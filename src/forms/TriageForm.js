@@ -3,18 +3,20 @@ import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import TextField from '@mui/material/TextField'
-import Radio from '@mui/material/Radio'
-import RadioGroup from '@mui/material/RadioGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
-import Button from '@mui/material/Button'
-import Box from '@mui/material/Box'
-import Alert from '@mui/material/Alert'
+import {
+  Divider,
+  Paper,
+  CircularProgress,
+  TextField,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  Button,
+  Box,
+  Alert
+} from '@mui/material'
 
 import { submitForm, formatBmi } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
@@ -107,44 +109,44 @@ function compareNumbers(a, b) {
   return a - b;
 }
 
-function CalcAvg({ sys1, sys2, sys3, name }) {
+function CalcAvg({ reading1, reading2, reading3, label }) {
 
   let ans
 
-  if (sys3 == null | sys3 === '') {
-    ans = Math.round((sys1 + sys2) / 2)
-    if (name == 1) {
+  if (reading3 == null || reading3 === '') {
+    ans = Math.round((reading1 + reading2) / 2)
+    if (label == 1) {
       calSyst = ans
     } else {
       calDias = ans
     }
     return ans
   } else {
-    let diff1 = Math.abs(sys1 - sys2)
-    let diff2 = Math.abs(sys1 - sys3)
-    let diff3 = Math.abs(sys3 - sys2)
+    let diff1 = Math.abs(reading1 - reading2)
+    let diff2 = Math.abs(reading1 - reading3)
+    let diff3 = Math.abs(reading3 - reading2)
 
     const diffArray = [diff1, diff2, diff3]
 
     diffArray.sort(compareNumbers);
 
     if (diffArray[0] == diff1) {
-      ans = Math.round((sys1 + sys2) / 2)
-      if (name == 1) {
+      ans = Math.round((reading1 + reading2) / 2)
+      if (label == 1) {
         calSyst = ans
       } else {
         calDias = ans
       }
     } else if (diffArray[0] == diff2) {
-      ans = Math.round((sys1 + sys3) / 2)
-      if (name == 1) {
+      ans = Math.round((reading1 + reading3) / 2)
+      if (label == 1) {
         calSyst = ans
       } else {
         calDias = ans
       }
     } else {
-      ans = Math.round((sys2 + sys3) / 2)
-      if (name == 1) {
+      ans = Math.round((reading2 + reading3) / 2)
+      if (label == 1) {
         calSyst = ans
       } else {
         calDias = ans
