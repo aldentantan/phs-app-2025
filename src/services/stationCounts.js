@@ -46,8 +46,11 @@ export const getEligibilityRows = (forms = {}) => {
     hcsr?.hxHcsrQ3 === 'Yes' ||
     hcsr?.hxHcsrQ8 === 'Yes' ||
     pmhx?.PMHX12 === 'Yes' ||
-    phq?.PHQ10 >= 10 ||
-    phq?.PHQ9 !== '0 - Not at all'
+    //phq?.PHQ10 >= 10 ||
+    //phq?.PHQ9 !== '0 - Not at all'
+    // NOTE^ this makes Doctor's Station Eligible with phq?.PHQ9 !== '0 - Not at all'
+    (phq?.PHQ10 && phq.PHQ10 >= 10) ||
+    (phq?.PHQ9 && phq.PHQ9 !== '0 - Not at all')
   
   const isDietitianEligible = hxsocial?.SOCIAL15 === 'Yes'
   const isSocialServicesEligible = hxsocial?.SOCIAL6 === 'Yes' ||
