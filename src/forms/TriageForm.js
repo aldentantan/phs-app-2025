@@ -91,8 +91,9 @@ function CalcBMI({ values }) {
   return null
 }
 
-function IsHighBP({ sys, dias }) {
-  if (sys > 140 && dias > 90) {
+function IsHighBP({ systolic, diastolic }) {
+  if (systolic > 140 && diastolic > 90) {
+    console.log("HIGH BP")
     return (
       <Fragment>
         <font color='red'>
