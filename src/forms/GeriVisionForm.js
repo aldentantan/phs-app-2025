@@ -1,102 +1,66 @@
 import React, { useContext, useEffect, useState } from 'react'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
 import { useNavigate } from 'react-router-dom'
-
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  TextField,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  Select,
+  InputLabel,
+} from '@mui/material'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
 import Grid from '@mui/material/Grid'
 import CircularProgress from '@mui/material/CircularProgress'
+import Button from '@mui/material/Button'
 
 import allForms from '../forms/forms.json'
-
-import { AutoForm } from 'uniforms'
-import { SubmitField, ErrorsField } from 'uniforms-mui'
-import { LongTextField, SelectField, RadioField, NumField } from 'uniforms-mui'
 import PopupText from 'src/utils/popupText'
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
-
-const schema = new SimpleSchema({
-  geriVisionQ1: {
-    type: String,
-    allowedValues: ['Yes (Specify in textbox )', 'No'],
-    optional: false,
-  },
-  geriVisionQ2: {
-    type: String,
-    optional: true,
-  },
-  geriVisionQ3: {
-    type: String,
-    optional: false,
-  },
-  geriVisionQ4: {
-    type: String,
-    optional: false,
-  },
-  geriVisionQ5: {
-    type: String,
-    optional: true,
-  },
-  geriVisionQ6: {
-    type: String,
-    optional: true,
-  },
-  geriVisionQ7: {
-    type: String,
-    allowedValues: ['CF2M', 'CF1M', 'HM', 'LP', 'NLP', 'NIL'],
-    optional: true,
-  },
-  geriVisionQ8: {
-    type: Array,
-    optional: false,
-  },
-  'geriVisionQ8.$': {
-    type: String,
-    allowedValues: ['Refractive', 'Non-refractive', 'None'],
-  },
-  geriVisionQ9: {
-    type: Array,
-    optional: true,
-  },
-  'geriVisionQ9.$': {
-    type: String,
-    allowedValues: ["Referred to Doctor's Consult"],
-  },
-  geriVisionQ10: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
-  geriVisionQ11: {
-    type: String,
-    optional: true,
-  },
-  geriVisionQ12: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
-  geriVisionQ13: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
+const validationSchema = Yup.object().shape({
+  geriVisionQ1: Yup.string()
+    .oneOf(['Yes (Specify in textbox )', 'No'], 'Please select an option')
+    .required('Required'),
+  geriVisionQ2: Yup.string().when('geriVisionQ1', {
+    is: 'Yes (Specify in textbox )',
+    then: Yup.string().required('Please specify the eye condition or surgery'),
+  }),
+  geriVisionQ3: Yup.string().required('Required'),
+  geriVisionQ4: Yup.string().required('Required'),
+  geriVisionQ5: Yup.string(),
+  geriVisionQ6: Yup.string(),
+  geriVisionQ7: Yup.string().oneOf(['CF2M', 'CF1M', 'HM', 'LP', 'NLP', 'NIL']),
+  geriVisionQ8: Yup.array()
+    .of(Yup.string().oneOf(['Refractive', 'Non-refractive', 'None']))
+    .required('Required'),
+  geriVisionQ9: Yup.array().of(Yup.string().oneOf(["Referred to Doctor's Consult"])),
+  geriVisionQ10: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
+  geriVisionQ11: Yup.string().when('geriVisionQ10', {
+    is: 'Yes',
+    then: Yup.string().required('Please specify'),
+  }),
+  geriVisionQ12: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
+  geriVisionQ13: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
 })
 
 const formName = 'geriVisionForm'
+
 const GeriVisionForm = () => {
   const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
-  const [loadingSidePanel, isLoadingSidePanel] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [saveData, setSaveData] = useState({})
-  const [hxHCSR, sethxHCSR] = useState({})
-  
-  const form_schema = new SimpleSchema2Bridge(schema)
+  const [hxHCSR, setHxHCSR] = useState({})
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -107,191 +71,285 @@ const GeriVisionForm = () => {
       const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
 
       Promise.all([hcsrData]).then((result) => {
-        sethxHCSR(result[0])
-        isLoadingSidePanel(false)
+        setHxHCSR(result[0])
+        setLoadingSidePanel(false)
       })
     }
     fetchData()
-  }, [])
+  }, [patientId])
 
-  const formOptions = {
-    geriVisionQ1: [
-      {
-        label: 'Yes (Specify in textbox )',
-        value: 'Yes (Specify in textbox )',
-      },
-      { label: 'No', value: 'No' },
-    ],
-    geriVisionQ7: [
-      {
-        label: 'CF2M',
-        value: 'CF2M',
-      },
-      { label: 'CF1M', value: 'CF1M' },
-      { label: 'HM', value: 'HM' },
-      { label: 'LP', value: 'LP' },
-      { label: 'NLP', value: 'NLP' },
-      { label: 'NIL', value: 'NIL' },
-    ],
-    geriVisionQ8: [
-      {
-        label: 'Refractive',
-        value: 'Refractive',
-      },
-      { label: 'Non-refractive', value: 'Non-refractive' },
-      { label: 'None', value: 'None' },
-    ],
-    geriVisionQ9: [
-      {
-        label: "Referred to Doctor's Consult",
-        value: "Referred to Doctor's Consult",
-      },
-    ],
-    geriVisionQ10: [
-      {
-        label: 'Yes',
-        value: 'Yes',
-      },
-      { label: 'No', value: 'No' },
-    ],
-    geriVisionQ12: [
-      {
-        label: 'Yes',
-        value: 'Yes',
-      },
-      { label: 'No', value: 'No' },
-    ],
-    geriVisionQ13: [
-      {
-        label: 'Yes',
-        value: 'Yes',
-      },
-      { label: 'No', value: 'No' },
-    ],
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setLoading(true)
+    const response = await submitForm(values, patientId, formName)
+    if (response.result) {
+      setLoading(false)
+      setTimeout(() => {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      }, 80)
+    } else {
+      setLoading(false)
+      setTimeout(() => {
+        alert(`Unsuccessful. ${response.error}`)
+      }, 80)
+    }
+    setSubmitting(false)
   }
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
-        if (response.result) {
-          isLoading(false)
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          isLoading(false)
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-      }}
-      model={saveData}
-    >
-      <div className='form--div'>
-        <h1>VISION SCREENING</h1>
-        <h2>Non-Refractive Error</h2>
-        <h3>1. Previous eye condition or surgery</h3>
-        <RadioField
-          name='geriVisionQ1'
-          label='Geri - Vision Q1'
-          options={formOptions.geriVisionQ1}
-        />
-        <PopupText qnNo='geriVisionQ1' triggerValue='Yes (Specify in textbox )'>
-          <h4>Explanation</h4>
-          <LongTextField name='geriVisionQ2' label='Geri - Vision Q2' />
-        </PopupText>
-        <h3>
-          2. Visual acuity (w/o pinhole occluder) - Right Eye 6/__ <br />
-        </h3>
-        <NumField sx={{ "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": { display: "none", }, "& input[type=number]": { MozAppearance: "textfield", }, }}
-          type="number" name='geriVisionQ3' label='Geri - Vision Q3' /> <br />
-        <h3>
-          3. Visual acuity (w/o pinhole occluder) - Left Eye 6/__ <br />
-        </h3>
-        <NumField sx={{ "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": { display: "none", }, "& input[type=number]": { MozAppearance: "textfield", }, }}
-          type="number" name='geriVisionQ4' label='Geri - Vision Q4' /> <br />
-        <h3>
-          4. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Right Eye 6/__ <br />
-        </h3>
-        <NumField sx={{ "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": { display: "none", }, "& input[type=number]": { MozAppearance: "textfield", }, }}
-          type="number" name='geriVisionQ5' label='Geri - Vision Q5' /> <br />
-        <h3>
-          5. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Left Eye 6/__ <br />
-        </h3>
-        <NumField sx={{ "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": { display: "none", }, "& input[type=number]": { MozAppearance: "textfield", }, }}
-          type="number" name='geriVisionQ6' label='Geri - Vision Q6' /> <br />
-        <h3>6. Is participant currently on any eye review/ consulting any eye specialist?</h3>
-        <RadioField
-          name='geriVisionQ10'
-          label='Geri - Vision Q10'
-          options={formOptions.geriVisionQ10}
-        />
-        <h4>Please specify:</h4>
-        <LongTextField name='geriVisionQ11' label='Geri - Vision Q11' />
-        <h3>7. Type of vision error?</h3>
-        <RadioField
-          name='geriVisionQ8'
-          label='Geri - Vision Q8'
-          options={formOptions.geriVisionQ8}
-        />
-        <h4>
-          Please <u>refer to Doctor’s Consult</u> if pinhole visual acuity is <u>worse than 6/12</u>
-        </h4>
-        <SelectField
-          name='geriVisionQ9'
-          checkboxes='true'
-          label='Geri - Vision Q9'
-          options={formOptions.geriVisionQ9}
-        />
-        <h2>Refractive Error</h2>
-        Senior Citizens are eligible to receiving subsidy for spectacles under the Senior Mobility
-        Fund (SMF) provided they qualify for the following:
-        <ul>
-          <li>
-            Have a household monthly income per person of $2,000 and below OR Annual Value (AV) of
-            residence reflected on NRIC of $13,000 and below for households with no income
-          </li>
-          <li>Be living in the community (not residing in a nursing home or sheltered home).</li>
-          <li>First time SMF applicant</li>
-          <li>
-            Be assessed by a qualified assessor on the type of device required when applicable.
-          </li>
-          <li>
-            Not concurrently receive (or apply for) any other public or private grants, or
-            subsidies.
-          </li>
-        </ul>
-        <h3>1. Does the participant wish to apply for the Senior Mobility Fund?</h3>
-        <RadioField
-          name='geriVisionQ12'
-          label='Geri - Vision Q12'
-          options={formOptions.geriVisionQ12}
-        />
-        <h3>2. Referred to Social Services?</h3>
-        <RadioField
-          name='geriVisionQ13'
-          label='Geri - Vision Q13'
-          options={formOptions.geriVisionQ13}
-        />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-
-      <br />
-      <Divider />
-    </AutoForm>
-  )
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <Formik
+              initialValues={{
+                geriVisionQ1: saveData.geriVisionQ1 || '',
+                geriVisionQ2: saveData.geriVisionQ2 || '',
+                geriVisionQ3: saveData.geriVisionQ3 || '',
+                geriVisionQ4: saveData.geriVisionQ4 || '',
+                geriVisionQ5: saveData.geriVisionQ5 || '',
+                geriVisionQ6: saveData.geriVisionQ6 || '',
+                geriVisionQ7: saveData.geriVisionQ7 || '',
+                geriVisionQ8: saveData.geriVisionQ8 || [],
+                geriVisionQ9: saveData.geriVisionQ9 || [],
+                geriVisionQ10: saveData.geriVisionQ10 || '',
+                geriVisionQ11: saveData.geriVisionQ11 || '',
+                geriVisionQ12: saveData.geriVisionQ12 || '',
+                geriVisionQ13: saveData.geriVisionQ13 || '',
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              {({ values, setFieldValue }) => (
+                <Form className='fieldPadding'>
+                  <div className='form--div'>
+                    <h1>VISION SCREENING</h1>
+                    <h2>Non-Refractive Error</h2>
+                    <h3>1. Previous eye condition or surgery</h3>
+                    <FormControl component='fieldset'>
+                      <RadioGroup
+                        name='geriVisionQ1'
+                        value={values.geriVisionQ1}
+                        onChange={(e) => setFieldValue('geriVisionQ1', e.target.value)}
+                      >
+                        <FormControlLabel
+                          value='Yes (Specify in textbox )'
+                          control={<Radio />}
+                          label='Yes (Specify in textbox)'
+                        />
+                        <FormControlLabel value='No' control={<Radio />} label='No' />
+                      </RadioGroup>
+                      <ErrorMessage name='geriVisionQ1' component='div' className='error' />
+                    </FormControl>
+                    {values.geriVisionQ1 === 'Yes (Specify in textbox )' && (
+                      <PopupText qnNo='geriVisionQ1' triggerValue='Yes (Specify in textbox )'>
+                        <h4>Explanation</h4>
+                        <Field
+                          as={TextField}
+                          name='geriVisionQ2'
+                          label='Geri - Vision Q2'
+                          fullWidth
+                          multiline
+                          rows={4}
+                          variant='outlined'
+                        />
+                        <ErrorMessage name='geriVisionQ2' component='div' className='error' />
+                      </PopupText>
+                    )}
+                    <h3>2. Visual acuity (w/o pinhole occluder) - Right Eye 6/__</h3>
+                    <Field
+                      as={TextField}
+                      name='geriVisionQ3'
+                      label='Geri - Vision Q3'
+                      type='number'
+                      fullWidth
+                      inputProps={{
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                    />
+                    <ErrorMessage name='geriVisionQ3' component='div' className='error' />
+                    <h3>3. Visual acuity (w/o pinhole occluder) - Left Eye 6/__</h3>
+                    <Field
+                      as={TextField}
+                      name='geriVisionQ4'
+                      label='Geri - Vision Q4'
+                      type='number'
+                      fullWidth
+                      inputProps={{
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                    />
+                    <ErrorMessage name='geriVisionQ4' component='div' className='error' />
+                    <h3>
+                      4. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Right Eye
+                      6/__
+                    </h3>
+                    <Field
+                      as={TextField}
+                      name='geriVisionQ5'
+                      label='Geri - Vision Q5'
+                      type='number'
+                      fullWidth
+                      inputProps={{
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                    />
+                    <ErrorMessage name='geriVisionQ5' component='div' className='error' />
+                    <h3>
+                      5. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Left Eye
+                      6/__
+                    </h3>
+                    <Field
+                      as={TextField}
+                      name='geriVisionQ6'
+                      label='Geri - Vision Q6'
+                      type='number'
+                      fullWidth
+                      inputProps={{
+                        inputMode: 'numeric',
+                        pattern: '[0-9]*',
+                      }}
+                    />
+                    <ErrorMessage name='geriVisionQ6' component='div' className='error' />
+                    <h3>
+                      6. Is participant currently on any eye review/ consulting any eye specialist?
+                    </h3>
+                    <FormControl component='fieldset'>
+                      <RadioGroup
+                        name='geriVisionQ10'
+                        value={values.geriVisionQ10}
+                        onChange={(e) => setFieldValue('geriVisionQ10', e.target.value)}
+                      >
+                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
+                        <FormControlLabel value='No' control={<Radio />} label='No' />
+                      </RadioGroup>
+                      <ErrorMessage name='geriVisionQ10' component='div' className='error' />
+                    </FormControl>
+                    {values.geriVisionQ10 === 'Yes' && (
+                      <>
+                        <h4>Please specify:</h4>
+                        <Field
+                          as={TextField}
+                          name='geriVisionQ11'
+                          label='Geri - Vision Q11'
+                          fullWidth
+                          multiline
+                          rows={4}
+                          variant='outlined'
+                        />
+                        <ErrorMessage name='geriVisionQ11' component='div' className='error' />
+                      </>
+                    )}
+                    <h3>7. Type of vision error?</h3>
+                    <FormControl fullWidth>
+                      <InputLabel>Geri - Vision Q8</InputLabel>
+                      <Select
+                        name='geriVisionQ8'
+                        multiple
+                        value={values.geriVisionQ8}
+                        onChange={(e) => setFieldValue('geriVisionQ8', e.target.value)}
+                        renderValue={(selected) => selected.join(', ')}
+                      >
+                        {['Refractive', 'Non-refractive', 'None'].map((option) => (
+                          <MenuItem key={option} value={option}>
+                            <Checkbox checked={values.geriVisionQ8.indexOf(option) > -1} />
+                            <ListItemText primary={option} />
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <ErrorMessage name='geriVisionQ8' component='div' className='error' />
+                    </FormControl>
+                    <h4>
+                      Please <u>refer to Doctor&apos;s Consult</u> if pinhole visual acuity is{' '}
+                      <u>worse than 6/12</u>
+                    </h4>
+                    <FormControl fullWidth>
+                      <InputLabel>Geri - Vision Q9</InputLabel>
+                      <Select
+                        name='geriVisionQ9'
+                        multiple
+                        value={values.geriVisionQ9}
+                        onChange={(e) => setFieldValue('geriVisionQ9', e.target.value)}
+                        renderValue={(selected) => selected.join(', ')}
+                      >
+                        <MenuItem value="Referred to Doctor's Consult">
+                          <Checkbox
+                            checked={
+                              values.geriVisionQ9.indexOf("Referred to Doctor's Consult") > -1
+                            }
+                          />
+                          <ListItemText primary="Referred to Doctor's Consult" />
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                    <h2>Refractive Error</h2>
+                    Senior Citizens are eligible to receiving subsidy for spectacles under the
+                    Senior Mobility Fund (SMF) provided they qualify for the following:
+                    <ul>
+                      <li>
+                        Have a household monthly income per person of $2,000 and below OR Annual
+                        Value (AV) of residence reflected on NRIC of $13,000 and below for
+                        households with no income
+                      </li>
+                      <li>
+                        Be living in the community (not residing in a nursing home or sheltered
+                        home).
+                      </li>
+                      <li>First time SMF applicant</li>
+                      <li>
+                        Be assessed by a qualified assessor on the type of device required when
+                        applicable.
+                      </li>
+                      <li>
+                        Not concurrently receive (or apply for) any other public or private grants,
+                        or subsidies.
+                      </li>
+                    </ul>
+                    <h3>1. Does the participant wish to apply for the Senior Mobility Fund?</h3>
+                    <FormControl component='fieldset'>
+                      <RadioGroup
+                        name='geriVisionQ12'
+                        value={values.geriVisionQ12}
+                        onChange={(e) => setFieldValue('geriVisionQ12', e.target.value)}
+                      >
+                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
+                        <FormControlLabel value='No' control={<Radio />} label='No' />
+                      </RadioGroup>
+                      <ErrorMessage name='geriVisionQ12' component='div' className='error' />
+                    </FormControl>
+                    <h3>2. Referred to Social Services?</h3>
+                    <FormControl component='fieldset'>
+                      <RadioGroup
+                        name='geriVisionQ13'
+                        value={values.geriVisionQ13}
+                        onChange={(e) => setFieldValue('geriVisionQ13', e.target.value)}
+                      >
+                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
+                        <FormControlLabel value='No' control={<Radio />} label='No' />
+                      </RadioGroup>
+                      <ErrorMessage name='geriVisionQ13' component='div' className='error' />
+                    </FormControl>
+                  </div>
+
+                  <div>
+                    {loading ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button type='submit' variant='contained' color='primary'>
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+
+                  <br />
+                  <Divider />
+                </Form>
+              )}
+            </Formik>
           </Paper>
         </Grid>
         <Grid

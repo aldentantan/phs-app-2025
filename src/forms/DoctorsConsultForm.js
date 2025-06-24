@@ -1,0 +1,669 @@
+import React, { Fragment, useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
+import { Formik, Form, Field } from 'formik'
+
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import Grid from '@mui/material/Grid'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextField from '@mui/material/TextField'
+import Checkbox from '@mui/material/Checkbox'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Button from '@mui/material/Button'
+
+import { submitForm } from '../api/api.js'
+import { FormContext } from '../api/utils.js'
+import { getSavedData } from '../services/mongoDB'
+import allForms from './forms.json'
+import './fieldPadding.css'
+
+const validationSchema = Yup.object().shape({
+  doctorsConsultQ1: Yup.string().required('This field is required'),
+  doctorsConsultQ2: Yup.string(),
+  doctorsConsultQ3: Yup.string().required('This field is required'),
+  doctorsConsultQ4: Yup.boolean(),
+  doctorsConsultQ5: Yup.string().when('doctorsConsultQ4', {
+    is: true,
+    then: (schema) => schema.required('Reason is required when referral is selected'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  doctorsConsultQ6: Yup.boolean(),
+  doctorsConsultQ7: Yup.string().when('doctorsConsultQ6', {
+    is: true,
+    then: (schema) => schema.required('Reason is required when referral is selected'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  doctorsConsultQ13: Yup.boolean(),
+  doctorsConsultQ8: Yup.boolean(),
+  doctorsConsultQ9: Yup.string().when('doctorsConsultQ8', {
+    is: true,
+    then: (schema) => schema.required('Reason is required when referral is selected'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  doctorsConsultQ10: Yup.boolean(),
+  doctorsConsultQ11: Yup.boolean(),
+})
+
+const formName = 'doctorConsultForm'
+
+const DoctorsConsultForm = () => {
+  const { patientId } = useContext(FormContext)
+  const [loading, setLoading] = useState(false)
+  const [loadingSidePanel, setLoadingSidePanel] = useState(true)
+  const [saveData, setSaveData] = useState({})
+
+  // forms to retrieve for side panel
+  const [hcsr, setHcsr] = useState({})
+  const [geriVision, setGeriVision] = useState({})
+  const [geriAudio, setGeriAudio] = useState({})
+  const [geriPHQ, setPHQ] = useState({})
+  const [lung, setLung] = useState({})
+  const [triage, setTriage] = useState({})
+  const [osteo, setOsteo] = useState({})
+  const [pmhx, setPMHX] = useState({})
+  const [social, setSocial] = useState({})
+  const [family, setFamily] = useState({})
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const loadPastForms = async () => {
+      const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
+      const geriVisionData = getSavedData(patientId, allForms.geriVisionForm)
+      const geriAudioData = getSavedData(patientId, allForms.geriAudiometryForm)
+      const savedData = getSavedData(patientId, formName)
+      const lungData = getSavedData(patientId, allForms.lungForm)
+      const PHQDATA = getSavedData(patientId, allForms.geriPhqForm)
+      const triageData = getSavedData(patientId, allForms.triageForm)
+      const osteoData = getSavedData(patientId, allForms.osteoForm)
+      const pmhxData = getSavedData(patientId, allForms.hxNssForm)
+      const socialData = getSavedData(patientId, allForms.hxSocialForm)
+      const familyData = getSavedData(patientId, allForms.hxFamilyForm)
+
+      Promise.all([
+        hcsrData,
+        savedData,
+        geriVisionData,
+        geriAudioData,
+        lungData,
+        PHQDATA,
+        triageData,
+        osteoData,
+        pmhxData,
+        socialData,
+        familyData,
+      ]).then((result) => {
+        setHcsr(result[0])
+        setSaveData(result[1])
+        setGeriVision(result[2])
+        setGeriAudio(result[3])
+        setLung(result[4])
+        setPHQ(result[5])
+        setTriage(result[6])
+        setOsteo(result[7])
+        setPMHX(result[8])
+        setSocial(result[9])
+        setFamily(result[10])
+        setLoadingSidePanel(false)
+      })
+    }
+    loadPastForms()
+  }, [patientId])
+
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setLoading(true)
+    try {
+      const response = await submitForm(values, patientId, formName)
+      if (response.result) {
+        setTimeout(() => {
+          alert('Successfully submitted form')
+          navigate('/app/dashboard', { replace: true })
+        }, 80)
+      } else {
+        setTimeout(() => {
+          alert(`Unsuccessful. ${response.error}`)
+        }, 80)
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    } finally {
+      setLoading(false)
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <Paper elevation={2} p={0} m={0}>
+      <Grid display='flex' flexDirection='row'>
+        <Grid xs={9}>
+          <Paper elevation={2} p={0} m={0}>
+            <Formik
+              initialValues={{
+                doctorsConsultQ1: saveData.doctorsConsultQ1 || '',
+                doctorsConsultQ2: saveData.doctorsConsultQ2 || '',
+                doctorsConsultQ3: saveData.doctorsConsultQ3 || '',
+                doctorsConsultQ4: saveData.doctorsConsultQ4 || false,
+                doctorsConsultQ5: saveData.doctorsConsultQ5 || '',
+                doctorsConsultQ6: saveData.doctorsConsultQ6 || false,
+                doctorsConsultQ7: saveData.doctorsConsultQ7 || '',
+                doctorsConsultQ13: saveData.doctorsConsultQ13 || false,
+                doctorsConsultQ8: saveData.doctorsConsultQ8 || false,
+                doctorsConsultQ9: saveData.doctorsConsultQ9 || '',
+                doctorsConsultQ10: saveData.doctorsConsultQ10 || false,
+                doctorsConsultQ11: saveData.doctorsConsultQ11 || false,
+              }}
+              validationSchema={validationSchema}
+              onSubmit={handleSubmit}
+              enableReinitialize
+            >
+              {({ values, errors, touched, isSubmitting }) => (
+                <Form className='fieldPadding'>
+                  <div className='form--div'>
+                    <h1>Doctor&apos;s Station</h1>
+                    <h3>Doctor&apos;s Name:</h3>
+                    <Field
+                      as={TextField}
+                      name='doctorsConsultQ1'
+                      label="Doctor's Name"
+                      fullWidth
+                      multiline
+                      rows={2}
+                      variant='outlined'
+                      error={touched.doctorsConsultQ1 && Boolean(errors.doctorsConsultQ1)}
+                      helperText={touched.doctorsConsultQ1 && errors.doctorsConsultQ1}
+                    />
+                    <h3>Clinical findings:</h3>
+                    <Field
+                      as={TextField}
+                      name='doctorsConsultQ2'
+                      label="Doctor's Clinical Findings"
+                      fullWidth
+                      multiline
+                      rows={4}
+                      variant='outlined'
+                    />
+                    <h3>Doctor&apos;s Memo:</h3>
+                    <Field
+                      as={TextField}
+                      name='doctorsConsultQ3'
+                      label="Doctor's Memo"
+                      fullWidth
+                      multiline
+                      rows={6}
+                      variant='outlined'
+                      error={touched.doctorsConsultQ3 && Boolean(errors.doctorsConsultQ3)}
+                      helperText={touched.doctorsConsultQ3 && errors.doctorsConsultQ3}
+                    />
+                    <h3>Refer to dietitian?</h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ4' color='primary' />}
+                      label='Yes'
+                    />
+                    {values.doctorsConsultQ4 && (
+                      <>
+                        <h4>Reason for referral</h4>
+                        <Field
+                          as={TextField}
+                          name='doctorsConsultQ5'
+                          label="Doctor's Station Q5"
+                          fullWidth
+                          multiline
+                          rows={2}
+                          variant='outlined'
+                          error={touched.doctorsConsultQ5 && Boolean(errors.doctorsConsultQ5)}
+                          helperText={touched.doctorsConsultQ5 && errors.doctorsConsultQ5}
+                        />
+                      </>
+                    )}
+                    <h3>Refer to Social Support?</h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ6' color='primary' />}
+                      label='Yes'
+                    />
+                    {values.doctorsConsultQ6 && (
+                      <>
+                        <h4>Reason for referral</h4>
+                        <Field
+                          as={TextField}
+                          name='doctorsConsultQ7'
+                          label="Doctor's Station Q7"
+                          fullWidth
+                          multiline
+                          rows={2}
+                          variant='outlined'
+                          error={touched.doctorsConsultQ7 && Boolean(errors.doctorsConsultQ7)}
+                          helperText={touched.doctorsConsultQ7 && errors.doctorsConsultQ7}
+                        />
+                      </>
+                    )}
+                    <h3>Refer to Mental Health? (and indicated on Form A)</h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ13' color='primary' />}
+                      label='Yes'
+                    />
+                    <h3>Refer to Dental?</h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ8' color='primary' />}
+                      label='Yes'
+                    />
+                    {values.doctorsConsultQ8 && (
+                      <>
+                        <h4>Reason for referral</h4>
+                        <Field
+                          as={TextField}
+                          name='doctorsConsultQ9'
+                          label="Doctor's Station Q9"
+                          fullWidth
+                          multiline
+                          rows={2}
+                          variant='outlined'
+                          error={touched.doctorsConsultQ9 && Boolean(errors.doctorsConsultQ9)}
+                          helperText={touched.doctorsConsultQ9 && errors.doctorsConsultQ9}
+                        />
+                      </>
+                    )}
+                    <h3>Does patient require urgent follow up</h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ10' color='primary' />}
+                      label='Yes'
+                    />
+                    <h3>
+                      Completed Doctor&apos;s Consult station. Please check that Form A is filled.
+                    </h3>
+                    <FormControlLabel
+                      control={<Field as={Checkbox} name='doctorsConsultQ11' color='primary' />}
+                      label='Yes'
+                    />
+                  </div>
+
+                  <div>
+                    {loading ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button
+                        type='submit'
+                        variant='contained'
+                        color='primary'
+                        disabled={isSubmitting}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                  <Divider />
+                </Form>
+              )}
+            </Formik>
+          </Paper>
+        </Grid>
+        <Grid
+          p={1}
+          width='30%'
+          display='flex'
+          flexDirection='column'
+          alignItems={loadingSidePanel ? 'center' : 'left'}
+        >
+          {loadingSidePanel ? (
+            <CircularProgress />
+          ) : (
+            <div className='summary--question-div'>
+              <h2>Patient Requires Referrals For: </h2>
+              <ul>
+                {!lung ? <p className='red'>nil lung data!</p> : <></>}
+                {lung && lung.LUNG14 == 'Yes' ? (
+                  <li>
+                    <p>
+                      Patient has <strong>{lung.LUNG13}</strong>
+                    </p>
+                    <p>Lung Function Results</p>
+                    <table style={{ border: '1px solid black', borderCollapse: 'collapse' }}>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td colSpan={2} style={{ border: '1px solid black' }}>
+                          Pre-Bronchodilator
+                        </td>
+                      </tr>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td style={{ border: '1px solid black' }}>FVC (L)</td>
+                        <td style={{ border: '1px solid black' }}>{lung.LUNG3}</td>
+                      </tr>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td style={{ border: '1px solid black' }}>FEV1 (L)</td>
+                        <td style={{ border: '1px solid black' }}>{lung.LUNG4}</td>
+                      </tr>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td style={{ border: '1px solid black' }}>FVC (%pred)</td>
+                        <td style={{ border: '1px solid black' }}>{lung.LUNG5}</td>
+                      </tr>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td style={{ border: '1px solid black' }}>FEV1 (%pred)</td>
+                        <td style={{ border: '1px solid black' }}>{lung.LUNG6}</td>
+                      </tr>
+                      <tr style={{ border: '1px solid black' }}>
+                        <td style={{ border: '1px solid black' }}>FEV1/FVC (%)</td>
+                        <td style={{ border: '1px solid black' }}>{lung.LUNG7}</td>
+                      </tr>
+                    </table>
+                  </li>
+                ) : null}
+
+                {!geriPHQ ? <p className='red'>nil geriPHQ data!</p> : <></>}
+                <li>
+                  {geriPHQ && geriPHQ.PHQ10 ? (
+                    <p>
+                      Patient scores <strong>{geriPHQ.PHQ10}</strong> in the PHQ.
+                    </p>
+                  ) : (
+                    <p className='red'>nil PHQ10 data!</p>
+                  )}
+                  <ul>
+                    <li>
+                      {geriPHQ && geriPHQ.PHQ9 ? (
+                        <p>
+                          The patient answered: <strong>{geriPHQ.PHQ9}</strong> to &apos;Thoughts
+                          that you would be better off dead or hurting yourself in some way&apos;.
+                        </p>
+                      ) : (
+                        <p className='red'>nil PHQ9 data!</p>
+                      )}
+                    </li>
+                    <li>
+                      {geriPHQ && geriPHQ.PHQextra9 ? (
+                        <p>
+                          When asked &apos;Do you want to take your life now&apos;, patient said{' '}
+                          <strong>{geriPHQ.PHQextra9}</strong>
+                        </p>
+                      ) : (
+                        <p className='red'>nil PHQextra9 data!</p>
+                      )}
+                    </li>
+                  </ul>
+                </li>
+
+                {!triage ? <p className='red'>nil triage data!</p> : <></>}
+                {triage.triageQ9 ? (
+                  <li>
+                    <p>
+                      Patient had blood pressure of{' '}
+                      <strong>
+                        {triage.triageQ7}/{triage.triageQ8}
+                      </strong>
+                    </p>
+                  </li>
+                ) : null}
+
+                {!geriVision ? <p className='red'>nil geriVision data!</p> : <></>}
+                {geriVision.geriVisionQ9 ? (
+                  <li>
+                    <p>Visual Check Results.</p>
+                    <ul>
+                      <li>
+                        <p>Visual Acuity</p>
+                        <table
+                          style={{
+                            border: '1px solid black',
+                            width: '100%',
+                            borderCollapse: 'collapse',
+                            minWidth: '60%',
+                          }}
+                        >
+                          <tr style={{ border: '1px solid black' }}>
+                            <th style={{ border: '1px solid black' }}></th>
+                            <th style={{ border: '1px solid black' }}>Right Eye</th>
+                            <th style={{ border: '1px solid black' }}>Left Eye</th>
+                          </tr>
+                          <tr style={{ border: '1px solid black' }}>
+                            <td style={{ border: '1px solid black' }}>Without Pinhole Occluder</td>
+                            <td style={{ border: '1px solid black' }}>
+                              6/{geriVision.geriVisionQ3}
+                            </td>
+                            <td style={{ border: '1px solid black' }}>
+                              6/{geriVision.geriVisionQ4}
+                            </td>
+                          </tr>
+                          <tr style={{ border: '1px solid black' }}>
+                            <td style={{ border: '1px solid black' }}>With Pinhole Occluder</td>
+                            <td style={{ border: '1px solid black' }}>
+                              6/{geriVision.geriVisionQ5}
+                            </td>
+                            <td style={{ border: '1px solid black' }}>
+                              6/{geriVision.geriVisionQ6}
+                            </td>
+                          </tr>
+                        </table>
+                      </li>
+                      <li>
+                        <p>
+                          Type of vision error, if any: <strong>{geriVision.geriVisionQ8}</strong>
+                        </p>
+                        <p>
+                          Previous eye surgery or condition:{' '}
+                          <strong>{geriVision.geriVisionQ1}</strong>
+                        </p>
+                        <p>
+                          Is currently on any eye review/ consulting any eye specialist:{' '}
+                          <strong>{geriVision.geriVisionQ10}</strong>
+                        </p>
+                        <p>
+                          <strong>{geriVision.geriVisionQ11}</strong>
+                        </p>
+                        {hcsr ? (
+                          <p>
+                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ6}</strong>
+                          </p>
+                        ) : (
+                          <p className='red'>nil hcsr data!</p>
+                        )}
+                      </li>
+                    </ul>
+                  </li>
+                ) : null}
+
+                {!geriAudio ? <p className='red'>nil geriAudio data!</p> : <></>}
+                {geriAudio ? (
+                  <li>
+                    <p>Patient&apos;s audiometry results, if any:</p>
+                    <ul>
+                      <li>
+                        <p>
+                          <strong>{geriAudio.geriAudiometryQ13}</strong>
+                        </p>
+                        <p>
+                          Details: <strong>{geriAudio.geriAudiometryQ12}</strong>
+                        </p>
+                        {hcsr ? (
+                          <p>
+                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ7}</strong>
+                          </p>
+                        ) : (
+                          <p className='red'>nil hcsr data!</p>
+                        )}
+                      </li>
+                    </ul>
+                  </li>
+                ) : null}
+
+                {!osteo ? <p className='red'>nil osteo data!</p> : <></>}
+                {osteo ? (
+                  <li>
+                    <p>
+                      Patient&apos;s OSTA risk is <strong>{osteo.BONE1}</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <p>
+                          FRAX Hip Fracture Score is <strong>{osteo.BONE3}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Patient requires a follow up: <strong>{osteo.BONE2}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : null}
+
+                <h2>Patient&apos;s Relevant History: </h2>
+                {triage ? (
+                  <li>
+                    <p>Biodata</p>
+                    <ul>
+                      <li>
+                        <p>
+                          BMI: <strong>{triage.triageQ12}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Waist Circumference: <strong>{triage.triageQ13}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <p className='red'>nil triage data!</p>
+                )}
+
+                {hcsr ? (
+                  <li>
+                    <p>Presenting Complaints</p>
+                    <ul>
+                      <li>
+                        <p>
+                          Health Concerns: <strong>{hcsr.hxHcsrQ3}</strong>
+                          <br></br>
+                          <strong>{hcsr.hxHcsrShortAnsQ3}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Red Flags: <strong>{hcsr.hxHcsrQ4}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Problems passing urine: <strong>{hcsr.hxHcsrQ5}</strong>
+                          <br></br>
+                          <strong>{hcsr.hxHcsrShortAnsQ5}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <p className='red'>nil hcsr data!</p>
+                )}
+
+                {pmhx ? (
+                  <li>
+                    <p>Past Medical History</p>
+                    <ul>
+                      <li>
+                        <p>
+                          Chronic conditions: <strong>{pmhx.PMHX1}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Long term medications and compliance: <strong>{pmhx.PMHX2}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Drug allergies: <strong>{pmhx.PMHX5}</strong>
+                          <br></br>
+                          <strong>{pmhx.PMHXShortAns5}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Alternative medicine: <strong>{pmhx.PMHX6}</strong>
+                          <br></br>
+                          <strong>{pmhx.PMHXShortAns6}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Regular screening: <strong>{pmhx.PMHX8}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Reason for referral: <strong>{pmhx.PMHXShortAns12}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <p className='red'>nil pmhx data!</p>
+                )}
+
+                {social ? (
+                  <li>
+                    <p>Social History</p>
+                    <ul>
+                      <li>
+                        <p>
+                          Smoking: <strong>{social.SOCIAL10}</strong>
+                          <br></br>
+                          <strong>{social.SOCIALShortAns10}</strong>
+                        </p>
+                        <p>
+                          Past Smoking: <strong>{social.SOCIAL11}</strong>
+                          <br></br>
+                          <strong>{social.SOCIALShortAns11}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Alcohol: <strong>{social.SOCIAL12}</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>
+                          Exercise: <strong>{social.SOCIAL14}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <p className='red'>nil social data!</p>
+                )}
+
+                {family && family.FAMILY1 ? (
+                  <li>
+                    <p>Family History</p>
+                    <ul>
+                      <li>
+                        <p>Cancers:</p>
+                        <ul>
+                          {family.FAMILY1.map((c) => (
+                            <li key={c}>{c}</li>
+                          ))}
+                        </ul>
+                      </li>
+                      <li>
+                        <p>
+                          Others: <strong>{family.FAMILY2}</strong>
+                        </p>
+                      </li>
+                    </ul>
+                  </li>
+                ) : (
+                  <p className='red'>nil family data!</p>
+                )}
+              </ul>
+            </div>
+          )}
+        </Grid>
+      </Grid>
+    </Paper>
+  )
+}
+
+DoctorsConsultForm.contextType = FormContext
+
+export default function DoctorsConsultform(props) {
+  const navigate = useNavigate()
+  return <DoctorsConsultForm {...props} navigate={navigate} />
+}

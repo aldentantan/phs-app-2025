@@ -19,8 +19,8 @@ const timelineItems = [
   { key: 'triage', label: 'Triage', path: 'triage' },
   { key: 'hsg', label: 'HealthierSG', path: 'hsg' },
   { key: 'phlebo', label: 'Phlebotomy', path: 'phlebo' },
-  /*{ key: 'fit', label: 'FIT', path: 'fit' },*/
-  /*{ key: 'lungfn', label: 'Lung Function', path: 'lungfn' },*/
+  { key: 'fit', label: 'FIT', path: 'fit' },
+  { key: 'lungfn', label: 'Lung Function', path: 'lungfn' },
   { key: 'wce', label: 'WCE', path: 'wce' },
   { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
   { key: 'nkf', label: 'NKF', path: 'nkf' },
