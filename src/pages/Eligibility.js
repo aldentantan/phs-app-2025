@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { Helmet } from 'react-helmet'
+import CircularProgress from '@mui/material/CircularProgress'
 import {
   Box,
   TableContainer,
@@ -14,6 +15,7 @@ import logo from 'src/icons/Icon'
 import { getSavedData, getSavedPatientData } from '../services/mongoDB'
 import { FormContext } from '../api/utils.js'
 import allForms from '../forms/forms.json'
+import { parseFromLangKey, setLang } from '../api/langutil'
 
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
@@ -30,9 +32,12 @@ const Eligibility = () => {
   const [hxoral, setHxOral] = useState({})
   const [wce, setWce] = useState({})
   const [phq, setPhq] = useState({})
+  const [patient, setPatient] = useState({})
+  const [loadingPrevData, isLoadingPrevData] = useState(true)
 
   useEffect(() => {
     const loadPastForms = async () => {
+      isLoadingPrevData(true)
       const pmhxData = getSavedData(patientId, allForms.hxNssForm)
       const hxSocialData = getSavedData(patientId, allForms.hxSocialForm)
       const regData = getSavedData(patientId, allForms.registrationForm)
@@ -42,6 +47,7 @@ const Eligibility = () => {
       const hxOralData = getSavedData(patientId, allForms.hxOralForm)
       const wceData = getSavedData(patientId, allForms.wceForm)
       const phqData = getSavedData(patientId, allForms.geriPhqForm)
+      const patientsData = getSavedPatientData(patientId, 'patients')
 
       Promise.all([
         pmhxData,
@@ -53,6 +59,7 @@ const Eligibility = () => {
         hxOralData,
         wceData,
         phqData,
+        patientsData,
       ]).then((result) => {
         setPmhx(result[0])
         setHxSocial(result[1])
@@ -63,6 +70,8 @@ const Eligibility = () => {
         setHxOral(result[6])
         setWce(result[7])
         setPhq(result[8])
+        setPatient(result[9])
+        isLoadingPrevData(false)
       })
     }
     loadPastForms()
@@ -134,28 +143,22 @@ const Eligibility = () => {
   ]
 
   function patientSection() {
-    //const salutation = reg.registrationQ1 || 'Dear'
-  
+    const salutation = reg.registrationQ1 || 'Dear'
+
     const mainLogo = {
       image: logo,
       width: 220,
     }
 
-    const patientsData = getSavedPatientData(patientId, 'patients');
     const thanksNote = [
-      { text: `${patientsData.initials}`, style: 'normal' },
+      { text: `${parseFromLangKey('dear', salutation, patient.initials)}`, style: 'normal' },
+      { text: '', margin: [0, 5] },
     ]
-  
-    // const title = [{ text: parseFromLangKey('title'), style: 'header' }]
-  
-    // const thanksNote = [
-    //   { text: `${parseFromLangKey('dear', salutation, patients.initials)}`, style: 'normal' },
-    //   { text: `${parseFromLangKey('intro')}`, style: 'normal' },
-    // ]
-  
-    return [mainLogo, 
-      //...title, 
-      ...thanksNote
+
+    return [
+      mainLogo,
+      //...title,
+      ...thanksNote,
     ]
   }
 
@@ -167,19 +170,25 @@ const Eligibility = () => {
           widths: ['*', '*'],
           body: [
             [
-              { text: 'Modality', style: 'tableHeader' },
-              { text: 'Eligibility', style: 'tableHeader' },
+              { text: 'Modality', style: 'tableHeader', bold: true },
+              { text: 'Eligibility', style: 'tableHeader', bold: true },
             ],
             ...rows.map((row) => [
               { text: row.name },
               {
                 text: row.eligibility,
                 color: row.eligibility === 'YES' ? 'blue' : 'red', // Conditional color
+                lineHeight: 1.5,
               },
             ]),
           ],
         },
-        layout: 'lightHorizontalLines',
+        layout: {
+          hLineWidth: () => 0.5,
+          vLineWidth: () => 0.5,
+          hLineColor: () => 'black',
+          vLineColor: () => 'black',
+        },
       },
     ]
   }
@@ -214,9 +223,9 @@ const Eligibility = () => {
     content.push(...patientSection())
     content.push(...eligibilitySection())
     let fileName = 'Report.pdf'
-    // if (patients.initials) {
-    //   fileName = patients.initials.split(' ').join('_') + '_Eligiblity_Report.pdf'
-    // }
+    if (patient.initials) {
+      fileName = patient.initials.split(' ').join('_') + '_Eligibility_Report.pdf'
+    }
 
     pdfMake.createPdf(docDefinition).download(fileName)
   }
@@ -233,7 +242,11 @@ const Eligibility = () => {
           py: 3,
         }}
       >
-        <Button onClick={() => generate_pdf_updated()}>Download Eligibility Report</Button>
+        {loadingPrevData ? (
+          <CircularProgress />
+        ) : (
+          <Button onClick={() => generate_pdf_updated()}>Download Eligibility Report</Button>
+        )}
         <TableContainer>
           <Table>
             <TableHead>

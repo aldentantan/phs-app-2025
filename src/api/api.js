@@ -1166,6 +1166,7 @@ export function generate_pdf_updated(
   content.push(...bloodPressureSection(triage))
   content.push(...bmiSection(triage.triageQ10, triage.triageQ11))
   content.push(...otherScreeningModularitiesSection(lung, geriVision, social))
+  content.push({ text: '', pageBreak: 'before' })
   content.push(
     ...followUpSection(
       reg,
@@ -1239,7 +1240,7 @@ export function bloodPressureSection(triage) {
   const textSection = [
     { text: parseFromLangKey('bp_title'), style: 'subheader' },
     {
-      text: `${parseFromLangKey('bp_reading')} ${triage.triageQ7}/${triage.triageQ8} mmHg.\n`,
+      text: `${parseFromLangKey('bp_reading')} ${triage.triageQ7}/${triage.triageQ8} mmHg.\n\n`,
       style: 'normal',
     },
     { text: `${parseFromLangKey('bp_tip')}`, style: 'normal' },
@@ -1254,7 +1255,7 @@ export function bloodPressureSection(triage) {
     {
       text: 'https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings',
       style: 'italicSmall',
-      fontSize: 8,
+      fontSize: 7,
       color: 'blue',
       link: 'https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings',
     },
@@ -1266,7 +1267,7 @@ export function bloodPressureSection(triage) {
         { width: '*', stack: textSection },
         { width: 'auto', stack: imageSection, alignment: 'right' },
       ],
-      columnGap: 20,
+      columnGap: 13,
       margin: [0, 10, 0, 10],
     },
   ]
@@ -1284,7 +1285,7 @@ export function bmiSection(height, weight) {
     {
       text: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
       style: 'italicSmall',
-      fontSize: 8,
+      fontSize: 7,
       color: 'blue',
       link: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
     },
@@ -1306,8 +1307,8 @@ export function bmiSection(height, weight) {
             widths: ['*', '*'],
             body: [
               [
-                { text: parseFromLangKey('bmi_tbl_l_header'), style: 'tableHeader' },
-                { text: parseFromLangKey('bmi_tbl_r_header'), style: 'tableHeader' },
+                { text: parseFromLangKey('bmi_tbl_l_header'), style: 'tableHeader', bold: true },
+                { text: parseFromLangKey('bmi_tbl_r_header'), style: 'tableHeader', bold: true },
               ],
               ['18.5 - 22.9', parseFromLangKey('bmi_tbl_low')],
               ['23.0 - 27.4', parseFromLangKey('bmi_tbl_mod')],
@@ -1315,11 +1316,17 @@ export function bmiSection(height, weight) {
               ['32.5 - 37.4', parseFromLangKey('bmi_tbl_vhigh')],
             ],
           },
-          layout: 'lightHorizontalLines',
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
         },
         { width: 'auto', stack: imageSection, alignment: 'right' },
       ],
     },
+    { text: '', margin: [0, 5] },
   ]
 }
 
@@ -1335,54 +1342,97 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
     { text: parseFromLangKey('other_lung'), style: 'normal' },
 
     {
-      style: 'tableExample',
-      table: {
-        widths: ['*', '*'],
-        body: [
-          [
-            { text: parseFromLangKey('other_lung_tbl_l_header'), style: 'tableHeader' },
-            { text: '', style: 'tableHeader' },
-          ],
-          ['FVC (L)', `${lung.LUNG3}`],
-          ['FEV1 (L)', `${lung.LUNG4}`],
-          ['FVC (%pred)', `${lung.LUNG5}`],
-          ['FEV1 (%pred)', `${lung.LUNG6}`],
-          ['FEV1/FVC (%)', `${lung.LUNG7}`],
-        ],
-      },
-      layout: 'lightHorizontalLines',
+      columns: [
+        {
+          style: 'tableExample',
+          margin: [0, 5, 0, 5],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: parseFromLangKey('other_lung_tbl_l_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                  colSpan: 2, // <-- span across 2 columns
+                },
+                {},
+              ],
+              ['FVC (L)', `${lung.LUNG3}`],
+              ['FEV1 (L)', `${lung.LUNG4}`],
+              ['FVC (%pred)', `${lung.LUNG5}`],
+              ['FEV1 (%pred)', `${lung.LUNG6}`],
+              ['FEV1/FVC (%)', `${lung.LUNG7}`],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
+        },
+        {
+          width: '*', // takes remaining space
+          text: '', // or you can add other content here or leave blank
+        },
+      ],
     },
 
     { text: `${other_lung_smoking_text}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
 
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
-
     {
-      style: 'tableExample',
-      table: {
-        widths: ['*', '*', '*'],
-        body: [
-          [
-            { text: '', style: 'tableHeader' },
-            { text: parseFromLangKey('other_eye_tbl_l_header'), style: 'tableHeader' },
-            { text: parseFromLangKey('other_eye_tbl_r_header'), style: 'tableHeader' },
-          ],
-          [
-            parseFromLangKey('other_eye_tbl_t_row'),
-            `6/${eye.geriVisionQ3}`,
-            `6/${eye.geriVisionQ4}`,
-          ],
-          [
-            parseFromLangKey('other_eye_tbl_b_row'),
-            `6/${eye.geriVisionQ5}`,
-            `6/${eye.geriVisionQ6}`,
-          ],
-        ],
-      },
-      layout: 'lightHorizontalLines',
+      columns: [
+        {
+          width: '70%',
+          style: 'tableExample',
+          margin: [0, 5, 0, 5],
+          table: {
+            widths: ['*', '*', '*'],
+            body: [
+              [
+                { text: '', style: 'tableHeader' },
+                {
+                  text: parseFromLangKey('other_eye_tbl_l_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                },
+                {
+                  text: parseFromLangKey('other_eye_tbl_r_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                },
+              ],
+              [
+                parseFromLangKey('other_eye_tbl_t_row'),
+                `6/${eye.geriVisionQ3}`,
+                `6/${eye.geriVisionQ4}`,
+              ],
+              [
+                parseFromLangKey('other_eye_tbl_b_row'),
+                `6/${eye.geriVisionQ5}`,
+                `6/${eye.geriVisionQ6}`,
+              ],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
+        },
+        {
+          width: '*', // takes remaining space
+          text: '', // or you can add other content here or leave blank
+        },
+      ],
     },
-
+    { text: '', margin: [0, 5] },
     { text: `${parseFromLangKey('other_eye_error')} ${eye.geriVisionQ8}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
   ]
 }
 
@@ -1457,7 +1507,8 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),,
+    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+    ,
     ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
     ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
     ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
@@ -1465,6 +1516,7 @@ export function followUpSection(
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
     ...(oralString ? [{ text: oralString, style: 'normal' }] : []),
+    { text: '', margin: [0, 5] },
     //{ text: parseFromLangKey('fw_empty'), style: 'normal' },
   ]
 }
@@ -1473,20 +1525,19 @@ export function memoSection(audioData, dietData, ptData, otData) {
   let audio =
     parseFromLangKey('memo_audio') +
     parseFromLangKey('memo_audio_1', audioData.geriAudiometryQ13) +
-    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12);
-  
-  let diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`;
+    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12)
+
+  let diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`
   if (dietData.dietitiansConsultQ5) {
     diet += parseFromLangKey(
       'memo_diet_1',
       dietData.dietitiansConsultQ5,
       dietData.dietitiansConsultQ6,
-    );
+    )
   }
 
-  const pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`;
-  const ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`;
-
+  const pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
+  const ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
 
   return [
     { text: parseFromLangKey('memo_title'), style: 'subheader' },
@@ -1514,6 +1565,7 @@ export function recommendationSection() {
   return [
     { text: parseFromLangKey('rec_title'), style: 'subheader' },
     { text: `${parseFromLangKey('rec')}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
     { text: parseFromLangKey('disclaimer_title'), style: 'subheader' },
     { text: `${parseFromLangKey('disclaimer')}\n`, style: 'normal' },
   ]
