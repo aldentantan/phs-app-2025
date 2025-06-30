@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Formik, Form, Field, useFormikContext } from 'formik'
+import { Formik, Form, useFormikContext } from 'formik'
 import * as Yup from 'yup'
 
 import {
@@ -14,7 +14,7 @@ import {
   Radio,
   FormHelperText,
   TextField
-} from '@mui/material'
+} from '@mui/material';
 
 import { submitForm } from '../../api/api.js'
 import { FormContext } from '../../api/utils.js'
@@ -124,16 +124,6 @@ const TextFieldFormik = ({ name, label, multiline = false, rows = 1, ...props })
   )
 }
 
-// Conditional Text Field Component
-const ConditionalTextField = ({ name, triggerField, triggerValue, label, ...props }) => {
-  const { values } = useFormikContext()
-  
-  if (values[triggerField] === triggerValue) {
-    return <TextFieldFormik name={name} label={label} multiline rows={3} {...props} />
-  }
-  return null
-}
-
 // Referral Component
 const GetReferral = () => {
   const { values } = useFormikContext()
@@ -218,7 +208,7 @@ const GynaeForm = () => {
         onSubmit={handleSubmit}
         enableReinitialize={true}
       >
-        {({ values, errors, touched }) => (
+        {({ values }) => (
           <Form>
             <div className='form--div fieldPadding'>
               <h1>Gynecology</h1>

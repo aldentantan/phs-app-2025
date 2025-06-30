@@ -228,7 +228,7 @@ const WceForm = (props) => {
               onSubmit={handleSubmit}
               enableReinitialize={true}
             >
-              {({ errors, touched }) => (
+              {()  => (
                 <Form>
                   <div className='form--div fieldPadding'>
                     <h1>WCE</h1>
