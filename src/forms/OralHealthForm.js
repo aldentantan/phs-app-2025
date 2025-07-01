@@ -69,9 +69,7 @@ const schema = Yup.object({
   DENT1: Yup.boolean().oneOf([true], 'You must check this box to proceed').required('Required'),
   DENT2: Yup.string().oneOf(['Yes, (please specify)', 'No'], 'Invalid option').required('Required'),
   DENTShortAns2: Yup.string(),
-  DENT3: Yup.array()
-    .of(Yup.string().oneOf(['Yes']))
-    .required('Required'),
+  DENT3: Yup.boolean().oneOf([true], 'You must check this box to proceed').required('Required'),
   DENT4: Yup.string().oneOf(['Yes', 'No, (specify why)'], 'Invalid option').required('Required'),
   DENTShortAns4: Yup.string(),
 })
@@ -86,7 +84,7 @@ const OralHealthForm = () => {
     DENT1: false,
     DENT2: '',
     DENTShortAns2: '',
-    DENT3: [],
+    DENT3: false,
     DENT4: '',
     DENTShortAns4: '',
   })
@@ -269,7 +267,7 @@ const OralHealthForm = () => {
               </FormLabel>
               <FormLabel>DENT3</FormLabel>
               <FormControlLabel
-                control={<Field name='DENT3' type='checkbox' value='Yes' as={Checkbox} />}
+                control={<Field name='DENT3' type='checkbox' as={Checkbox} />}
                 label='Yes'
               />
               <ErrorMessage name='DENT3' component='div' style={{ color: 'red' }} />

@@ -1,15 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
 import SimpleSchema from 'simpl-schema'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
+import * as Yup from 'yup'
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik'
+import {
+  Checkbox,
+  FormControlLabel,
+  TextField,
+  RadioGroup,
+  Radio,
+  FormLabel,
+  Button,
+  CircularProgress,
+  Typography,
+  Box,
+  Divider,
+  Paper,
+} from '@mui/material'
 
-import { AutoForm } from 'uniforms'
-import { SubmitField, ErrorsField, RadioField } from 'uniforms-mui'
+import Grid from '@mui/material/Grid'
+
 import { submitForm } from '../../api/api.js'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB.js'
@@ -22,38 +33,65 @@ const dayRangeFormOptions = [
   { label: '2 - More than half the days', value: '2 - More than half the days' },
   { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
 ]
+const yesNo = ['Yes', 'No']
 
 const schema = new SimpleSchema({
-  SAMH1: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
-  SAMH2: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
+  SAMH1: Yup.string().oneOf(yesNo).required('Required'),
+  SAMH2: Yup.string().oneOf(yesNo).required('Required'),
 })
+
+// const schema = Yup.object({
+//   SAMH1: {
+//     type: String,
+//     allowedValues: ['Yes', 'No'],
+//     optional: false,
+//   },
+//   SAMH2: {
+//     type: String,
+//     allowedValues: ['Yes', 'No'],
+//     optional: false,
+//   },
+// })
 
 const formName = 'mentalHealthForm'
 
+const RadioField = ({ name, label, options }) => {
+  const { values, handleChange } = useFormikContext()
+  return (
+    <div>
+      <FormLabel>{label}</FormLabel>
+      <RadioGroup name={name} value={values[name]} onChange={handleChange} row>
+        {options.map((opt) => (
+          <FormControlLabel
+            key={opt.value}
+            value={opt.value}
+            control={<Radio />}
+            label={opt.label}
+          />
+        ))}
+      </RadioGroup>
+      <ErrorMessage name={name} component='div' style={{ color: 'red' }} />
+    </div>
+  )
+}
+
 const MentalHealthForm = () => {
   const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
-  const [saveData, setSaveData] = useState({})
+  const [initialValues, setInitialValues] = useState({
+    SAMH1: '',
+    SAMH2: '',
+  })
 
   const [regi, setReg] = useState({})
   const [phq, setPHQ] = useState({})
 
-  const form_schema = new SimpleSchema2Bridge(schema)
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSaveData(savedData)
+      setInitialValues(savedData)
 
       const regData = getSavedData(patientId, allForms.registrationForm)
       // const docData = getSavedData(patientId, allForms.triageForm)
@@ -103,37 +141,48 @@ const MentalHealthForm = () => {
   }
 
   const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
+    <Formik
+      validationSchema={schema}
+      enableReinitialize
+      initialValues={initialValues}
+      onSubmit={async (values, { setSubmitting }) => {
+        setSubmitting(true)
+        const response = await submitForm(values, patientId, formName)
         if (response.result) {
+          setSubmitting(false)
           setTimeout(() => {
             alert('Successfully submitted form')
             navigate('/app/dashboard', { replace: true })
           }, 80)
         } else {
+          setSubmitting(false)
           setTimeout(() => {
             alert(`Unsuccessful. ${response.error}`)
           }, 80)
         }
-        isLoading(false)
       }}
-      model={saveData}
     >
-      <div className='form--div'>
-        <h3>Patient has attended mental health consultation?</h3>
-        <RadioField name='SAMH1' label='SAMH1' options={formOptions.SAMH1} />
-        <h3>Patient has signed up for follow-up with SAMH?</h3>
-        <RadioField name='SAMH2' label='SAMH2' options={formOptions.SAMH2} />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-      <br />
-      <Divider />
-    </AutoForm>
+      {({ isSubmitting }) => (
+        <Form>
+          <div className='form--div'>
+            <h3>Patient has attended mental health consultation?</h3>
+            <RadioField name='SAMH1' label='SAMH1' options={formOptions.SAMH1} />
+            <h3>Patient has signed up for follow-up with SAMH?</h3>
+            <RadioField name='SAMH2' label='SAMH2' options={formOptions.SAMH2} />
+          </div>
+          <br />
+          {isSubmitting ? (
+            <CircularProgress />
+          ) : (
+            <Button type='submit' variant='contained' color='primary'>
+              Submit
+            </Button>
+          )}
+          <br />
+          <Divider />
+        </Form>
+      )}
+    </Formik>
   )
 
   return (
@@ -171,8 +220,6 @@ const MentalHealthForm = () => {
               <p className='underlined'>Would the patient benefit from counselling:</p>
               <p className='blue'>{phq.PHQ11},</p>
               <p className='blue'>{phq.PHQShortAns11}</p>
-
-
             </div>
           )}
         </Grid>
