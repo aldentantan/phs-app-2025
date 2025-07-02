@@ -152,3 +152,8 @@ export const updateStationCounts = async (patientId, visitedStationsCount, eligi
           eligibleStations} }
   )
 }
+
+export const getPdfQueueCollection = () => {
+  const mongoConnection = app.currentUser.mongoClient('mongodb-atlas')
+  return mongoConnection.db('phs').collection('pdfQueue')
+}

@@ -7,6 +7,8 @@ import {bloodpressureQR, bmiQR} from 'src/icons/QRCodes'
 import 'jspdf-autotable'
 import { parseFromLangKey, setLang } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 
 const axios = require('axios').default
 
@@ -1049,3 +1051,47 @@ export const regexPasswordPattern =
   // deletes volunteer accounts
   // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
 // }
+
+pdfMake.vfs = pdfFonts.vfs
+
+export const generateDoctorPdf = (entry) => {
+  const content = [
+    { text: 'Doctor Consultation Summary', style: 'header' },
+    { text: `Patient ID: ${entry.patientId}` },
+    { text: `Doctor: ${entry.doctorName}` },
+    { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
+    { text: '' },
+  ]
+
+  for (const [key, value] of Object.entries(entry.data || {})) {
+    content.push({ text: `${key}: ${value}` })
+  }
+
+  const docDefinition = {
+    content,
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+      subheader: {
+        fontSize: 11,
+        bold: true,
+      },
+      normal: {
+        fontSize: 10,
+      },
+      italicSmall: {
+        italics: true,
+        fontSize: 8,
+      },
+    },
+    defaultStyle: {
+      fontSize: 10,
+    },
+    pageMargins: [40, 60, 40, 60],
+  }
+
+  pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
+}
