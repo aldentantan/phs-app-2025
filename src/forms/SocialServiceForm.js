@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
 
 import * as Yup from 'yup'
+import { useFormik } from 'formik'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import {
   Checkbox,
@@ -14,6 +13,7 @@ import {
   FormLabel,
   FormGroup,
   Button,
+  Typography,
 } from '@mui/material'
 
 import Divider from '@mui/material/Divider'
@@ -27,8 +27,8 @@ import './fieldPadding.css'
 import Grid from '@mui/material/Grid'
 import allForms from './forms.json'
 
-const schema = Yup.object({
-  socialServiceQ1: Yup.string().oneOf(['Yes', 'No'], 'Must be Yes or No').required('Required'),
+const validationSchema = Yup.object({
+  socialServiceQ1: Yup.string().oneOf(['Yes', 'No']).required('Required'),
   socialServiceQ2: Yup.string().required('Required'),
   socialServiceQ3: Yup.string().required('Required'),
   socialServiceQ4: Yup.boolean(),
@@ -80,18 +80,9 @@ const schema = Yup.object({
 const formName = 'socialServiceForm'
 const SocialServiceForm = () => {
   const { patientId } = useContext(FormContext)
-  //const [loading, isLoading] = useState(false)
-  //const [saveData, setSaveData] = useState({})
-  const [initialValues, setInitialValues] = useState({
-    socialServiceQ1: '',
-    socialServiceQ2: '',
-    socialServiceQ3: '',
-    socialServiceQ4: false,
-    socialServiceQ5: '',
-    socialServiceQ7: false,
-    socialServiceQ8: false,
-    socialServiceQ9: '',
-  })
+  const [loading, setLoading] = useState(false)
+  const [savedData, setSavedData] = useState({})
+
   const [reg, setReg] = useState({})
   const [hxSocial, setHxSocial] = useState({})
   const [doctorConsult, setDoctorConsult] = useState({})
@@ -122,7 +113,7 @@ const SocialServiceForm = () => {
         geriOtData,
         geriPtData,
       ]).then((result) => {
-        setInitialValues(result[0])
+        setSavedData(result[0])
         //setSaveData(result[0])
         setReg(result[1])
         setHxSocial(result[2])
@@ -146,175 +137,204 @@ const SocialServiceForm = () => {
     ],
   }
 
-  const newForm = () => (
-    <Formik
-      initialValues={initialValues}
-      enableReinitialize
-      validationSchema={schema}
-      onSubmit={async (values, { setSubmitting }) => {
-        setSubmitting(true)
-        const response = await submitFormSpecial(values, patientId, formName)
-        if (response.result) {
-          //isLoading(false)
-          setSubmitting(false)
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          //isLoading(false)
-          setSubmitting(false)
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-      }}
-    >
-      {({ values, handleChange, isSubmitting }) => (
-        <Form className='form--div'>
-          <h1>Social Service Station</h1>
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            1. Has the participant visited the social service station?
-          </FormLabel>
-
-          <RadioGroup name='socialServiceQ1' value={values.socialServiceQ1} onChange={handleChange}>
-            {formOptions.socialServiceQ1.map((opt) => (
-              <FormControlLabel
-                key={opt.value}
-                value={opt.value}
-                control={<Radio />}
-                label={opt.label}
-              />
-            ))}
-          </RadioGroup>
-          <ErrorMessage name='socialServiceQ1' component='div' style={{ color: 'red' }} />
-          <br />
-
-          {/* <RadioField
-            name='socialServiceQ1'
-            label='Social Service Q1'
-            options={formOptions.socialServiceQ1}
-          /> */}
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            2. Brief summary of the participant&apos;s concerns
-          </FormLabel>
-          <Field
-            name='socialServiceQ2'
-            as={TextField}
-            label='Social Service Q2'
-            fullWidth
-            multiline
-            minRows={3}
-          />
-          <ErrorMessage name='socialServiceQ2' component='div' style={{ color: 'red' }} />
-          <br />
-          <br />
-          {/* <LongTextField name='socialServiceQ2' label='Social Service Q2' /> */}
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            3. Brief summary of what will be done for the participant (Eg name of scheme participant
-            wants to apply for)
-          </FormLabel>
-          <Field
-            name='socialServiceQ3'
-            as={TextField}
-            label='Social Service Q3'
-            fullWidth
-            multiline
-            minRows={3}
-          />
-          <ErrorMessage name='socialServiceQ3' component='div' style={{ color: 'red' }} />
-          <br />
-          <br />
-          {/* <LongTextField name='socialServiceQ3' label='Social Service Q3' /> */}
-
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            5. Is follow-up required?
-          </FormLabel>
-          <br />
-          <FormControlLabel
-            control={<Field name='socialServiceQ4' type='checkbox' as={Checkbox} />}
-            label='Yes'
-          />
-          <br />
-          <br />
-          {/* <BoolField name='socialServiceQ4' /> */}
-
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            6. Brief summary of follow-up for the participant
-          </FormLabel>
-          <Field
-            name='socialServiceQ5'
-            as={TextField}
-            label='Social Service Q5'
-            fullWidth
-            multiline
-            minRows={2}
-          />
-          <br />
-          <br />
-          {/* <LongTextField name='socialServiceQ5' label='Social Service Q5' /> */}
-
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            7. Completed application for HDB EASE?
-          </FormLabel>
-          <br />
-          <FormControlLabel
-            control={<Field name='socialServiceQ7' type='checkbox' as={Checkbox} />}
-            label='Yes'
-          />
-          <br />
-          <br />
-          {/* <BoolField name='socialServiceQ7' /> */}
-
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            8. Completed CHAS application?
-          </FormLabel>
-          <br />
-          <FormControlLabel
-            control={<Field name='socialServiceQ8' type='checkbox' as={Checkbox} />}
-            label='Yes'
-          />
-          <br />
-          <br />
-          {/* <BoolField name='socialServiceQ8' /> */}
-
-          <FormLabel style={{ fontWeight: 'bold', fontSize: '1.5rem', color: 'black' }}>
-            9. If application is unsuccessful, document the reasons below and further follow-up
-            action.
-          </FormLabel>
-          <Field
-            name='socialServiceQ9'
-            as={TextField}
-            label='Social Service Q9'
-            fullWidth
-            multiline
-            minRows={3}
-          />
-          <br />
-          {/* <LongTextField name='socialServiceQ9' label='Social Service Q9' /> */}
-
-          <br />
-          {isSubmitting ? (
-            <CircularProgress />
-          ) : (
-            <Button type='submit' variant='contained' color='primary'>
-              Submit
-            </Button>
-          )}
-
-          <br />
-          <Divider />
-        </Form>
-      )}
-    </Formik>
-  )
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      socialServiceQ1: savedData?.socialServiceQ1 || '',
+      socialServiceQ2: savedData?.socialServiceQ2 || '',
+      socialServiceQ3: savedData?.socialServiceQ3 || '',
+      socialServiceQ4: savedData?.socialServiceQ4 || false,
+      socialServiceQ5: savedData?.socialServiceQ5 || '',
+      socialServiceQ7: savedData?.socialServiceQ7 || false,
+      socialServiceQ8: savedData?.socialServiceQ8 || false,
+      socialServiceQ9: savedData?.socialServiceQ9 || '',
+    },
+    validationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      setLoading(true)
+      const response = await submitFormSpecial(values, patientId, formName)
+      setLoading(false)
+      if (response.result) {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      } else {
+        alert(`Unsuccessful. ${response.error}`)
+      }
+      setSubmitting(false)
+    },
+  })
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <form onSubmit={formik.handleSubmit}>
+              <h1>Social Service Station</h1>
+              <h3>1. Has the participant visited the social service station?</h3>
+
+              <RadioGroup
+                name='socialServiceQ1'
+                value={formik.values.socialServiceQ1}
+                onChange={formik.handleChange}
+              >
+                {formOptions.socialServiceQ1.map(({ label, value }) => (
+                  <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
+                ))}
+              </RadioGroup>
+
+              {formik.touched.socialServiceQ1 && formik.errors.socialServiceQ1 && (
+                <Typography color='error'>{formik.errors.socialServiceQ1}</Typography>
+              )}
+              <br />
+              <br />
+
+              {/* <RadioField
+            name='socialServiceQ1'
+            label='Social Service Q1'
+            options={formOptions.socialServiceQ1}
+          /> */}
+              <h3>2. Brief summary of the participant&apos;s concerns</h3>
+              <TextField
+                name='socialServiceQ2'
+                label='Social Service Q2'
+                multiline
+                minRows={2}
+                fullWidth
+                value={formik.values.socialServiceQ2}
+                onChange={formik.handleChange}
+                error={formik.touched.socialServiceQ2 && Boolean(formik.errors.socialServiceQ2)}
+                helperText={formik.touched.socialServiceQ2 && formik.errors.socialServiceQ2}
+                sx={{ mt: 2 }}
+              />
+              <br />
+              <br />
+              {/* <LongTextField name='socialServiceQ2' label='Social Service Q2' /> */}
+              <h3>
+                3. Brief summary of what will be done for the participant (Eg name of scheme
+                participant wants to apply for)
+              </h3>
+              <TextField
+                name='socialServiceQ3'
+                label='Social Service Q3'
+                multiline
+                minRows={2}
+                fullWidth
+                value={formik.values.socialServiceQ3}
+                onChange={formik.handleChange}
+                error={formik.touched.socialServiceQ3 && Boolean(formik.errors.socialServiceQ3)}
+                helperText={formik.touched.socialServiceQ3 && formik.errors.socialServiceQ3}
+                sx={{ mt: 2 }}
+              />
+              <br />
+              <br />
+              {/* <LongTextField name='socialServiceQ3' label='Social Service Q3' /> */}
+
+              <h3>5. Is follow-up required?</h3>
+              <br />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name='socialServiceQ4'
+                    checked={formik.values.socialServiceQ4 == true}
+                    onChange={() => {
+                      const updated = !formik.values.socialServiceQ4
+                      formik.setFieldValue('socialServiceQ4', updated)
+                    }}
+                  />
+                }
+                label={'Yes'}
+              />
+              <br />
+              <br />
+              {/* <BoolField name='socialServiceQ4' /> */}
+
+              <h3>6. Brief summary of follow-up for the participant</h3>
+              <TextField
+                name='socialServiceQ5'
+                label='Social Service Q5'
+                multiline
+                minRows={2}
+                fullWidth
+                value={formik.values.socialServiceQ5}
+                onChange={formik.handleChange}
+                error={formik.touched.socialServiceQ5 && Boolean(formik.errors.socialServiceQ5)}
+                helperText={formik.touched.socialServiceQ5 && formik.errors.socialServiceQ5}
+                sx={{ mt: 2 }}
+              />
+
+              <br />
+              <br />
+              {/* <LongTextField name='socialServiceQ5' label='Social Service Q5' /> */}
+
+              <h3>7. Completed application for HDB EASE?</h3>
+              <br />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name='socialServiceQ7'
+                    checked={formik.values.socialServiceQ7 == true}
+                    onChange={() => {
+                      const updated = !formik.values.socialServiceQ7
+                      formik.setFieldValue('socialServiceQ7', updated)
+                    }}
+                  />
+                }
+                label={'Yes'}
+              />
+              <br />
+              <br />
+              {/* <BoolField name='socialServiceQ7' /> */}
+
+              <h3>8. Completed CHAS application?</h3>
+              <br />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name='socialServiceQ8'
+                    checked={formik.values.socialServiceQ8 == true}
+                    onChange={() => {
+                      const updated = !formik.values.socialServiceQ8
+                      formik.setFieldValue('socialServiceQ8', updated)
+                    }}
+                  />
+                }
+                label={'Yes'}
+              />
+              <br />
+              <br />
+              {/* <BoolField name='socialServiceQ8' /> */}
+
+              <h3>
+                9. If application is unsuccessful, document the reasons below and further follow-up
+                action.
+              </h3>
+              <TextField
+                name='socialServiceQ9'
+                label='Social Service Q9'
+                multiline
+                minRows={2}
+                fullWidth
+                value={formik.values.socialServiceQ9}
+                onChange={formik.handleChange}
+                error={formik.touched.socialServiceQ9 && Boolean(formik.errors.socialServiceQ9)}
+                helperText={formik.touched.socialServiceQ9 && formik.errors.socialServiceQ9}
+                sx={{ mt: 2 }}
+              />
+              <br />
+              {/* <LongTextField name='socialServiceQ9' label='Social Service Q9' /> */}
+
+              <br />
+              <div style={{ marginTop: 20 }}>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <Button variant='contained' type='submit'>
+                    Submit
+                  </Button>
+                )}
+              </div>
+            </form>
           </Paper>
         </Grid>
         <Grid
