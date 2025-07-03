@@ -7,12 +7,11 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Typography,
   CircularProgress,
-  Divider,
   Paper,
   Grid,
   Button,
-  Typography,
 } from '@mui/material'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
@@ -129,9 +128,6 @@ const OralHealthForm = () => {
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <form onSubmit={formik.handleSubmit}>
-            <Typography variant='h4' gutterBottom>
-              Oral Health
-            </Typography>
             <div>
               <h1>Oral Health</h1>
               <h3>I have been informed and understand that: </h3>
