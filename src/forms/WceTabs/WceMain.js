@@ -1,11 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { styled } from '@mui/system'
-import AppBar from '@mui/material/AppBar'
-import Tabs from '@mui/material/Tabs'
-import Tab from '@mui/material/Tab'
-import Typography from '@mui/material/Typography'
-import Box from '@mui/material/Box'
+
+
+import {
+  AppBar,
+  Tabs,
+  Tab,
+  Typography,
+  Box
+} from '@mui/material'
+
 import { ScrollTopContext } from '../../api/utils.js'
 import WceForm from './WceForm.js'
 import GynaeForm from './GynaeForm.js'
@@ -29,6 +34,7 @@ function TabPanel(props) {
     </div>
   )
 }
+
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
