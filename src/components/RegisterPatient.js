@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import { Search as SearchIcon } from 'react-feather'
 import Autocomplete from '@mui/material/Autocomplete'
+import { updateAllStationCounts } from '../services/stationCounts'
 
 const RegisterPatient = (props) => {
   const [isLoadingQueueNumber, setIsLoadingQueueNumber] = useState(false)
@@ -85,6 +86,7 @@ const RegisterPatient = (props) => {
     console.log(data)
     if ('initials' in data) {
       updatePatientInfo(data)
+      await updateAllStationCounts(data.queueNo)
       setIsLoadingQueueNumber(false)
       navigate('/app/dashboard', { replace: true })
     } else if ('age' in data) {
@@ -99,6 +101,7 @@ const RegisterPatient = (props) => {
   }
   const handleSubmitPatientName = async () => {
     setIsLoadingPatientName(true)
+
     const value = values.selectedValue?.initials
     if (value) {
       const data = await getPreRegDataByName(value, 'patients')
@@ -131,7 +134,9 @@ const RegisterPatient = (props) => {
           >
             Register
           </Button>
-          <Typography color='textSecondary' gutterBottom variant='h5'>OR</Typography>
+          <Typography color='textSecondary' gutterBottom variant='h5'>
+            OR
+          </Typography>
           <Typography color='textPrimary' gutterBottom variant='h4'>
             Enter queue number below
           </Typography>
@@ -150,9 +155,9 @@ const RegisterPatient = (props) => {
             variant='outlined'
             onChange={handleQueueNumberInput}
             onKeyDown={(e) => {
-
-              if (e.key === 'Enter') { //default it here
-                handleSubmitQueueNumber();
+              if (e.key === 'Enter') {
+                //default it here
+                handleSubmitQueueNumber()
               }
             }}
             sx={{ marginTop: '5px', marginBottom: '5px' }}
