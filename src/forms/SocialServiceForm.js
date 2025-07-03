@@ -133,6 +133,7 @@ const SocialServiceForm = () => {
             <form onSubmit={formik.handleSubmit}>
               <h1>Social Service Station</h1>
               <h3>1. Has the participant visited the social service station?</h3>
+              <FormLabel>Social Service Q1*</FormLabel>
 
               <RadioGroup
                 name='socialServiceQ1'
@@ -158,7 +159,7 @@ const SocialServiceForm = () => {
               <h3>2. Brief summary of the participant&apos;s concerns</h3>
               <TextField
                 name='socialServiceQ2'
-                label='Social Service Q2'
+                label='Social Service Q2*'
                 multiline
                 minRows={2}
                 fullWidth
@@ -177,7 +178,7 @@ const SocialServiceForm = () => {
               </h3>
               <TextField
                 name='socialServiceQ3'
-                label='Social Service Q3'
+                label='Social Service Q3*'
                 multiline
                 minRows={2}
                 fullWidth
