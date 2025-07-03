@@ -1,9 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema from 'simpl-schema'
 
 import * as Yup from 'yup'
-import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik'
+import { useFormik } from 'formik'
 import {
   Checkbox,
   FormControlLabel,
@@ -35,53 +34,18 @@ const dayRangeFormOptions = [
 ]
 const yesNo = ['Yes', 'No']
 
-const schema = new SimpleSchema({
+const formName = 'mentalHealthForm'
+
+const validationSchema = Yup.object({
   SAMH1: Yup.string().oneOf(yesNo).required('Required'),
   SAMH2: Yup.string().oneOf(yesNo).required('Required'),
 })
 
-// const schema = Yup.object({
-//   SAMH1: {
-//     type: String,
-//     allowedValues: ['Yes', 'No'],
-//     optional: false,
-//   },
-//   SAMH2: {
-//     type: String,
-//     allowedValues: ['Yes', 'No'],
-//     optional: false,
-//   },
-// })
-
-const formName = 'mentalHealthForm'
-
-const RadioField = ({ name, label, options }) => {
-  const { values, handleChange } = useFormikContext()
-  return (
-    <div>
-      <FormLabel>{label}</FormLabel>
-      <RadioGroup name={name} value={values[name]} onChange={handleChange} row>
-        {options.map((opt) => (
-          <FormControlLabel
-            key={opt.value}
-            value={opt.value}
-            control={<Radio />}
-            label={opt.label}
-          />
-        ))}
-      </RadioGroup>
-      <ErrorMessage name={name} component='div' style={{ color: 'red' }} />
-    </div>
-  )
-}
-
 const MentalHealthForm = () => {
   const { patientId } = useContext(FormContext)
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
-  const [initialValues, setInitialValues] = useState({
-    SAMH1: '',
-    SAMH2: '',
-  })
+  const [loading, setLoading] = useState(false)
+  const [savedData, setSavedData] = useState({})
 
   const [regi, setReg] = useState({})
   const [phq, setPHQ] = useState({})
@@ -91,7 +55,7 @@ const MentalHealthForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setInitialValues(savedData)
+      setSavedData(savedData)
 
       const regData = getSavedData(patientId, allForms.registrationForm)
       // const docData = getSavedData(patientId, allForms.triageForm)
@@ -140,57 +104,64 @@ const MentalHealthForm = () => {
     ],
   }
 
-  const newForm = () => (
-    <Formik
-      validationSchema={schema}
-      enableReinitialize
-      initialValues={initialValues}
-      onSubmit={async (values, { setSubmitting }) => {
-        setSubmitting(true)
-        const response = await submitForm(values, patientId, formName)
-        if (response.result) {
-          setSubmitting(false)
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          setSubmitting(false)
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-      }}
-    >
-      {({ isSubmitting }) => (
-        <Form>
-          <div className='form--div'>
-            <h3>Patient has attended mental health consultation?</h3>
-            <RadioField name='SAMH1' label='SAMH1' options={formOptions.SAMH1} />
-            <h3>Patient has signed up for follow-up with SAMH?</h3>
-            <RadioField name='SAMH2' label='SAMH2' options={formOptions.SAMH2} />
-          </div>
-          <br />
-          {isSubmitting ? (
-            <CircularProgress />
-          ) : (
-            <Button type='submit' variant='contained' color='primary'>
-              Submit
-            </Button>
-          )}
-          <br />
-          <Divider />
-        </Form>
-      )}
-    </Formik>
-  )
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      SAMH1: savedData?.SAMH1 || '',
+      SAMH2: savedData?.SAMH2 || '',
+    },
+    validationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      setLoading(true)
+      const response = await submitForm(values, patientId, formName)
+      setLoading(false)
+      if (response.result) {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      } else {
+        alert(`Unsuccessful. ${response.error}`)
+      }
+      setSubmitting(false)
+    },
+  })
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <form onSubmit={formik.handleSubmit}>
+              <div className='form--div'>
+                <h3>Patient has attended mental health consultation?</h3>
+                <RadioGroup name='SAMH1' value={formik.values.SAMH1} onChange={formik.handleChange}>
+                  {formOptions.SAMH1.map(({ label, value }) => (
+                    <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
+                  ))}
+                </RadioGroup>
+                {formik.touched.SAMH1 && formik.errors.SAMH1 && (
+                  <Typography color='error'>{formik.errors.SAMH1}</Typography>
+                )}
+                <h3>Patient has signed up for follow-up with SAMH?</h3>
+                <RadioGroup name='SAMH2' value={formik.values.SAMH2} onChange={formik.handleChange}>
+                  {formOptions.SAMH2.map(({ label, value }) => (
+                    <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
+                  ))}
+                </RadioGroup>
+                {formik.touched.SAMH2 && formik.errors.SAMH2 && (
+                  <Typography color='error'>{formik.errors.SAMH2}</Typography>
+                )}
+              </div>
+              <br />
+              <div>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <Button type='submit' variant='contained' color='primary'>
+                    Submit
+                  </Button>
+                )}
+              </div>
+            </form>
           </Paper>
         </Grid>
         <Grid

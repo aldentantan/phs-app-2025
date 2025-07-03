@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
 import {
   Checkbox,
   FormControlLabel,
@@ -38,44 +37,6 @@ const validationSchema = Yup.object({
   socialServiceQ9: Yup.string(),
 })
 
-// const schema = new SimpleSchema({
-//   socialServiceQ1: {
-//     type: String,
-//     allowedValues: ['Yes', 'No'],
-//     optional: false,
-//   },
-//   socialServiceQ2: {
-//     type: String,
-//     optional: false,
-//   },
-//   socialServiceQ3: {
-//     type: String,
-//     optional: false,
-//   },
-//   socialServiceQ4: {
-//     type: Boolean,
-//     label: 'Yes',
-//     optional: true,
-//   },
-//   socialServiceQ5: {
-//     type: String,
-//     optional: true,
-//   },
-//   socialServiceQ7: {
-//     type: Boolean,
-//     label: 'Yes',
-//     optional: true,
-//   },
-//   socialServiceQ8: {
-//     type: Boolean,
-//     label: 'Yes',
-//     optional: true,
-//   },
-//   socialServiceQ9: {
-//     type: String,
-//     optional: true,
-//   },
-// })
 
 const formName = 'socialServiceForm'
 const SocialServiceForm = () => {
