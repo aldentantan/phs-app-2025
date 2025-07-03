@@ -12,7 +12,6 @@ import { submitForm } from '../../api/api.js'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB.js'
 import '../fieldPadding.css'
-import PopupText from 'src/utils/popupText.js'
 
 
 const responses = [
@@ -49,12 +48,11 @@ function getScore(values) {
 
 const formName = 'geriInterForm'
 
-const GeriInterForm = (props) => {
+const GeriInterForm = () => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [regi, setRegi] = useState({})
-  const { changeTab, nextTab } = props
   const navigate = useNavigate()
   const [initialValues, setInitialValues] = useState({
     InterQ1: '',

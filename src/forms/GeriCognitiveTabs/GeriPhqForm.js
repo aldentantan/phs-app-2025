@@ -107,7 +107,7 @@ const GeriPhqForm = (props) => {
         enableReinitialize
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={async (values, { setSubmitting, setFieldValue }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           setLoading(true)
           const score = getScore(values)
           values.PHQ10 = score

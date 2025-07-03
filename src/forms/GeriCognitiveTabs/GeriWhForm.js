@@ -1,6 +1,4 @@
-
 import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
 import CircularProgress from '@mui/material/CircularProgress'
@@ -29,7 +27,6 @@ const GeriWhForm = (props) => {
     WH1: '',
     WH2shortAns: '',
   })
-  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
