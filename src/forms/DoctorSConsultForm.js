@@ -13,7 +13,7 @@ import { SubmitField, ErrorsField } from 'uniforms-mui'
 import { LongTextField, BoolField } from 'uniforms-mui'
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
-import { getSavedData } from '../services/mongoDB'
+import { getSavedData, getPdfQueueCollection } from '../services/mongoDB'
 import allForms from './forms.json'
 import './fieldPadding.css'
 
@@ -144,7 +144,15 @@ const DoctorSConsultForm = () => {
       className='fieldPadding'
       onSubmit={async (model) => {
         isLoading(true)
+        const doctorName = model.doctorSConsultQ1
         const response = await submitForm(model, patientId, formName)
+        const collection = getPdfQueueCollection()
+        await collection.insertOne({
+          patientId: patientId,
+          doctorName: doctorName,
+          printed: false,
+          createdAt: new Date(),
+        })
         if (response.result) {
           isLoading(false)
           setTimeout(() => {
