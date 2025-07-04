@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
 import { registrationValidationSchema } from './registrationSchema'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
 import {
+  Divider,
+  Paper,
+  CircularProgress,
   Button,
   FormControl,
   FormControlLabel,
@@ -27,6 +27,7 @@ import {
   getClinicSlotsCollection,
   getSavedData,
 } from '../services/mongoDB'
+import PopupText from 'src/utils/popupText'
 import './fieldPadding.css'
 import './forms.css'
 
@@ -372,7 +373,7 @@ const RegForm = () => {
                 <ErrorMessage name="registrationQ6" component="div" style={{ color: 'red' }} />
               </FormControl>
 
-              {values.registrationQ6 === 'Others 其他' && (
+              <PopupText qnNo='registrationQ6' triggerValue='Others 其他'>
                 <Field name="registrationShortAnsQ6">
                   {({ field }) => (
                     <TextField
@@ -386,7 +387,7 @@ const RegForm = () => {
                     />
                   )}
                 </Field>
-              )}
+              </PopupText>
 
               <h3>Nationality 国籍</h3>
               <p>Please Note: Non Singapore Citizens/ Non-PRs are unfortunately not eligible for this health screening</p>
@@ -560,46 +561,44 @@ const RegForm = () => {
                 <ErrorMessage name="registrationQ15" component="div" style={{ color: 'red' }} />
               </FormControl>
 
-              {values.registrationQ15 === 'Yes' && (
-                <Box>
-                  <h2>Phlebotomy Eligibility</h2>
-                  <p>
-                    Before entering our screening, do note the following eligibility criteria for Phlebotomy:
-                    <ol type='A'>
-                      <li>NOT previously diagnosed with Diabetes/ High Cholesterol/ High Blood Pressure.</li>
-                      <li>Have not done a blood test within the past 3 years.</li>
-                    </ol>
-                  </p>
-                  <p>
-                    Rationale: PHS aims to reach out to undiagnosed people. Patients that are already aware of
-                    their condition would have regular follow-ups with the GPs/polyclinics/hospitals. This
-                    information is available in our publicity material. Please approach our registration
-                    volunteers should you have any queries. We are happy to explain further. Thank you!
-                  </p>
-                  <p>
-                    抽血合格标准:
-                    <br />
-                    1) 在过去的三年内沒有验过血。
-                    <br />
-                    2) 没有糖尿病, 高血压, 高胆固醇。
-                  </p>
-                  <FormControlLabel
-                    control={
-                      <Field name="registrationQ16">
-                        {({ field }) => (
-                          <Checkbox
-                            {...field}
-                            checked={field.value}
-                            onChange={(e) => setFieldValue('registrationQ16', e.target.checked)}
-                          />
-                        )}
-                      </Field>
-                    }
-                    label="I have read and acknowledged the eligibility criteria for Phlebotomy. 我知道抽血的合格标准。"
-                  />
-                  <ErrorMessage name="registrationQ16" component="div" style={{ color: 'red' }} />
-                </Box>
-              )}
+              <PopupText qnNo='registrationQ15' triggerValue='Yes'>
+                <h2>Phlebotomy Eligibility</h2>
+                <p>
+                  Before entering our screening, do note the following eligibility criteria for Phlebotomy:
+                  <ol type='A'>
+                    <li>NOT previously diagnosed with Diabetes/ High Cholesterol/ High Blood Pressure.</li>
+                    <li>Have not done a blood test within the past 3 years.</li>
+                  </ol>
+                </p>
+                <p>
+                  Rationale: PHS aims to reach out to undiagnosed people. Patients that are already aware of
+                  their condition would have regular follow-ups with the GPs/polyclinics/hospitals. This
+                  information is available in our publicity material. Please approach our registration
+                  volunteers should you have any queries. We are happy to explain further. Thank you!
+                </p>
+                <p>
+                  抽血合格标准:
+                  <br />
+                  1) 在过去的三年内沒有验过血。
+                  <br />
+                  2) 没有糖尿病, 高血压, 高胆固醇。
+                </p>
+                <FormControlLabel
+                  control={
+                    <Field name="registrationQ16">
+                      {({ field }) => (
+                        <Checkbox
+                          {...field}
+                          checked={field.value}
+                          onChange={(e) => setFieldValue('registrationQ16', e.target.checked)}
+                        />
+                      )}
+                    </Field>
+                  }
+                  label="I have read and acknowledged the eligibility criteria for Phlebotomy. 我知道抽血的合格标准。"
+                />
+                <ErrorMessage name="registrationQ16" component="div" style={{ color: 'red' }} />
+              </PopupText>
 
               <br />
 
