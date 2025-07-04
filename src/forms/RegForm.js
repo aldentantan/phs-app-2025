@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field, ErrorMessage } from 'formik'
-import { registrationValidationSchema } from './registrationSchema' // Import the schema from above
+import { registrationValidationSchema } from './registrationSchema'
 
+import Divider from '@mui/material/Divider'
+import Paper from '@mui/material/Paper'
+import CircularProgress from '@mui/material/CircularProgress'
 import {
-  Divider,
-  Paper,
-  CircularProgress,
   Button,
   FormControl,
   FormControlLabel,
@@ -80,11 +80,18 @@ const RegForm = () => {
       if (patientId == -1) {
         savedData.registrationQ3 = birthday
       }
+      
+      // Calculate age if birthday exists in saved data
+      if (savedData.registrationQ3) {
+        const calculatedAge = calculateAge(savedData.registrationQ3)
+        setPatientAge(calculatedAge)
+      }
+      
       setSlots(temp)
       setSaveData(savedData)
     }
     fetchData()
-  }, [])
+  }, [patientId])
 
   const displayVacancy = Object.entries(slots).map(([postalCode, n], i) => {
     return (
@@ -105,8 +112,16 @@ const RegForm = () => {
   const calculateAge = (birthDate) => {
     const today = new Date()
     if (birthDate) {
-      const age = today.getFullYear() - birthDate.getFullYear()
-      setBirthday(birthDate)
+      const birth = new Date(birthDate)
+      let age = today.getFullYear() - birth.getFullYear()
+      const monthDiff = today.getMonth() - birth.getMonth()
+      
+      // Adjust age if birthday hasn't occurred this year yet
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--
+      }
+      
+      setBirthday(birth)
       setPatientAge(age)
       return age
     }
@@ -259,6 +274,7 @@ const RegForm = () => {
         validationSchema={registrationValidationSchema}
         onSubmit={handleSubmit}
         enableReinitialize={true}
+        key={patientId} // Force re-render when patient changes
       >
         {({ values, errors, touched, setFieldValue }) => (
           <Form className='fieldPadding'>
@@ -307,8 +323,9 @@ const RegForm = () => {
                     value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
                     onChange={(e) => {
                       const date = new Date(e.target.value)
+                      const calculatedAge = calculateAge(date)
                       setFieldValue('registrationQ3', date)
-                      setFieldValue('registrationQ4', calculateAge(date))
+                      setFieldValue('registrationQ4', calculatedAge)
                     }}
                   />
                 )}
