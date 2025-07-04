@@ -58,6 +58,18 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
             Edit Forms
           </Button>
         )}
+        {admin && (
+          <Button
+            color='primary'
+            size='large'
+            type='submit'
+            variant='contained'
+            href='/app/docadmin'
+            sx={{ marginLeft: 2 }}
+          >
+            Doctor PDF
+          </Button>
+        )}
 
         <Box sx={{ flexGrow: 1 }} />
         <Hidden lgUp>

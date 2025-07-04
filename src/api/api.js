@@ -8,6 +8,8 @@ import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
 import { parseFromLangKey, setLang } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 
 //updated pdf libraries
 import pdfMake from 'pdfmake/build/pdfmake'
@@ -1140,7 +1142,7 @@ export const regexPasswordPattern =
 // console.log('done')
 // deletes volunteer accounts
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
-
+pdfMake.vfs = pdfFonts.vfs
 export function generate_pdf_updated(
   reg,
   patients,
@@ -1194,30 +1196,8 @@ export function generate_pdf_updated(
 
   const docDefinition = {
     content: content,
-    styles: {
-      header: {
-        fontSize: 16,
-        bold: true,
-        margin: [0, 10, 0, 5],
-      },
-      subheader: {
-        fontSize: 11,
-        bold: true,
-      },
-      normal: {
-        fontSize: 10,
-      },
-      italicSmall: {
-        italics: true,
-        fontSize: 8,
-      },
-    },
-    defaultStyle: {
-      fontSize: 10,
-    },
-    pageMargins: [40, 60, 40, 60],
-  }
-  let fileName = 'Report.pdf'
+    
+    let fileName = 'Report.pdf'
   if (patients.initials) {
     fileName = patients.initials.split(' ').join('_') + '_Report.pdf'
   }
@@ -1576,4 +1556,90 @@ export function recommendationSection() {
     { text: parseFromLangKey('disclaimer_title'), style: 'subheader' },
     { text: `${parseFromLangKey('disclaimer')}\n`, style: 'normal' },
   ]
+}
+    
+    
+    
+    
+    
+    
+ 
+  // console.log(await mongoDBConnection.collection("patients").deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriPtConsultForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.dietitiansConsultForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.doctorConsultForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.fitForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriAmtForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriEbasDepForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriFrailScaleForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriGeriApptForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriOtConsultForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriOtQuestionnaireForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriParQForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriMmseForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriPhysicalActivityLevelForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriAudiometryForm).deleteMany({}))
+  // console.log("half")
+  // console.log(await mongoDBConnection.collection(forms.geriSppbForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.phlebotomyForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriTugForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.geriVisionForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.hxCancerForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.hxHcsrForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.hxNssForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.hxSocialForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.phleboForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.registrationForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.oralHealthForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.socialServiceForm).deleteMany({}))
+  // console.log(await mongoDBConnection.collection(forms.wceForm).deleteMany({}))
+  // console.log('done')
+  // deletes volunteer accounts
+  // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
+// }
+
+
+
+export const generateDoctorPdf = (entry) => {
+  const content = [
+    { text: 'Doctor Consultation Summary', style: 'header' },
+    { text: `Patient ID: ${entry.patientId}` },
+    { text: `Doctor: ${entry.doctorName}` },
+    { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
+    { text: '' },
+  ]
+
+  for (const [key, value] of Object.entries(entry.data || {})) {
+    content.push({ text: `${key}: ${value}` })
+  }
+
+  const docDefinition = {
+    content,
+
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+      subheader: {
+        fontSize: 11,
+        bold: true,
+      },
+      normal: {
+        fontSize: 10,
+      },
+      italicSmall: {
+        italics: true,
+        fontSize: 8,
+      },
+    },
+    defaultStyle: {
+      fontSize: 10,
+    },
+    pageMargins: [40, 60, 40, 60],
+  }
+
+
+  pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
 }
