@@ -3,17 +3,19 @@ import { useContext, useEffect, useState } from 'react'
 import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import Button from '@mui/material/Button'
-import FormControl from '@mui/material/FormControl'
-import FormLabel from '@mui/material/FormLabel'
-import RadioGroup from '@mui/material/RadioGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Radio from '@mui/material/Radio'
-import TextField from '@mui/material/TextField'
-import FormHelperText from '@mui/material/FormHelperText'
+import {
+  Divider,
+  Paper,
+  CircularProgress,
+  Button,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  TextField,
+  FormHelperText
+} from '@mui/material'
 
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
