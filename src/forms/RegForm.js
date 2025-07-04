@@ -277,7 +277,7 @@ const RegForm = () => {
         enableReinitialize={true}
         key={patientId} // Force re-render when patient changes
       >
-        {({ values, errors, touched, setFieldValue }) => (
+        {({ errors, touched, setFieldValue }) => (
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h2>Registration</h2>
