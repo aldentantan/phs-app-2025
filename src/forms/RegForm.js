@@ -1,23 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { registrationValidationSchema } from './registrationSchema' // Import the schema from above
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-
-import { AutoForm } from 'uniforms'
 import {
-  SubmitField,
-  ErrorsField,
-  SelectField,
-  RadioField,
-  LongTextField,
+  Divider,
+  Paper,
+  CircularProgress,
+  Button,
+  FormControl,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
+  Select,
+  MenuItem,
   TextField,
-  BoolField,
-  DateField,
-} from 'uniforms-mui'
-import CircularProgress from '@mui/material/CircularProgress'
+  Checkbox,
+  Typography,
+  Box,
+  Alert
+} from '@mui/material'
+
 import { submitForm, submitRegClinics } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
 import {
@@ -26,8 +29,6 @@ import {
 } from '../services/mongoDB'
 import './fieldPadding.css'
 import './forms.css'
-import { useField } from 'uniforms'
-import PopupText from 'src/utils/popupText.js'
 
 const postalCodeToLocations = {
   648886:
@@ -53,6 +54,7 @@ export const defaultSlots = {
 }
 
 const formName = 'registrationForm'
+
 const RegForm = () => {
   const { patientId, updatePatientId, updatePatientInfo } = useContext(FormContext)
   const [loading, isLoading] = useState(false)
@@ -64,7 +66,7 @@ const RegForm = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('Patient ID: ' + patientId) //patientID == -1, if registration of new patient
+      console.log('Patient ID: ' + patientId)
       const savedData = await getSavedData(patientId, formName)
 
       const phlebCountersCollection = getClinicSlotsCollection()
@@ -76,7 +78,6 @@ const RegForm = () => {
         }
       }
       if (patientId == -1) {
-        // only when registration of new patient
         savedData.registrationQ3 = birthday
       }
       setSlots(temp)
@@ -95,24 +96,23 @@ const RegForm = () => {
   })
 
   const displayLocations = () => {
-    const result = []
-    Object.values(postalCodeToLocations).map((item) => {
-      result.push({ label: item, value: item })
-    })
-    return result
+    return Object.values(postalCodeToLocations).map((item) => ({
+      label: item,
+      value: item
+    }))
   }
 
-  const GetAge = () => {
-    const [{ value: birthday }] = useField('registrationQ3', {})
+  const calculateAge = (birthDate) => {
     const today = new Date()
-    if (birthday) {
-      var age = today.getFullYear() - birthday.getFullYear()
-      setBirthday(birthday)
+    if (birthDate) {
+      const age = today.getFullYear() - birthDate.getFullYear()
+      setBirthday(birthDate)
       setPatientAge(age)
-      return <p className='blue'>{age}</p>
+      return age
     }
-    return null
+    return 0
   }
+
   const formOptions = {
     registrationQ1: [
       { label: 'Mr', value: 'Mr' },
@@ -121,17 +121,11 @@ const RegForm = () => {
       { label: 'Dr', value: 'Dr' },
     ],
     registrationQ5: [
-      {
-        label: 'Male',
-        value: 'Male',
-      },
+      { label: 'Male', value: 'Male' },
       { label: 'Female', value: 'Female' },
     ],
     registrationQ6: [
-      {
-        label: 'Chinese 华裔',
-        value: 'Chinese 华裔',
-      },
+      { label: 'Chinese 华裔', value: 'Chinese 华裔' },
       { label: 'Malay 巫裔', value: 'Malay 巫裔' },
       { label: 'Indian 印裔', value: 'Indian 印裔' },
       { label: 'Eurasian 欧亚裔', value: 'Eurasian 欧亚裔' },
@@ -139,10 +133,7 @@ const RegForm = () => {
     ],
     registrationQ7: [
       { label: 'Singapore Citizen 新加坡公民', value: 'Singapore Citizen 新加坡公民' },
-      {
-        label: 'Singapore Permanent Resident (PR) \n新加坡永久居民',
-        value: 'Singapore Permanent Resident (PR) \n新加坡永久居民',
-      },
+      { label: 'Singapore Permanent Resident (PR) \n新加坡永久居民', value: 'Singapore Permanent Resident (PR) \n新加坡永久居民' },
     ],
     registrationQ8: [
       { label: 'Single 单身', value: 'Single 单身' },
@@ -161,10 +152,7 @@ const RegForm = () => {
       { label: 'Others', value: 'Others' },
     ],
     registrationQ11: [
-      {
-        label: 'Yes',
-        value: 'Yes',
-      },
+      { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' },
       { label: 'Unsure', value: 'Unsure' },
     ],
@@ -199,328 +187,544 @@ const RegForm = () => {
     ],
   }
 
-  const layout = (
-    <div className='form--div'>
-      <h2>Registration</h2>
-      <h3>Salutation 称谓</h3>
-      <SelectField name='registrationQ1' options={formOptions.registrationQ1} />
-      <h3>Initials (e.g Chen Ren Ying - Chen R Y, Christie Tan En Ning - Christie T E N)</h3>
-      <LongTextField name='registrationQ2' />
-      <h3>Birthday</h3>
-      <DateField name='registrationQ3' type='date' />
-      <h3>Age</h3>
-      <GetAge />
-      <h3>Gender</h3>
-      <RadioField name='registrationQ5' options={formOptions.registrationQ5} />
-      <h3>Race 种族</h3>
-      <RadioField name='registrationQ6' options={formOptions.registrationQ6} />
-      <PopupText qnNo='registrationQ6' triggerValue='Others 其他'>
-        <LongTextField name='registrationShortAnsQ6' />
-      </PopupText>
-      <h3>Nationality 国籍</h3>
-      <p>
-        Please Note: Non Singapore Citizens/ Non-PRs are unfortunately not eligible for this health
-        screening
-      </p>
-      <RadioField name='registrationQ7' options={formOptions.registrationQ7} />
-      <h3>Marital Status 婚姻状况</h3>
-      <SelectField name='registrationQ8' options={formOptions.registrationQ8} />
-      <h3>Occupation 工作</h3>
-      <TextField name='registrationQ9' />
-      <h3>
-        GRC/SMC Subdivision{' '}
-        <a href='https://www.parliament.gov.sg/mps/find-my-mp' target='_blank' rel='noreferrer'>
-          [https://www.parliament.gov.sg/mps/find-my-mp]
-        </a>
-      </h3>
-      <SelectField name='registrationQ10' options={formOptions.registrationQ10} />
-      <h3>Are you currently part of HealthierSG?</h3>
-      <RadioField name='registrationQ11' options={formOptions.registrationQ11} />
-      <h3>CHAS Status 社保援助计划</h3>
-      <SelectField name='registrationQ12' options={formOptions.registrationQ12} />
-      <h3> Pioneer Generation Status 建国一代配套</h3>
-      <RadioField name='registrationQ13' options={formOptions.registrationQ13} />
-      <h3>Preferred Language for Health Report</h3>
-      <RadioField name='registrationQ14' options={formOptions.registrationQ14} />
-      <h2>Going for Phlebotomy?</h2>
-      <h3>
-        Conditions:
-        <br />
-        1) Singaporeans ONLY
-        <br />
-        2) Not enrolled under HealthierSG
-        <br />
-        3) Have not undergone a government screening for the past 3 years
-        <br />
-        4) Have not been diagnosed with diabetes, hyperlipidemia or high blood pressure
-      </h3>
-      <RadioField name='registrationQ15' options={formOptions.registrationQ15} />
-      <PopupText qnNo='registrationQ15' triggerValue='Yes'>
-        <h2>Phlebotomy Eligibility</h2>{' '}
-        <p>
-          {' '}
-          Before entering our screening, do note the following eligibility criteria for Phlebotomy:
-          <ol type='A'>
-            <li>NOT previously diagnosed with Diabetes/ High Cholesterol/ High Blood Pressure.</li>
-            <li>Have not done a blood test within the past 3 years.</li>
-          </ol>
-        </p>
-        <p>
-          Rationale: PHS aims to reach out to undiagnosed people. Patients that are already aware of
-          their condition would have regular follow-ups with the GPs/polyclinics/hospitals. This
-          information is available in our publicity material. Please approach our registration
-          volunteers should you have any queries. We are happy to explain further. Thank you!
-        </p>
-        <p>
-          抽血合格标准:
-          <br />
-          1) 在过去的三年内沒有验过血。
-          <br />
-          2) 没有糖尿病, 高血压, 高胆固醇。
-        </p>
-        <BoolField name='registrationQ16' />
-      </PopupText>
-      <br />
-      <h2>Compliance to PDPA 同意书</h2>
-      <p>
-        I hereby give consent to having photos and/or videos taken of me for publicity purposes. I
-        hereby give my consent to the Public Health Service Executive Committee to collect my
-        personal information for the purpose of participating in the Public Health Service (hereby
-        called “PHS”) and its related events, and to contact me via calls, SMS, text messages or
-        emails regarding the event and follow-up process.
-      </p>
-      <p>
-        Should you wish to withdraw your consent for us to contact you for the purposes stated
-        above, please notify a member of the PHS Executive Committee at &nbsp;
-        <a href='mailto:ask.phs@gmail.com'>ask.phs@gmail.com</a> &nbsp; in writing. We will then
-        remove your personal information from our database. Please allow 3 business days for your
-        withdrawal of consent to take effect. All personal information will be kept confidential,
-        will only be disseminated to members of the PHS Executive Committee, and will be strictly
-        used by these parties for the purposes stated.
-      </p>
-      <BoolField name='registrationQ17' />
-      <h2>Follow up at GP Clinics</h2>
-      <p>
-        Your Health Report & Blood Test Results (if applicable) will be mailed out to the GP you
-        have selected <b>4-6 weeks</b> after the screening.
-      </p>
-      <h4>
-        All results, included those that are normal, have to be collected from the GP clinic via an
-        appointment
-      </h4>
-      <br />
-      {displayVacancy}
-      <RadioField name='registrationQ18' options={displayLocations()} />
-      <h3>
-        Patient consented to being considered for participation in Long Term Follow-Up (LTFU)?
-        (Patient has to sign and tick Form C)
-      </h3>
-      <RadioField name='registrationQ19' options={formOptions.registrationQ19} />
-      <h3>
-        Participant consent to participation in Research? (Participant has to sign IRB Consent Form)
-      </h3>
-      <RadioField name='registrationQ20' options={formOptions.registrationQ20} />
-    </div>
-  )
-  const form_layout = layout
+  const initialValues = {
+    registrationQ1: saveData.registrationQ1 || 'Mr',
+    registrationQ2: saveData.registrationQ2 || '',
+    registrationQ3: saveData.registrationQ3 || new Date(),
+    registrationQ4: saveData.registrationQ4 || patientAge,
+    registrationQ5: saveData.registrationQ5 || '',
+    registrationQ6: saveData.registrationQ6 || '',
+    registrationQ7: saveData.registrationQ7 || '',
+    registrationQ8: saveData.registrationQ8 || '',
+    registrationQ9: saveData.registrationQ9 || '',
+    registrationQ10: saveData.registrationQ10 || '',
+    registrationQ11: saveData.registrationQ11 || '',
+    registrationQ12: saveData.registrationQ12 || '',
+    registrationQ13: saveData.registrationQ13 || '',
+    registrationQ14: saveData.registrationQ14 || '',
+    registrationQ15: saveData.registrationQ15 || '',
+    registrationQ16: saveData.registrationQ16 || false,
+    registrationQ17: saveData.registrationQ17 || false,
+    registrationQ18: saveData.registrationQ18 || '',
+    registrationQ19: saveData.registrationQ19 || '',
+    registrationQ20: saveData.registrationQ20 || '',
+    registrationShortAnsQ6: saveData.registrationShortAnsQ6 || '',
+  }
 
-  const schema = new SimpleSchema({
-    registrationQ1: {
-      defaultValue: 'Mr',
-      type: String,
-      allowedValues: ['Mr', 'Ms', 'Mrs', 'Dr'],
-      optional: false,
-    },
-    registrationQ2: {
-      type: String,
-      optional: false,
-    },
-    registrationQ3: {
-      defaultValue: new Date(),
-      type: Date,
-      optional: false,
-    },
-    registrationQ4: {
-      defaultValue: patientAge,
-      type: Number,
-      optional: true,
-    },
-    registrationQ5: {
-      type: String,
-      allowedValues: ['Male', 'Female'],
-      optional: false,
-    },
-    registrationQ6: {
-      type: String,
-      allowedValues: [
-        'Chinese 华裔',
-        'Malay 巫裔',
-        'Indian 印裔',
-        'Eurasian 欧亚裔',
-        'Others 其他',
-      ],
-      optional: false,
-    },
-    registrationQ7: {
-      type: String,
-      allowedValues: [
-        'Singapore Citizen 新加坡公民',
-        'Singapore Permanent Resident (PR) \n新加坡永久居民',
-      ],
-      optional: false,
-    },
-    registrationQ8: {
-      type: String,
-      allowedValues: [
-        'Single 单身',
-        'Married 已婚',
-        'Widowed 已寡',
-        'Separated 已分居',
-        'Divorced 已离婚',
-      ],
-      optional: false,
-    },
-    registrationQ9: {
-      type: String,
-      optional: false,
-    },
-    registrationQ10: {
-      type: String,
-      allowedValues: [
-        'Jurong',
-        'Yuhua',
-        'Bukit Batok',
-        'Pioneer',
-        'West Coast',
-        'Hong Kah North',
-        'Others',
-      ],
-      optional: false,
-    },
-    registrationQ11: {
-      type: String,
-      allowedValues: ['Yes', 'No', 'Unsure'],
-      optional: false,
-    },
-    registrationQ12: {
-      type: String,
-      allowedValues: ['CHAS Orange', 'CHAS Green', 'CHAS Blue', 'No CHAS'],
-      optional: false,
-    },
-    registrationQ13: {
-      type: String,
-      allowedValues: ['Pioneer generation card holder', 'Merdeka generation card holder', 'None'],
-      optional: false,
-    },
-    //locations
-    registrationQ18: {
-      type: String,
-      allowedValues: Object.values(postalCodeToLocations),
-      optional: true,
-    },
-    registrationQ14: {
-      type: String,
-      allowedValues: ['English', 'Mandarin', 'Malay', 'Tamil'],
-      optional: false,
-    },
-    registrationQ15: {
-      type: String,
-      allowedValues: ['Yes', 'No'],
-      optional: false,
-    },
-    registrationQ16: {
-      type: Boolean,
-      label:
-        'I have read and acknowledged the eligibility criteria for Phlebotomy. 我知道抽血的合格标准。',
-      optional: true,
-    },
-    registrationQ17: {
-      type: Boolean,
-      label: 'I agree and consent to the above.',
-      optional: false,
-    },
-    //race: other
-    registrationShortAnsQ6: {
-      type: String,
-      optional: true,
-    },
-    registrationQ19: {
-      type: String,
-      allowedValues: ['Yes', 'No'],
-      optional: false,
-    },
-    registrationQ20: {
-      type: String,
-      allowedValues: ['Yes', 'No'],
-      optional: false,
-    },
-  })
-  const form_schema = new SimpleSchema2Bridge(schema)
+  const handleSubmit = async (values) => {
+    isLoading(true)
+    values.registrationQ4 = patientAge
 
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        model.registrationQ4 = patientAge
+    const location = values.registrationQ18
+    if (location) {
+      const postalCode = values.registrationQ18 === 'None' ? 'None' : values.registrationQ18.trim().slice(-6)
 
-        // Note: Q10 is optional
-        const location = model.registrationQ18
-        if (location) {
-          const postalCode =
-            model.registrationQ18 === 'None' ? 'None' : model.registrationQ18.trim().slice(-6)
-
-          // Note we check on the backend if no slots left
-          const counterResponse = await submitRegClinics(postalCode, patientId)
-          // Update counters by checking previous selection
-          if (!counterResponse.result) {
-            isLoading(false)
-            setTimeout(() => {
-              alert(`Unsuccessful. ${counterResponse.error}`)
-            }, 80)
-            isLoading(false)
-            return
-          }
-        }
-
-        console.log('Patient ID: ' + patientId)
-        // If counters updated successfully, submit the new form information
-        const response = await submitForm(model, patientId, formName)
-
-        console.log('test  _' + response.result + ' ' + patientAge)
-        if (response.result) {
-          setTimeout(() => {
-            console.log('response data: ' + response.qNum)
-            alert('Successfully submitted form')
-            console.log('Successfully submitted form')
-            updatePatientInfo(response.data)
-            updatePatientId(response.qNum)
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          setTimeout(() => {
-            console.log('Form submission failed')
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-
+      const counterResponse = await submitRegClinics(postalCode, patientId)
+      if (!counterResponse.result) {
         isLoading(false)
-      }}
-      model={saveData}
-    >
-      {form_layout}
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
+        setTimeout(() => {
+          alert(`Unsuccessful. ${counterResponse.error}`)
+        }, 80)
+        return
+      }
+    }
 
-      <br />
-      <Divider />
-    </AutoForm>
-  )
+    console.log('Patient ID: ' + patientId)
+    const response = await submitForm(values, patientId, formName)
+
+    console.log('test  _' + response.result + ' ' + patientAge)
+    if (response.result) {
+      setTimeout(() => {
+        console.log('response data: ' + response.qNum)
+        alert('Successfully submitted form')
+        console.log('Successfully submitted form')
+        updatePatientInfo(response.data)
+        updatePatientId(response.qNum)
+        navigate('/app/dashboard', { replace: true })
+      }, 80)
+    } else {
+      setTimeout(() => {
+        console.log('Form submission failed')
+        alert(`Unsuccessful. ${response.error}`)
+      }, 80)
+    }
+
+    isLoading(false)
+  }
 
   return (
     <Paper elevation={2} p={0} m={0}>
-      {newForm()}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={registrationValidationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize={true}
+      >
+        {({ values, errors, touched, setFieldValue }) => (
+          <Form className='fieldPadding'>
+            <div className='form--div'>
+              <h2>Registration</h2>
+              
+              <h3>Salutation 称谓</h3>
+              <FormControl fullWidth error={touched.registrationQ1 && !!errors.registrationQ1}>
+                <Field name="registrationQ1">
+                  {({ field }) => (
+                    <Select {...field} displayEmpty>
+                      {formOptions.registrationQ1.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ1" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Initials (e.g Chen Ren Ying - Chen R Y, Christie Tan En Ning - Christie T E N)</h3>
+              <Field name="registrationQ2">
+                {({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    multiline
+                    rows={2}
+                    error={touched.registrationQ2 && !!errors.registrationQ2}
+                    helperText={touched.registrationQ2 && errors.registrationQ2}
+                  />
+                )}
+              </Field>
+
+              <h3>Birthday</h3>
+              <Field name="registrationQ3">
+                {({ field }) => (
+                  <TextField
+                    {...field}
+                    type="date"
+                    fullWidth
+                    error={touched.registrationQ3 && !!errors.registrationQ3}
+                    helperText={touched.registrationQ3 && errors.registrationQ3}
+                    value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
+                    onChange={(e) => {
+                      const date = new Date(e.target.value)
+                      setFieldValue('registrationQ3', date)
+                      setFieldValue('registrationQ4', calculateAge(date))
+                    }}
+                  />
+                )}
+              </Field>
+
+              <h3>Age</h3>
+              <Typography className='blue'>{patientAge}</Typography>
+
+              <h3>Gender</h3>
+              <FormControl error={touched.registrationQ5 && !!errors.registrationQ5}>
+                <Field name="registrationQ5">
+                  {({ field }) => (
+                    <RadioGroup {...field} row>
+                      {formOptions.registrationQ5.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ5" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Race 种族</h3>
+              <FormControl error={touched.registrationQ6 && !!errors.registrationQ6}>
+                <Field name="registrationQ6">
+                  {({ field }) => (
+                    <RadioGroup {...field}>
+                      {formOptions.registrationQ6.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ6" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              {values.registrationQ6 === 'Others 其他' && (
+                <Field name="registrationShortAnsQ6">
+                  {({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      multiline
+                      rows={2}
+                      placeholder="Please specify"
+                      error={touched.registrationShortAnsQ6 && !!errors.registrationShortAnsQ6}
+                      helperText={touched.registrationShortAnsQ6 && errors.registrationShortAnsQ6}
+                    />
+                  )}
+                </Field>
+              )}
+
+              <h3>Nationality 国籍</h3>
+              <p>Please Note: Non Singapore Citizens/ Non-PRs are unfortunately not eligible for this health screening</p>
+              <FormControl error={touched.registrationQ7 && !!errors.registrationQ7}>
+                <Field name="registrationQ7">
+                  {({ field }) => (
+                    <RadioGroup {...field}>
+                      {formOptions.registrationQ7.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ7" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Marital Status 婚姻状况</h3>
+              <FormControl fullWidth error={touched.registrationQ8 && !!errors.registrationQ8}>
+                <Field name="registrationQ8">
+                  {({ field }) => (
+                    <Select {...field} displayEmpty>
+                      {formOptions.registrationQ8.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ8" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Occupation 工作</h3>
+              <Field name="registrationQ9">
+                {({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    error={touched.registrationQ9 && !!errors.registrationQ9}
+                    helperText={touched.registrationQ9 && errors.registrationQ9}
+                  />
+                )}
+              </Field>
+
+              <h3>
+                GRC/SMC Subdivision{' '}
+                <a href='https://www.parliament.gov.sg/mps/find-my-mp' target='_blank' rel='noreferrer'>
+                  [https://www.parliament.gov.sg/mps/find-my-mp]
+                </a>
+              </h3>
+              <FormControl fullWidth error={touched.registrationQ10 && !!errors.registrationQ10}>
+                <Field name="registrationQ10">
+                  {({ field }) => (
+                    <Select {...field} displayEmpty>
+                      {formOptions.registrationQ10.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ10" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Are you currently part of HealthierSG?</h3>
+              <FormControl error={touched.registrationQ11 && !!errors.registrationQ11}>
+                <Field name="registrationQ11">
+                  {({ field }) => (
+                    <RadioGroup {...field} row>
+                      {formOptions.registrationQ11.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ11" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>CHAS Status 社保援助计划</h3>
+              <FormControl fullWidth error={touched.registrationQ12 && !!errors.registrationQ12}>
+                <Field name="registrationQ12">
+                  {({ field }) => (
+                    <Select {...field} displayEmpty>
+                      {formOptions.registrationQ12.map(option => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ12" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Pioneer Generation Status 建国一代配套</h3>
+              <FormControl error={touched.registrationQ13 && !!errors.registrationQ13}>
+                <Field name="registrationQ13">
+                  {({ field }) => (
+                    <RadioGroup {...field}>
+                      {formOptions.registrationQ13.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ13" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>Preferred Language for Health Report</h3>
+              <FormControl error={touched.registrationQ14 && !!errors.registrationQ14}>
+                <Field name="registrationQ14">
+                  {({ field }) => (
+                    <RadioGroup {...field}>
+                      {formOptions.registrationQ14.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ14" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h2>Going for Phlebotomy?</h2>
+              <h3>
+                Conditions:
+                <br />
+                1) Singaporeans ONLY
+                <br />
+                2) Not enrolled under HealthierSG
+                <br />
+                3) Have not undergone a government screening for the past 3 years
+                <br />
+                4) Have not been diagnosed with diabetes, hyperlipidemia or high blood pressure
+              </h3>
+              <FormControl error={touched.registrationQ15 && !!errors.registrationQ15}>
+                <Field name="registrationQ15">
+                  {({ field }) => (
+                    <RadioGroup {...field} row>
+                      {formOptions.registrationQ15.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ15" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              {values.registrationQ15 === 'Yes' && (
+                <Box>
+                  <h2>Phlebotomy Eligibility</h2>
+                  <p>
+                    Before entering our screening, do note the following eligibility criteria for Phlebotomy:
+                    <ol type='A'>
+                      <li>NOT previously diagnosed with Diabetes/ High Cholesterol/ High Blood Pressure.</li>
+                      <li>Have not done a blood test within the past 3 years.</li>
+                    </ol>
+                  </p>
+                  <p>
+                    Rationale: PHS aims to reach out to undiagnosed people. Patients that are already aware of
+                    their condition would have regular follow-ups with the GPs/polyclinics/hospitals. This
+                    information is available in our publicity material. Please approach our registration
+                    volunteers should you have any queries. We are happy to explain further. Thank you!
+                  </p>
+                  <p>
+                    抽血合格标准:
+                    <br />
+                    1) 在过去的三年内沒有验过血。
+                    <br />
+                    2) 没有糖尿病, 高血压, 高胆固醇。
+                  </p>
+                  <FormControlLabel
+                    control={
+                      <Field name="registrationQ16">
+                        {({ field }) => (
+                          <Checkbox
+                            {...field}
+                            checked={field.value}
+                            onChange={(e) => setFieldValue('registrationQ16', e.target.checked)}
+                          />
+                        )}
+                      </Field>
+                    }
+                    label="I have read and acknowledged the eligibility criteria for Phlebotomy. 我知道抽血的合格标准。"
+                  />
+                  <ErrorMessage name="registrationQ16" component="div" style={{ color: 'red' }} />
+                </Box>
+              )}
+
+              <br />
+
+              <h2>Compliance to PDPA 同意书</h2>
+              <p>
+                I hereby give consent to having photos and/or videos taken of me for publicity purposes. I
+                hereby give my consent to the Public Health Service Executive Committee to collect my
+                personal information for the purpose of participating in the Public Health Service (hereby
+                called &quot;PHS&quot;) and its related events, and to contact me via calls, SMS, text messages or
+                emails regarding the event and follow-up process.
+              </p>
+              <p>
+                Should you wish to withdraw your consent for us to contact you for the purposes stated
+                above, please notify a member of the PHS Executive Committee at &nbsp;
+                <a href='mailto:ask.phs@gmail.com'>ask.phs@gmail.com</a> &nbsp; in writing. We will then
+                remove your personal information from our database. Please allow 3 business days for your
+                withdrawal of consent to take effect. All personal information will be kept confidential,
+                will only be disseminated to members of the PHS Executive Committee, and will be strictly
+                used by these parties for the purposes stated.
+              </p>
+              <FormControlLabel
+                control={
+                  <Field name="registrationQ17">
+                    {({ field }) => (
+                      <Checkbox
+                        {...field}
+                        checked={field.value}
+                        onChange={(e) => setFieldValue('registrationQ17', e.target.checked)}
+                      />
+                    )}
+                  </Field>
+                }
+                label="I agree and consent to the above."
+              />
+              <ErrorMessage name="registrationQ17" component="div" style={{ color: 'red' }} />
+
+              <h2>Follow up at GP Clinics</h2>
+              <p>
+                Your Health Report & Blood Test Results (if applicable) will be mailed out to the GP you
+                have selected <b>4-6 weeks</b> after the screening.
+              </p>
+              <h4>
+                All results, included those that are normal, have to be collected from the GP clinic via an
+                appointment
+              </h4>
+              <br />
+              {displayVacancy}
+              
+              <FormControl error={touched.registrationQ18 && !!errors.registrationQ18}>
+                <Field name="registrationQ18">
+                  {({ field }) => (
+                    <RadioGroup {...field}>
+                      {displayLocations().map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ18" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>
+                Patient consented to being considered for participation in Long Term Follow-Up (LTFU)?
+                (Patient has to sign and tick Form C)
+              </h3>
+              <FormControl error={touched.registrationQ19 && !!errors.registrationQ19}>
+                <Field name="registrationQ19">
+                  {({ field }) => (
+                    <RadioGroup {...field} row>
+                      {formOptions.registrationQ19.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ19" component="div" style={{ color: 'red' }} />
+              </FormControl>
+
+              <h3>
+                Participant consent to participation in Research? (Participant has to sign IRB Consent Form)
+              </h3>
+              <FormControl error={touched.registrationQ20 && !!errors.registrationQ20}>
+                <Field name="registrationQ20">
+                  {({ field }) => (
+                    <RadioGroup {...field} row>
+                      {formOptions.registrationQ20.map(option => (
+                        <FormControlLabel
+                          key={option.value}
+                          value={option.value}
+                          control={<Radio />}
+                          label={option.label}
+                        />
+                      ))}
+                    </RadioGroup>
+                  )}
+                </Field>
+                <ErrorMessage name="registrationQ20" component="div" style={{ color: 'red' }} />
+              </FormControl>
+            </div>
+
+            {/* Display form-level errors */}
+            {Object.keys(errors).length > 0 && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                Please fix the following errors before submitting:
+                <ul>
+                  {Object.entries(errors).map(([field, error]) => (
+                    <li key={field}>{error}</li>
+                  ))}
+                </ul>
+              </Alert>
+            )}
+
+            <Box sx={{ mt: 2, mb: 2 }}>
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={Object.keys(errors).length > 0}
+                >
+                  Submit
+                </Button>
+              )}
+            </Box>
+
+            <Divider />
+          </Form>
+        )}
+      </Formik>
     </Paper>
   )
 }
