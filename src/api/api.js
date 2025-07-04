@@ -1171,7 +1171,7 @@ export function generate_pdf_updated(
   content.push(...bloodPressureSection(triage))
   content.push(...bmiSection(triage.triageQ10, triage.triageQ11))
   content.push(...otherScreeningModularitiesSection(lung, geriVision, social))
-  content.push({ text: '', pageBreak: 'before' })
+  //content.push({ text: '', pageBreak: 'before' })
   content.push(
     ...followUpSection(
       reg,
@@ -1206,11 +1206,11 @@ export function generate_pdf_updated(
       subheader: {
         fontSize: 13,
         bold: true,
-        margin: [0, 8, 0, 3],
+        margin: [0, 3, 0, 3],
       },
       normal: {
-        fontSize: 11,
-        margin: [0, 4, 0, 4],
+        fontSize: 10,
+        margin: [0, 0, 0, 4],
       },
       italicSmall: {
         italics: true,
@@ -1247,7 +1247,7 @@ export function bloodPressureSection(triage) {
   const textSection = [
     { text: parseFromLangKey('bp_title'), style: 'subheader' },
     {
-      text: `${parseFromLangKey('bp_reading')} ${triage.triageQ7}/${triage.triageQ8} mmHg.\n\n`,
+      text: `${parseFromLangKey('bp_reading')} ${triage.triageQ7}/${triage.triageQ8} mmHg.\n`,
       style: 'normal',
     },
     { text: `${parseFromLangKey('bp_tip')}`, style: 'normal' },
