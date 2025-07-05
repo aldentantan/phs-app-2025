@@ -1,15 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
+import * as Yup from 'yup'
+import { useFormik } from 'formik'
+import {
+  FormControlLabel,
+  RadioGroup,
+  Radio,
+  Button,
+  CircularProgress,
+  Typography,
+  Paper,
+} from '@mui/material'
+
 import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
 
-import { AutoForm } from 'uniforms'
-import { SubmitField, ErrorsField, RadioField } from 'uniforms-mui'
 import { submitForm } from '../../api/api.js'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB.js'
@@ -22,38 +27,30 @@ const dayRangeFormOptions = [
   { label: '2 - More than half the days', value: '2 - More than half the days' },
   { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
 ]
-
-const schema = new SimpleSchema({
-  SAMH1: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
-  SAMH2: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  },
-})
+const yesNo = ['Yes', 'No']
 
 const formName = 'mentalHealthForm'
 
+const validationSchema = Yup.object({
+  SAMH1: Yup.string().oneOf(yesNo).required('Required'),
+  SAMH2: Yup.string().oneOf(yesNo).required('Required'),
+})
+
 const MentalHealthForm = () => {
   const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
-  const [saveData, setSaveData] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [savedData, setSavedData] = useState({})
 
   const [regi, setReg] = useState({})
   const [phq, setPHQ] = useState({})
 
-  const form_schema = new SimpleSchema2Bridge(schema)
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSaveData(savedData)
+      setSavedData(savedData)
 
       const regData = getSavedData(patientId, allForms.registrationForm)
       // const docData = getSavedData(patientId, allForms.triageForm)
@@ -102,46 +99,64 @@ const MentalHealthForm = () => {
     ],
   }
 
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
-        if (response.result) {
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-        isLoading(false)
-      }}
-      model={saveData}
-    >
-      <div className='form--div'>
-        <h3>Patient has attended mental health consultation?</h3>
-        <RadioField name='SAMH1' label='SAMH1' options={formOptions.SAMH1} />
-        <h3>Patient has signed up for follow-up with SAMH?</h3>
-        <RadioField name='SAMH2' label='SAMH2' options={formOptions.SAMH2} />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-      <br />
-      <Divider />
-    </AutoForm>
-  )
+  const formik = useFormik({
+    enableReinitialize: true,
+    initialValues: {
+      SAMH1: savedData?.SAMH1 || '',
+      SAMH2: savedData?.SAMH2 || '',
+    },
+    validationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      setLoading(true)
+      const response = await submitForm(values, patientId, formName)
+      setLoading(false)
+      if (response.result) {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      } else {
+        alert(`Unsuccessful. ${response.error}`)
+      }
+      setSubmitting(false)
+    },
+  })
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <form onSubmit={formik.handleSubmit}>
+              <div className='form--div'>
+                <h3>Patient has attended mental health consultation?</h3>
+                <RadioGroup name='SAMH1' value={formik.values.SAMH1} onChange={formik.handleChange}>
+                  {formOptions.SAMH1.map(({ label, value }) => (
+                    <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
+                  ))}
+                </RadioGroup>
+                {formik.touched.SAMH1 && formik.errors.SAMH1 && (
+                  <Typography color='error'>{formik.errors.SAMH1}</Typography>
+                )}
+                <h3>Patient has signed up for follow-up with SAMH?</h3>
+                <RadioGroup name='SAMH2' value={formik.values.SAMH2} onChange={formik.handleChange}>
+                  {formOptions.SAMH2.map(({ label, value }) => (
+                    <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
+                  ))}
+                </RadioGroup>
+                {formik.touched.SAMH2 && formik.errors.SAMH2 && (
+                  <Typography color='error'>{formik.errors.SAMH2}</Typography>
+                )}
+              </div>
+              <br />
+              <div>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <Button type='submit' variant='contained' color='primary'>
+                    Submit
+                  </Button>
+                )}
+              </div>
+            </form>
           </Paper>
         </Grid>
         <Grid
@@ -171,8 +186,6 @@ const MentalHealthForm = () => {
               <p className='underlined'>Would the patient benefit from counselling:</p>
               <p className='blue'>{phq.PHQ11},</p>
               <p className='blue'>{phq.PHQShortAns11}</p>
-
-
             </div>
           )}
         </Grid>
