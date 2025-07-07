@@ -37,26 +37,26 @@ const timelineItems = [
   { key: 'socialservice', label: 'Social Services', path: 'socialservice' },
 ]
 
-// Map between timeline keys and eligibility names (add more as needed)
+// Map between timeline keys and eligibility names - UPDATED to match Eligibility.js line 286
 const eligibilityKeyMap = {
   hxtaking: 'History Taking',
   triage: 'Triage',
-  hsg: 'Healthier SG',
+  hsg: 'Healthier SG Booth', // Fixed: was 'Healthier SG'
   phlebo: 'Phlebotomy',
-  fit: 'FIT',
-  lungfn: 'Lung Function',
-  wce: 'WCE',
+  fit: 'Faecal Immunochemical Testing (FIT)', // Fixed: was 'FIT'
+  lungfn: 'Lung Function Testing', // Fixed: was 'Lung Function'
+  wce: "Women's Cancer Education", // Fixed: was 'WCE'
   osteo: 'Osteoporosis',
-  nkf: 'NKF',
+  nkf: 'Kidney Screening', // Fixed: was 'NKF'
   mentalhealth: 'Mental Health',
   vax: 'Vaccination',
-  gericog: 'Geriatrics - Cognitive',
-  gerimobility: 'Geriatrics - Mobility',
-  gerivision: 'Geriatrics - Vision',
-  geriaudio: 'Geriatrics - Audiometry',
-  hpv: 'HPV',
+  gericog: 'Geriatric Screening', // Fixed: was 'Geriatrics - Cognitive'
+  gerimobility: 'Geriatric Screening', // Fixed: was 'Geriatrics - Mobility'
+  gerivision: 'Geriatric Screening', // Fixed: was 'Geriatrics - Vision'
+  geriaudio: 'Audiometry', // Fixed: was 'Geriatrics - Audiometry'
+  hpv: 'HPV On-Site Testing', // Fixed: was 'HPV'
   doctorsconsult: "Doctor's Station",
-  dietitiansconsult: "Dietitian's Consultation",
+  dietitiansconsult: "Dietitian's Consult", // Fixed: was "Dietitian's Consultation"
   socialservice: 'Social Services',
   oralhealth: 'Oral Health',
 }
@@ -127,6 +127,8 @@ function generateStatusObject(record) {
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult
       socialservice: record.socialServiceForm !== undefined, // social service,
       oralhealth: record.oralHealthForm !== undefined, // Oral Health
+      // Add eligibility data to the status object
+      eligibleStations: record.eligibleStations || [],
     }
   }
 
@@ -149,7 +151,7 @@ const TimelineItemComponent = ({ item, formDone, admin, navigate, scrollTop }) =
   let dotColor
   if (formDone?.[item.key]) {
     dotColor = 'primary' // Completed stations are primary color
-  } else if (!isEligible && eligibilityName) {
+  } else if (eligibilityName && !isEligible) {
     dotColor = 'error' // Not eligible stations are red
   } else {
     dotColor = 'grey' // Default color for incomplete but eligible stations

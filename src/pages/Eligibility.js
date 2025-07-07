@@ -91,7 +91,6 @@ const Eligibility = () => {
       console.log('visited stations:', visitedStationNames)
       console.log('eligible stations:', eligibleStationNames)
 
-
       //melanie pdf function
       function createData(name, isEligible) {
         const eligibility = isEligible ? 'YES' : 'NO'
@@ -211,7 +210,7 @@ const Eligibility = () => {
         ]
       }
 
-      generatePDFRef.current =() =>{
+      generatePDFRef.current = () => {
         let content = []
         const docDefinition = {
           content: content,
