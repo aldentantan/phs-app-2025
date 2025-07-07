@@ -37,26 +37,26 @@ const timelineItems = [
   { key: 'socialservice', label: 'Social Services', path: 'socialservice' },
 ]
 
-// Map between timeline keys and eligibility names - UPDATED to match Eligibility.js line 286
+// Map between timeline keys and eligibility names -
 const eligibilityKeyMap = {
   hxtaking: 'History Taking',
   triage: 'Triage',
-  hsg: 'Healthier SG Booth', // Fixed: was 'Healthier SG'
+  hsg: 'Healthier SG Booth',
   phlebo: 'Phlebotomy',
-  fit: 'Faecal Immunochemical Testing (FIT)', // Fixed: was 'FIT'
-  lungfn: 'Lung Function Testing', // Fixed: was 'Lung Function'
-  wce: "Women's Cancer Education", // Fixed: was 'WCE'
+  fit: 'Faecal Immunochemical Testing (FIT)',
+  lungfn: 'Lung Function Testing',
+  wce: "Women's Cancer Education",
   osteo: 'Osteoporosis',
-  nkf: 'Kidney Screening', // Fixed: was 'NKF'
+  nkf: 'Kidney Screening',
   mentalhealth: 'Mental Health',
   vax: 'Vaccination',
-  gericog: 'Geriatric Screening', // Fixed: was 'Geriatrics - Cognitive'
-  gerimobility: 'Geriatric Screening', // Fixed: was 'Geriatrics - Mobility'
-  gerivision: 'Geriatric Screening', // Fixed: was 'Geriatrics - Vision'
-  geriaudio: 'Audiometry', // Fixed: was 'Geriatrics - Audiometry'
-  hpv: 'HPV On-Site Testing', // Fixed: was 'HPV'
+  gericog: 'Geriatric Screening',
+  gerimobility: 'Geriatric Screening',
+  gerivision: 'Geriatric Screening',
+  geriaudio: 'Audiometry',
+  hpv: 'HPV On-Site Testing',
   doctorsconsult: "Doctor's Station",
-  dietitiansconsult: "Dietitian's Consult", // Fixed: was "Dietitian's Consultation"
+  dietitiansconsult: "Dietitian's Consult",
   socialservice: 'Social Services',
   oralhealth: 'Oral Health',
 }
