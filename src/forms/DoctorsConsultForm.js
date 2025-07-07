@@ -14,13 +14,13 @@ import Button from '@mui/material/Button'
 
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
-import { getSavedData } from '../services/mongoDB'
+import { getSavedData, getPdfQueueCollection } from '../services/mongoDB'
 import allForms from './forms.json'
 import './fieldPadding.css'
 
 const validationSchema = Yup.object().shape({
   doctorsConsultQ1: Yup.string().required('This field is required'),
-  doctorsConsultQ2: Yup.string(),
+  doctorsConsultQ2: Yup.string().required('This field is required'),
   doctorsConsultQ3: Yup.string().required('This field is required'),
   doctorsConsultQ4: Yup.boolean(),
   doctorsConsultQ5: Yup.string().when('doctorsConsultQ4', {
@@ -115,7 +115,16 @@ const DoctorsConsultForm = () => {
     setLoading(true)
     try {
       const response = await submitForm(values, patientId, formName)
+
       if (response.result) {
+        const collection = getPdfQueueCollection()
+        await collection.insertOne({
+          patientId: patientId,
+          doctorName: values.doctorsConsultQ1, // Using doctor's name from Q1
+          printed: false,
+          createdAt: new Date(),
+        })
+
         setTimeout(() => {
           alert('Successfully submitted form')
           navigate('/app/dashboard', { replace: true })
@@ -182,6 +191,8 @@ const DoctorsConsultForm = () => {
                       multiline
                       rows={4}
                       variant='outlined'
+                      error={touched.doctorsConsultQ2 && Boolean(errors.doctorsConsultQ2)}
+                      helperText={touched.doctorsConsultQ2 && errors.doctorsConsultQ2}
                     />
                     <h3>Doctor&apos;s Memo:</h3>
                     <Field

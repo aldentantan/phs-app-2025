@@ -33,7 +33,8 @@ const validationSchema = Yup.object().shape({
     .required('Required'),
   geriVisionQ2: Yup.string().when('geriVisionQ1', {
     is: 'Yes (Specify in textbox )',
-    then: Yup.string().required('Please specify the eye condition or surgery'),
+    then: (schema) => schema.required('Please specify the eye condition or surgery'),
+    otherwise: (schema) => schema,
   }),
   geriVisionQ3: Yup.string().required('Required'),
   geriVisionQ4: Yup.string().required('Required'),
@@ -47,7 +48,8 @@ const validationSchema = Yup.object().shape({
   geriVisionQ10: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
   geriVisionQ11: Yup.string().when('geriVisionQ10', {
     is: 'Yes',
-    then: Yup.string().required('Please specify'),
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
   }),
   geriVisionQ12: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
   geriVisionQ13: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
@@ -142,21 +144,19 @@ const GeriVisionForm = () => {
                       </RadioGroup>
                       <ErrorMessage name='geriVisionQ1' component='div' className='error' />
                     </FormControl>
-                    {values.geriVisionQ1 === 'Yes (Specify in textbox )' && (
-                      <PopupText qnNo='geriVisionQ1' triggerValue='Yes (Specify in textbox )'>
-                        <h4>Explanation</h4>
-                        <Field
-                          as={TextField}
-                          name='geriVisionQ2'
-                          label='Geri - Vision Q2'
-                          fullWidth
-                          multiline
-                          rows={4}
-                          variant='outlined'
-                        />
-                        <ErrorMessage name='geriVisionQ2' component='div' className='error' />
-                      </PopupText>
-                    )}
+                    <PopupText qnNo='geriVisionQ1' triggerValue='Yes (Specify in textbox )'>
+                      <h4>Explanation</h4>
+                      <Field
+                        as={TextField}
+                        name='geriVisionQ2'
+                        label='Geri - Vision Q2'
+                        fullWidth
+                        multiline
+                        rows={4}
+                        variant='outlined'
+                      />
+                      <ErrorMessage name='geriVisionQ2' component='div' className='error' />
+                    </PopupText>
                     <h3>2. Visual acuity (w/o pinhole occluder) - Right Eye 6/__</h3>
                     <Field
                       as={TextField}
@@ -229,21 +229,19 @@ const GeriVisionForm = () => {
                       </RadioGroup>
                       <ErrorMessage name='geriVisionQ10' component='div' className='error' />
                     </FormControl>
-                    {values.geriVisionQ10 === 'Yes' && (
-                      <>
-                        <h4>Please specify:</h4>
-                        <Field
-                          as={TextField}
-                          name='geriVisionQ11'
-                          label='Geri - Vision Q11'
-                          fullWidth
-                          multiline
-                          rows={4}
-                          variant='outlined'
-                        />
-                        <ErrorMessage name='geriVisionQ11' component='div' className='error' />
-                      </>
-                    )}
+                    <PopupText qnNo='geriVisionQ10' triggerValue='Yes'>
+                      <h4>Please specify:</h4>
+                      <Field
+                        as={TextField}
+                        name='geriVisionQ11'
+                        label='Geri - Vision Q11'
+                        fullWidth
+                        multiline
+                        rows={4}
+                        variant='outlined'
+                      />
+                      <ErrorMessage name='geriVisionQ11' component='div' className='error' />
+                    </PopupText>
                     <h3>7. Type of vision error?</h3>
                     <FormControl fullWidth>
                       <InputLabel>Geri - Vision Q8</InputLabel>

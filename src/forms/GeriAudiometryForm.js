@@ -46,6 +46,28 @@ const validationSchema = Yup.object().shape({
     .required('This field is required'),
 })
 
+// Custom Radio Field Component
+const RadioField = ({ label, name, options, error, touched }) => (
+  <FormControl component='fieldset' error={touched && !!error}>
+    <FormLabel component='legend'>{label}</FormLabel>
+    <Field name={name}>
+      {({ field }) => (
+        <RadioGroup {...field} value={field.value || ''}>
+          {options.map((option) => (
+            <FormControlLabel
+              key={option.value}
+              value={option.value}
+              control={<Radio />}
+              label={option.label}
+            />
+          ))}
+        </RadioGroup>
+      )}
+    </Field>
+    <FormHelperText>{touched && error}</FormHelperText>
+  </FormControl>
+)
+
 const formName = 'geriAudiometryForm'
 const GeriAudiometryForm = () => {
   const { patientId } = useContext(FormContext)
@@ -54,20 +76,32 @@ const GeriAudiometryForm = () => {
   const [saveData, setSaveData] = useState({})
   const [hcsr, setHcsr] = useState({})
   const [pmhx, setPMHX] = useState({})
+  const [dataLoaded, setDataLoaded] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
     const loadForms = async () => {
-      const savedData = getSavedData(patientId, formName)
-      const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
-      const pmhxData = getSavedData(patientId, allForms.hxNssForm)
+      try {
+        const savedData = getSavedData(patientId, formName)
+        const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
+        const pmhxData = getSavedData(patientId, allForms.hxNssForm)
 
-      Promise.all([savedData, hcsrData, pmhxData]).then((result) => {
-        setSaveData(result[0])
-        setHcsr(result[1])
-        setPMHX(result[2])
+        const [savedResult, hcsrResult, pmhxResult] = await Promise.all([
+          savedData,
+          hcsrData,
+          pmhxData,
+        ])
+
+        setSaveData(savedResult || {})
+        setHcsr(hcsrResult || {})
+        setPMHX(pmhxResult || {})
+        setDataLoaded(true)
         setLoadingSidePanel(false)
-      })
+      } catch (error) {
+        console.error('Error loading form data:', error)
+        setDataLoaded(true)
+        setLoadingSidePanel(false)
+      }
     }
     loadForms()
   }, [patientId])
@@ -95,74 +129,97 @@ const GeriAudiometryForm = () => {
     }
   }
 
+  // Don't render form until data is loaded
+  if (!dataLoaded) {
+    return (
+      <Paper elevation={2} p={0} m={0}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+          <CircularProgress />
+        </div>
+      </Paper>
+    )
+  }
+
+  const initialValues = {
+    geriAudiometryQ1: saveData.geriAudiometryQ1 || '',
+    geriAudiometryQ2: saveData.geriAudiometryQ2 || '',
+    geriAudiometryQ3: saveData.geriAudiometryQ3 || '',
+    geriAudiometryQ4: saveData.geriAudiometryQ4 || '',
+    geriAudiometryQ5: saveData.geriAudiometryQ5 || [],
+    geriAudiometryQ6: saveData.geriAudiometryQ6 || [],
+    geriAudiometryQ7: saveData.geriAudiometryQ7 || [],
+    geriAudiometryQ8: saveData.geriAudiometryQ8 || [],
+    geriAudiometryQ9: saveData.geriAudiometryQ9 || '',
+    geriAudiometryQ10: saveData.geriAudiometryQ10 || '',
+    geriAudiometryQ11: saveData.geriAudiometryQ11 || '',
+    geriAudiometryQ12: saveData.geriAudiometryQ12 || '',
+    geriAudiometryQ13: saveData.geriAudiometryQ13 || '',
+  }
+
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
             <Formik
-              initialValues={{
-                geriAudiometryQ1: saveData.geriAudiometryQ1 || '',
-                geriAudiometryQ2: saveData.geriAudiometryQ2 || '',
-                geriAudiometryQ3: saveData.geriAudiometryQ3 || '',
-                geriAudiometryQ4: saveData.geriAudiometryQ4 || '',
-                geriAudiometryQ5: saveData.geriAudiometryQ5 || [],
-                geriAudiometryQ6: saveData.geriAudiometryQ6 || [],
-                geriAudiometryQ7: saveData.geriAudiometryQ7 || [],
-                geriAudiometryQ8: saveData.geriAudiometryQ8 || [],
-                geriAudiometryQ9: saveData.geriAudiometryQ9 || '',
-                geriAudiometryQ10: saveData.geriAudiometryQ10 || '',
-                geriAudiometryQ11: saveData.geriAudiometryQ11 || '',
-                geriAudiometryQ12: saveData.geriAudiometryQ12 || '',
-                geriAudiometryQ13: saveData.geriAudiometryQ13 || '',
-              }}
+              initialValues={initialValues}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
-              enableReinitialize
+              enableReinitialize={true}
             >
               {({ errors, touched, isSubmitting }) => (
                 <Form className='fieldPadding'>
                   <div className='form--div'>
                     <h1>AUDIOMETRY</h1>
                     <h3>Did participant visit Audiometry Booth by NUS audiology team?</h3>
-                    <FormControl
-                      component='fieldset'
-                      error={touched.geriAudiometryQ1 && !!errors.geriAudiometryQ1}
-                    >
-                      <RadioGroup name='geriAudiometryQ1'>
-                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
-                        <FormControlLabel value='No' control={<Radio />} label='No' />
-                      </RadioGroup>
-                      <FormHelperText>
-                        {touched.geriAudiometryQ1 && errors.geriAudiometryQ1}
-                      </FormHelperText>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ1'
+                      label='Visit Audiometry Booth'
+                      options={[
+                        { value: 'Yes', label: 'Yes' },
+                        { value: 'No', label: 'No' },
+                      ]}
+                      error={errors.geriAudiometryQ1}
+                      touched={touched.geriAudiometryQ1}
+                    />
 
                     <h2>External Ear Examination</h2>
                     <h3>Visual Ear Examination (Left Ear):</h3>
-                    <FormControl component='fieldset'>
-                      <RadioGroup name='geriAudiometryQ2'>
-                        <FormControlLabel value='Pass' control={<Radio />} label='Pass' />
-                        <FormControlLabel value='Refer' control={<Radio />} label='Refer' />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ2'
+                      label='Left Ear Examination'
+                      options={[
+                        { value: 'Pass', label: 'Pass' },
+                        { value: 'Refer', label: 'Refer' },
+                      ]}
+                      error={errors.geriAudiometryQ2}
+                      touched={touched.geriAudiometryQ2}
+                    />
 
                     <h3>Visual Ear Examination (Right Ear)</h3>
-                    <FormControl component='fieldset'>
-                      <RadioGroup name='geriAudiometryQ3'>
-                        <FormControlLabel value='Pass' control={<Radio />} label='Pass' />
-                        <FormControlLabel value='Refer' control={<Radio />} label='Refer' />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ3'
+                      label='Right Ear Examination'
+                      options={[
+                        { value: 'Pass', label: 'Pass' },
+                        { value: 'Refer', label: 'Refer' },
+                      ]}
+                      error={errors.geriAudiometryQ3}
+                      touched={touched.geriAudiometryQ3}
+                    />
 
                     <h2>Hearing Test</h2>
                     <h3>Practice Tone (500Hz at 60dB in &quot;better&quot; ear):</h3>
-                    <FormControl component='fieldset'>
-                      <RadioGroup name='geriAudiometryQ4'>
-                        <FormControlLabel value='Pass' control={<Radio />} label='Pass' />
-                        <FormControlLabel value='Refer' control={<Radio />} label='Refer' />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ4'
+                      label='Practice Tone'
+                      options={[
+                        { value: 'Pass', label: 'Pass' },
+                        { value: 'Refer', label: 'Refer' },
+                      ]}
+                      error={errors.geriAudiometryQ4}
+                      touched={touched.geriAudiometryQ4}
+                    />
 
                     <h3>Pure Tone Screening at 25dB for Left Ear: </h3>
                     <p>(Tick checkbox for Response, DO NOT tick checkbox if NO response):</p>
@@ -251,12 +308,16 @@ const GeriAudiometryForm = () => {
                     <h3>
                       Do you have an upcoming appointment with your ear specialist or audiologist?
                     </h3>
-                    <FormControl component='fieldset'>
-                      <RadioGroup name='geriAudiometryQ9'>
-                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
-                        <FormControlLabel value='No' control={<Radio />} label='No' />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ9'
+                      label='Upcoming Appointment'
+                      options={[
+                        { value: 'Yes', label: 'Yes' },
+                        { value: 'No', label: 'No' },
+                      ]}
+                      error={errors.geriAudiometryQ9}
+                      touched={touched.geriAudiometryQ9}
+                    />
 
                     <h4>If yes, please specify:</h4>
                     <Field
@@ -269,12 +330,16 @@ const GeriAudiometryForm = () => {
                     />
 
                     <h3>Referred to Doctor&apos;s Consult?</h3>
-                    <FormControl component='fieldset'>
-                      <RadioGroup name='geriAudiometryQ11'>
-                        <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
-                        <FormControlLabel value='No' control={<Radio />} label='No' />
-                      </RadioGroup>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ11'
+                      label='Referred to Doctor'
+                      options={[
+                        { value: 'Yes', label: 'Yes' },
+                        { value: 'No', label: 'No' },
+                      ]}
+                      error={errors.geriAudiometryQ11}
+                      touched={touched.geriAudiometryQ11}
+                    />
 
                     <h3>
                       Please document significant findings from audiometry test and recommended
@@ -291,26 +356,26 @@ const GeriAudiometryForm = () => {
                       rows={4}
                     />
 
-                    <FormControl
-                      component='fieldset'
-                      error={touched.geriAudiometryQ13 && !!errors.geriAudiometryQ13}
-                    >
-                      <RadioGroup name='geriAudiometryQ13'>
-                        <FormControlLabel
-                          value='There is some hearing loss detected. This test is not diagnostic, and the participant needs to undergo a more comprehensive hearing assessment.'
-                          control={<Radio />}
-                          label='There is some hearing loss detected. This test is not diagnostic, and the participant needs to undergo a more comprehensive hearing assessment.'
-                        />
-                        <FormControlLabel
-                          value="There is no hearing loss detected, the participant's hearing is normal."
-                          control={<Radio />}
-                          label="There is no hearing loss detected, the participant's hearing is normal."
-                        />
-                      </RadioGroup>
-                      <FormHelperText>
-                        {touched.geriAudiometryQ13 && errors.geriAudiometryQ13}
-                      </FormHelperText>
-                    </FormControl>
+                    <RadioField
+                      name='geriAudiometryQ13'
+                      label='Assessment Result'
+                      options={[
+                        {
+                          value:
+                            'There is some hearing loss detected. This test is not diagnostic, and the participant needs to undergo a more comprehensive hearing assessment.',
+                          label:
+                            'There is some hearing loss detected. This test is not diagnostic, and the participant needs to undergo a more comprehensive hearing assessment.',
+                        },
+                        {
+                          value:
+                            "There is no hearing loss detected, the participant's hearing is normal.",
+                          label:
+                            "There is no hearing loss detected, the participant's hearing is normal.",
+                        },
+                      ]}
+                      error={errors.geriAudiometryQ13}
+                      touched={touched.geriAudiometryQ13}
+                    />
                   </div>
 
                   <ErrorMessage name='form' component='div' className='error' />
