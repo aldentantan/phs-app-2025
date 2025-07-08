@@ -196,7 +196,9 @@ const DoctorsConsultForm = () => {
                 <Form className='fieldPadding'>
                   <div className='form--div'>
                     <h1>Doctor&apos;s Station</h1>
-                    <h3>Doctor&apos;s Name:</h3>
+                    <Typography variant='h6' component='h3' gutterBottom>
+                      Doctor&apos;s Name
+                    </Typography>
                     <Field
                       as={TextField}
                       name='doctorSConsultQ1'
@@ -208,7 +210,9 @@ const DoctorsConsultForm = () => {
                       error={touched.doctorSConsultQ1 && Boolean(errors.doctorSConsultQ1)}
                       helperText={touched.doctorCConsultQ1 && errors.doctorSConsultQ1}
                     />
-                    <h3>Clinical findings:</h3>
+                    <Typography variant='h6' component='h3' gutterBottom>
+                      Clinical Findings
+                    </Typography>
                     <Field
                       as={TextField}
                       name='doctorSConsultQ2'
@@ -220,7 +224,9 @@ const DoctorsConsultForm = () => {
                       error={touched.doctorSConsultQ2 && Boolean(errors.doctorSConsultQ2)}
                       helperText={touched.doctorSConsultQ2 && errors.doctorSConsultQ2}
                     />
-                    <h3>Doctor&apos;s Memo:</h3>
+                    <Typography variant='h6' component='h3' gutterBottom>
+                      Doctor&apos;s Memo
+                    </Typography>
                     <Field
                       as={TextField}
                       name='doctorSConsultQ3'
@@ -239,7 +245,9 @@ const DoctorsConsultForm = () => {
 
                     {values.doctorSConsultQ4 && (
                       <>
-                        <h4>Reason for referral</h4>
+                        <Typography variant='h6' component='h3' gutterBottom>
+                          Reason for referral
+                        </Typography><br />
                         <Field
                           as={TextField}
                           name='doctorSConsultQ5'
@@ -258,7 +266,9 @@ const DoctorsConsultForm = () => {
 
                     {values.doctorSConsultQ6 && (
                       <>
-                        <h4>Reason for referral</h4>
+                        <Typography variant='h6' component='h3' gutterBottom>
+                          Reason for referral
+                        </Typography><br />
                         <Field
                           as={TextField}
                           name='doctorSConsultQ7'
@@ -279,7 +289,9 @@ const DoctorsConsultForm = () => {
                     <Field component={FormikCheckbox} name='doctorSConsultQ8' label='Yes' />
                     {values.doctorSConsultQ8 && (
                       <>
-                        <h4>Reason for referral</h4>
+                        <Typography variant='h6' component='h3' gutterBottom>
+                          Reason for referral
+                        </Typography><br />
                         <Field
                           as={TextField}
                           name='doctorSConsultQ9'
