@@ -4,15 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import React from 'react'
 
-import Button from '@mui/material/Button'
-import Checkbox from '@mui/material/Checkbox'
-import CircularProgress from '@mui/material/CircularProgress'
-import Divider from '@mui/material/Divider'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import TextField from '@mui/material/TextField'
-import Typography from '@mui/material/Typography'
+import { Button, Checkbox, CircularProgress, Divider, FormControlLabel, Grid, Paper, TextField, Typography } from '@mui/material'
 
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
@@ -186,15 +178,15 @@ const DoctorsConsultForm = () => {
                 doctorSConsultQ1: saveData.doctorSConsultQ1 || '',
                 doctorSConsultQ2: saveData.doctorSConsultQ2 || '',
                 doctorSConsultQ3: saveData.doctorSConsultQ3 || '',
-                doctorSConsultQ4: saveData.doctorSConsultQ4 === true,
+                doctorSConsultQ4: saveData.doctorSConsultQ4 || false,
                 doctorSConsultQ5: saveData.doctorSConsultQ5 || '',
-                doctorSConsultQ6: saveData.doctorSConsultQ6 === true,
+                doctorSConsultQ6: saveData.doctorSConsultQ6 || false,
                 doctorSConsultQ7: saveData.doctorSConsultQ7 || '',
-                doctorSConsultQ8: saveData.doctorSConsultQ8 === true,
+                doctorSConsultQ8: saveData.doctorSConsultQ8 || false,
                 doctorSConsultQ9: saveData.doctorSConsultQ9 || '',
-                doctorSConsultQ10: saveData.doctorSConsultQ10 === true,
-                doctorSConsultQ11: saveData.doctorSConsultQ11 === true,
-                doctorSConsultQ13: saveData.doctorSConsultQ13 === true,
+                doctorSConsultQ10: saveData.doctorSConsultQ10 || false,
+                doctorSConsultQ11: saveData.doctorSConsultQ11 || false,
+                doctorSConsultQ13: saveData.doctorSConsultQ13 || false,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
