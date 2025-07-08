@@ -14,12 +14,12 @@ import { Box, Card, CardContent, CardHeader, Divider } from '@mui/material'
 
 // Timeline item configuration - add/delete stations here (comment out)
 const timelineItems = [
-  { key: 'reg', label: 'Registration', path: 'reg' },
+  /*{ key: 'reg', label: 'Registration', path: 'reg' },
   { key: 'hxtaking', label: 'History Taking', path: 'hxtaking' },
-  { key: 'triage', label: 'Triage', path: 'triage' },
+  { key: 'triage', label: 'Triage', path: 'triage' },*/
   { key: 'hsg', label: 'HealthierSG', path: 'hsg' },
   { key: 'phlebo', label: 'Phlebotomy', path: 'phlebo' },
-  /*{ key: 'fit', label: 'FIT', path: 'fit' },*/
+  { key: 'fit', label: 'FIT', path: 'fit' },
   { key: 'lungfn', label: 'Lung Function', path: 'lungfn' },
   { key: 'wce', label: 'WCE', path: 'wce' },
   { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
@@ -36,6 +36,30 @@ const timelineItems = [
   { key: 'oralhealth', label: 'Oral Health', path: 'oralhealth' },
   { key: 'socialservice', label: 'Social Services', path: 'socialservice' },
 ]
+
+// Map between timeline keys and eligibility names -
+const eligibilityKeyMap = {
+  hxtaking: 'History Taking',
+  triage: 'Triage',
+  hsg: 'Healthier SG Booth',
+  phlebo: 'Phlebotomy',
+  fit: 'Faecal Immunochemical Testing (FIT)',
+  lungfn: 'Lung Function Testing',
+  wce: "Women's Cancer Education",
+  osteo: 'Osteoporosis',
+  nkf: 'Kidney Screening',
+  mentalhealth: 'Mental Health',
+  vax: 'Vaccination',
+  gericog: 'Geriatric Screening',
+  gerimobility: 'Geriatric Screening',
+  gerivision: 'Geriatric Screening',
+  geriaudio: 'Audiometry',
+  hpv: 'HPV On-Site Testing',
+  doctorsconsult: "Doctor's Station",
+  dietitiansconsult: "Dietitian's Consult",
+  socialservice: 'Social Services',
+  oralhealth: 'Oral Health',
+}
 
 // Refactor the generateStatusArray to generate an object instead
 function generateStatusObject(record) {
@@ -103,6 +127,8 @@ function generateStatusObject(record) {
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult
       socialservice: record.socialServiceForm !== undefined, // social service,
       oralhealth: record.oralHealthForm !== undefined, // Oral Health
+      // Add eligibility data to the status object
+      eligibleStations: record.eligibleStations || [],
     }
   }
 
@@ -116,23 +142,39 @@ function navigateTo(event, navigate, page, scrollTop) {
   navigate(path, { replace: true })
 }
 
-const TimelineItemComponent = ({ item, formDone, admin, navigate, scrollTop }) => (
-  <TimelineItem>
-    <TimelineSeparator>
-      <TimelineDot color={formDone?.[item.key] ? 'primary' : 'grey'} />
-      <TimelineConnector />
-    </TimelineSeparator>
-    <TimelineContent>
-      <a
-        href={`/app/${item.path}`}
-        onClick={(event) => navigateTo(event, navigate, item.path, scrollTop)}
-      >
-        {item.label}
-        {!formDone?.[item.key] ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
-      </a>
-    </TimelineContent>
-  </TimelineItem>
-)
+const TimelineItemComponent = ({ item, formDone, admin, navigate, scrollTop }) => {
+  // Check if this station is eligible
+  const eligibilityName = eligibilityKeyMap[item.key]
+  const isEligible = formDone.eligibleStations?.includes(eligibilityName)
+
+  // Determine dot color based on completion status and eligibility
+  let dotColor
+  if (formDone?.[item.key]) {
+    dotColor = 'primary' // Completed stations are primary color
+  } else if (eligibilityName && !isEligible) {
+    dotColor = 'error' // Not eligible stations are red
+  } else {
+    dotColor = 'grey' // Default color for incomplete but eligible stations
+  }
+
+  return (
+    <TimelineItem>
+      <TimelineSeparator>
+        <TimelineDot color={dotColor} />
+        <TimelineConnector />
+      </TimelineSeparator>
+      <TimelineContent>
+        <a
+          href={`/app/${item.path}`}
+          onClick={(event) => navigateTo(event, navigate, item.path, scrollTop)}
+        >
+          {item.label}
+          {!formDone?.[item.key] ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
+        </a>
+      </TimelineContent>
+    </TimelineItem>
+  )
+}
 
 const BasicTimeline = (props) => {
   const navigate = useNavigate()
@@ -177,6 +219,54 @@ const BasicTimeline = (props) => {
   } else {
     return (
       <Timeline>
+        {/* Registration as fixed item */}
+        <TimelineItem>
+          <TimelineSeparator>
+            <TimelineDot color={formDone?.reg ? 'primary' : 'grey'} />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <a href='/app/reg' onClick={(event) => navigateTo(event, navigate, 'reg', scrollTop)}>
+              Registration
+              {!formDone?.reg ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
+            </a>
+          </TimelineContent>
+        </TimelineItem>
+
+        {/* History Taking as fixed item */}
+        <TimelineItem>
+          <TimelineSeparator>
+            <TimelineDot color={formDone?.hxtaking ? 'primary' : 'grey'} />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <a
+              href='/app/hxtaking'
+              onClick={(event) => navigateTo(event, navigate, 'hxtaking', scrollTop)}
+            >
+              History Taking
+              {!formDone?.hxtaking ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
+            </a>
+          </TimelineContent>
+        </TimelineItem>
+
+        {/* Triage as fixed item */}
+        <TimelineItem>
+          <TimelineSeparator>
+            <TimelineDot color={formDone?.triage ? 'primary' : 'grey'} />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <a
+              href='/app/triage'
+              onClick={(event) => navigateTo(event, navigate, 'triage', scrollTop)}
+            >
+              Triage
+              {!formDone?.triage ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
+            </a>
+          </TimelineContent>
+        </TimelineItem>
+
         {timelineItems.map((item) => (
           <TimelineItemComponent
             key={item.key}

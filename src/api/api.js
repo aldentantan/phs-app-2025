@@ -1,12 +1,17 @@
 import React from 'react'
 import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services/mongoDB'
 import { jsPDF } from 'jspdf'
+import { autoTable } from 'jspdf-autotable'
 import { defaultSlots } from 'src/forms/RegForm'
 import logo from 'src/icons/Icon'
-import {bloodpressureQR, bmiQR} from 'src/icons/QRCodes'
-import 'jspdf-autotable'
+import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
+//import 'jspdf-autotable'
 import { parseFromLangKey, setLang } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
+import pdfMake from 'pdfmake/build/pdfmake'
+import pdfFonts from 'pdfmake/build/vfs_fonts'
+
+pdfMake.vfs = pdfFonts.vfs
 
 const axios = require('axios').default
 
@@ -80,7 +85,8 @@ export async function submitForm(args, patientId, formCollection) {
       goingForPhlebotomy: goingForPhlebotomy,
     }
 
-    console.log("patient id: " + record2)
+    console.log('patient id: ' + record2)
+
     if (record2 == null) {
       qNum = await mongoDB.currentUser.functions.getNextQueueNo()
       await patientsRecord.insertOne({ queueNo: qNum, ...data })
@@ -98,17 +104,24 @@ export async function submitForm(args, patientId, formCollection) {
         )
 
         await registrationForms.insertOne({ _id: patientId, ...args })
+
         await updateAllStationCounts(patientId)
 
-        return { result: true, data: data , qNum: patientId}
+        return { result: true, data: data, qNum: patientId }
       } else {
         if (await isAdmin()) {
           args.lastEdited = new Date()
           args.lastEditedBy = getName()
           await registrationForms.updateOne({ _id: patientId }, { $set: { ...args } })
           if (formCollection == 'registrationForm') {
-            await patientsRecord.updateOne({ queueNo: patientId }, { $set: {initials: args.registrationQ2}})
-            await patientsRecord.updateOne({ queueNo: patientId }, { $set: {age: args.registrationQ4}})
+            await patientsRecord.updateOne(
+              { queueNo: patientId },
+              { $set: { initials: args.registrationQ2 } },
+            )
+            await patientsRecord.updateOne(
+              { queueNo: patientId },
+              { $set: { age: args.registrationQ4 } },
+            )
           }
           await updateAllStationCounts(patientId)
           // replace form
@@ -116,7 +129,7 @@ export async function submitForm(args, patientId, formCollection) {
           // throw error message
           // const errorMsg = "This form has already been submitted. If you need to make "
           //         + "any changes, please contact the admin."
-          return { result: true, data: data, qNum: patientId}
+          return { result: true, data: data, qNum: patientId }
         } else {
           const errorMsg =
             'This form has already been submitted. If you need to make ' +
@@ -130,7 +143,7 @@ export async function submitForm(args, patientId, formCollection) {
       // Can check in every form page if there is valid patientId instead
       // cannot use useEffect since the form component is class component
       const errorMsg = 'An error has occurred.'
-      console.log("There is an error here")
+      console.log('There is an error here')
       // You will be directed to the registration page." logic not done
       return { result: false, error: errorMsg }
     }
@@ -502,7 +515,7 @@ export function generate_pdf(
   geriPtConsult,
   geriOtConsult,
   mental,
-  social
+  social,
 ) {
   var doc = new jsPDF()
   var k = 0
@@ -517,7 +530,21 @@ export function generate_pdf(
   k = addOtherScreeningModularities(doc, lung, geriVision, social, k)
   k = testOverflow(doc, k, 10)
 
-  k = addFollowUp(doc, k, reg, vaccine, hsg, phlebotomy, fit, wce, nkf, grace, hearts, oralHealth, mental)
+  k = addFollowUp(
+    doc,
+    k,
+    reg,
+    vaccine,
+    hsg,
+    phlebotomy,
+    fit,
+    wce,
+    nkf,
+    grace,
+    hearts,
+    oralHealth,
+    mental,
+  )
 
   k = addMemos(doc, k, geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult)
 
@@ -548,7 +575,8 @@ export function generate_pdf(
 }
 
 export function patient(doc, reg, patients, k) {
-  const salutation = typeof reg.registrationQ1 == 'undefined' ? parseFromLangKey("salutation") : reg.registrationQ1
+  const salutation =
+    typeof reg.registrationQ1 == 'undefined' ? parseFromLangKey('salutation') : reg.registrationQ1
 
   doc.addImage(logo, 'PNG', 10, 10, 77.8, 26.7)
   k = k + 3
@@ -556,20 +584,18 @@ export function patient(doc, reg, patients, k) {
   doc.setFont(undefined, 'bold')
   const original_font_size = doc.getFontSize()
   doc.setFontSize(17)
-  var title = doc.splitTextToSize(
-    kNewlines((k = k + 2)) + parseFromLangKey("title"),
-    190,
-  )
+  var title = doc.splitTextToSize(kNewlines((k = k + 2)) + parseFromLangKey('title'), 190)
   doc.text(10, 10, title)
-  k = title.length+3
+  k = title.length + 3
 
   doc.setFontSize(original_font_size)
   doc.setFont(undefined, 'normal')
   // Thanks note
   var thanksNote = doc.splitTextToSize(
     kNewlines((k = k + 2)) +
-      parseFromLangKey("dear", salutation, patients.initials) + '\n' +
-      parseFromLangKey("intro"),
+      parseFromLangKey('dear', salutation, patients.initials) +
+      '\n' +
+      parseFromLangKey('intro'),
     190,
   )
   doc.text(10, 10, thanksNote)
@@ -583,15 +609,14 @@ export function addBmi(doc, k, height, weight) {
   const bmi = calculateBMI(Number(height), Number(weight))
 
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("bmi_title"))
-  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey("bmi_title")), calculateY(k))
+  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('bmi_title'))
+  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey('bmi_title')), calculateY(k))
   doc.setFont(undefined, 'normal')
 
   doc.text(
     10,
     10,
-    kNewlines((k = k + 1)) +
-      parseFromLangKey("bmi_reading", height, weight, bmi.toString()),
+    kNewlines((k = k + 1)) + parseFromLangKey('bmi_reading', height, weight, bmi.toString()),
   )
 
   k++
@@ -599,27 +624,32 @@ export function addBmi(doc, k, height, weight) {
   doc.addImage(bmiQR, 'PNG', 165, 135, 32, 32)
   const original_font_size = doc.getFontSize()
   doc.setFontSize(8)
-  doc.text(160, 170, doc.splitTextToSize(
-    "https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems"
-  , 40))
+  doc.text(
+    160,
+    170,
+    doc.splitTextToSize(
+      'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
+      40,
+    ),
+  )
   doc.setFontSize(original_font_size)
 
-  doc.autoTable({
+  autoTable(doc, {
     theme: 'plain',
     styles: {
       font: doc.getFont().fontName,
       lineWidth: 0.1,
       lineColor: 0,
-      cellWidth: 57
+      cellWidth: 57,
     },
     startY: calculateY(k),
-    head: [[parseFromLangKey("bmi_tbl_l_header"), parseFromLangKey("bmi_tbl_r_header")]],
+    head: [[parseFromLangKey('bmi_tbl_l_header'), parseFromLangKey('bmi_tbl_r_header')]],
     body: [
-      ['18.5 - 22.9', parseFromLangKey("bmi_tbl_low")],
-      ['23.0 - 27.4', parseFromLangKey("bmi_tbl_mod")],
-      ['27.5 - 32.4', parseFromLangKey("bmi_tbl_high")],
-      ['32.5 - 37.4', parseFromLangKey("bmi_tbl_vhigh")]
-    ]
+      ['18.5 - 22.9', parseFromLangKey('bmi_tbl_low')],
+      ['23.0 - 27.4', parseFromLangKey('bmi_tbl_mod')],
+      ['27.5 - 32.4', parseFromLangKey('bmi_tbl_high')],
+      ['32.5 - 37.4', parseFromLangKey('bmi_tbl_vhigh')],
+    ],
   })
   k = k + 10
 
@@ -682,208 +712,263 @@ export function addBmi(doc, k, height, weight) {
 
 export function addBloodPressure(doc, triage, k) {
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("bp_title"))
-  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey("bp_title")), calculateY(k))
+  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('bp_title'))
+  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey('bp_title')), calculateY(k))
   doc.setFont(undefined, 'normal')
   doc.text(
     10,
     10,
     kNewlines((k = k + 1)) +
-      parseFromLangKey("bp_reading") +
+      parseFromLangKey('bp_reading') +
       triage.triageQ7 +
       '/' +
       triage.triageQ8 +
       ' mmHg.',
   )
 
-  doc.addImage(bloodpressureQR, "png", 165, 75, 32, 32);
+  doc.addImage(bloodpressureQR, 'png', 165, 75, 32, 32)
   const original_font_size = doc.getFontSize()
   doc.setFontSize(8)
-  doc.text(160, 110, doc.splitTextToSize(
-    "https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings"
-  , 40))
+  doc.text(
+    160,
+    110,
+    doc.splitTextToSize(
+      'https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings',
+      40,
+    ),
+  )
   doc.setFontSize(original_font_size)
 
-  var bloodPressure = doc.splitTextToSize(
-    kNewlines((k = k + 2)) + parseFromLangKey("bp_tip"),
-    150,
-  )
+  var bloodPressure = doc.splitTextToSize(kNewlines((k = k + 2)) + parseFromLangKey('bp_tip'), 150)
   doc.text(10, 10, bloodPressure)
-  k = bloodPressure.length-1
+  k = bloodPressure.length - 1
 
   return k
 }
 
 export function addOtherScreeningModularities(doc, lung, eye, social, k) {
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("other_title"))
-  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey("other_title")), calculateY(k))
+  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('other_title'))
+  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey('other_title')), calculateY(k))
   doc.setFont(undefined, 'normal')
 
-  doc.text(10, 10, kNewlines((k = k + 1)) + parseFromLangKey("other_lung"))
+  doc.text(10, 10, kNewlines((k = k + 1)) + parseFromLangKey('other_lung'))
   k++
-  doc.autoTable({
+  autoTable(doc, {
     theme: 'plain',
     styles: {
       font: doc.getFont().fontName,
       overflow: 'visible',
       lineWidth: 0.1,
       lineColor: 0,
-      cellWidth: 32
+      cellWidth: 32,
     },
     startY: calculateY(k),
-    head: [[
-      { content: parseFromLangKey("other_lung_tbl_l_header"),
-        colSpan: 2,
-        styles: {
-          valign: "middle",
-          fillColor: [244, 247, 249],
-          fontStyle: "bold"
-        }}
-      ]],
+
+    head: [
+      [
+        {
+          content: parseFromLangKey('other_lung_tbl_l_header'),
+          colSpan: 2,
+          styles: {
+            valign: 'middle',
+            fillColor: [244, 247, 249],
+            fontStyle: 'bold',
+          },
+        },
+      ],
+    ],
+
     body: [
       ['FVC (L)', `${lung.LUNG3}`],
       ['FEV1 (L)', `${lung.LUNG4}`],
       ['FVC (%pred)', `${lung.LUNG5}`],
       ['FEV1 (%pred)', `${lung.LUNG6}`],
       ['FEV1/FVC (%)', `${lung.LUNG7}`],
-    ]
+    ],
   })
   k = k + 11
 
   if (social.SOCIAL10) {
-    doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("other_lung_smoking"))
+    doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('other_lung_smoking'))
   }
   k += 2
 
   k = testOverflow(doc, k, 13)
 
   // EYE
-  doc.text(10, 10, kNewlines((k = k + 1)) + parseFromLangKey("other_eye"))
+  doc.text(10, 10, kNewlines((k = k + 1)) + parseFromLangKey('other_eye'))
   k++
-  doc.autoTable({
+  autoTable(doc, {
     theme: 'plain',
     styles: {
       font: doc.getFont().fontName,
       lineWidth: 0.1,
       lineColor: 0,
-      cellWidth: 46.6
+      cellWidth: 46.6,
     },
     startY: calculateY(k),
-    head: [['', parseFromLangKey("other_eye_tbl_l_header"), parseFromLangKey("other_eye_tbl_r_header")]],
+    head: [
+      ['', parseFromLangKey('other_eye_tbl_l_header'), parseFromLangKey('other_eye_tbl_r_header')],
+    ],
     body: [
-      [parseFromLangKey("other_eye_tbl_t_row"), `6/${eye.geriVisionQ3}`, `6/${eye.geriVisionQ4}`],
-      [parseFromLangKey("other_eye_tbl_b_row"), `6/${eye.geriVisionQ5}`, `6/${eye.geriVisionQ6}`]
-    ]
+      [parseFromLangKey('other_eye_tbl_t_row'), `6/${eye.geriVisionQ3}`, `6/${eye.geriVisionQ4}`],
+      [parseFromLangKey('other_eye_tbl_b_row'), `6/${eye.geriVisionQ5}`, `6/${eye.geriVisionQ6}`],
+    ],
   })
   k = k + 7
 
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("other_eye_error") + `${eye.geriVisionQ8}`)
+  doc.text(
+    10,
+    10,
+    kNewlines((k = k + 2)) + parseFromLangKey('other_eye_error') + `${eye.geriVisionQ8}`,
+  )
 
   return k
 }
 
-export function addFollowUp(doc, k, reg, vaccine, hsg, phlebotomy, fit, wce, nkf, grace, geriWhForm, oral, mental) {
+export function addFollowUp(
+  doc,
+  k,
+  reg,
+  vaccine,
+  hsg,
+  phlebotomy,
+  fit,
+  wce,
+  nkf,
+  grace,
+  geriWhForm,
+  oral,
+  mental,
+) {
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("fw_title"))
-  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey("fw_title")), calculateY(k))
+  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('fw_title'))
+  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey('fw_title')), calculateY(k))
   doc.setFont(undefined, 'normal')
   k++
 
-  const clean_k = k
-
-  const trip = (k) => followUpWith(doc, k, null, 0, k == clean_k, parseFromLangKey("fw_intro"))
-
   const indent = 10
   // VACCINE
-  k = followUpWith(doc, k, trip, indent, vaccine.VAX1 == 'Yes',
-    parseFromLangKey("fw_vax", vaccine.VAX2))
-    // 'You signed up for an influenza vaccine with [unsure yet] on [unsure].'
-    // + 'Please contact [unsure] for further details.')
+
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    vaccine.VAX1 == 'Yes',
+    parseFromLangKey('fw_vax', vaccine.VAX2),
+  )
+  // 'You signed up for an influenza vaccine with [unsure yet] on [unsure].'
+  // + 'Please contact [unsure] for further details.')
   // HSG
-  k = followUpWith(doc, k, trip, indent, hsg.HSG1 == 'Yes, I signed up for HSG today',
-    parseFromLangKey("fw_hsg")
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    hsg.HSG1 == 'Yes, I signed up for HSG today',
+    parseFromLangKey('fw_hsg'),
     // 'You signed up for HealthierSG today, please check with HealthierSG for your registered HealthierSG clinic.'
   )
   // PHLEBOTOMY
-  k = followUpWith(doc, k, trip, indent, reg.registrationQ15 == 'Yes',
-    parseFromLangKey("fw_phlebotomy"))
-  k = followUpWith(doc, k, trip, indent + 5, reg.registrationQ15 == 'Yes',
-      parseFromLangKey("fw_phlebotomy_1", reg.registrationQ18), 'm')
-    // `You had your blood drawn and registered for follow up at our partner Phlebotomy Clinic.
-    // When your results are ready for collection, our PHS volunteers will call you to remind you.
-    // You have indicated your preferred clinic to be ${reg.registrationQ18}`)
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    reg.registrationQ15 == 'Yes',
+    parseFromLangKey('fw_phlebotomy'),
+  )
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent + 5,
+    reg.registrationQ15 == 'Yes',
+    parseFromLangKey('fw_phlebotomy_1', reg.registrationQ18),
+    'm',
+  )
+  // `You had your blood drawn and registered for follow up at our partner Phlebotomy Clinic.
+  // When your results are ready for collection, our PHS volunteers will call you to remind you.
+  // You have indicated your preferred clinic to be ${reg.registrationQ18}`)
   // FIT
-  k = followUpWith(doc, k, trip, indent, fit.fitQ2 == 'Yes',
-    parseFromLangKey("fw_fit"))
-    // 'You signed up for FIT home kits to be delivered to you, '
-    // + 'please follow instructions from our partner Singapore Cancer Society.')
+  k = followUpWith(doc, k, trip, indent, fit.fitQ2 == 'Yes', parseFromLangKey('fw_fit'))
+  // 'You signed up for FIT home kits to be delivered to you, '
+  // + 'please follow instructions from our partner Singapore Cancer Society.')
   // HPV
-  k = followUpWith(doc, k, trip, indent, wce.wceQ5 == 'Yes',
-    parseFromLangKey("fw_wce"))
-  k = followUpWith(doc, k, trip, indent + 5, wce.wceQ5 == 'Yes',
-    parseFromLangKey("fw_wce_1"), 'm')
-    // `You have indicated interest with Singapore Cancer Society for HPV Test on ${wce.wceQ6} at Singapore Cancer Society Clinic@Bishan, with the address found below.
-    // - Address:
-    // 9 Bishan Place Junction 8 Office Tower
-    // #06-05, Singapore 579837
-    // - Clinic operating hours:
-    // Mondays to Fridays, 9.00am to 6.00pm (last appointment at 5pm)
-    // Saturdays, 9.00am to 4.00pm (last appointment at 3.15pm)
-    // - Contact us: 6499 9133`)
+  k = followUpWith(doc, k, trip, indent, wce.wceQ5 == 'Yes', parseFromLangKey('fw_wce'))
+  k = followUpWith(doc, k, trip, indent + 5, wce.wceQ5 == 'Yes', parseFromLangKey('fw_wce_1'), 'm')
+  // `You have indicated interest with Singapore Cancer Society for HPV Test on ${wce.wceQ6} at Singapore Cancer Society Clinic@Bishan, with the address found below.
+  // - Address:
+  // 9 Bishan Place Junction 8 Office Tower
+  // #06-05, Singapore 579837
+  // - Clinic operating hours:
+  // Mondays to Fridays, 9.00am to 6.00pm (last appointment at 5pm)
+  // Saturdays, 9.00am to 4.00pm (last appointment at 3.15pm)
+  // - Contact us: 6499 9133`)
   // OSTEO
 
   // NKF
-  k = followUpWith(doc, k, trip, indent, nkf.NKF1 == 'Yes',
-    parseFromLangKey("fw_nkf", nkf.NKF2))
-  k = followUpWith(doc, k, trip, indent + 5, nkf.NKF1 == 'Yes',
-    parseFromLangKey("fw_nkf_1"), 'm')
+  k = followUpWith(doc, k, trip, indent, nkf.NKF1 == 'Yes', parseFromLangKey('fw_nkf', nkf.NKF2))
+  k = followUpWith(doc, k, trip, indent + 5, nkf.NKF1 == 'Yes', parseFromLangKey('fw_nkf_1'), 'm')
 
-    // `You have indicated interest with National Kidney Foundation on ${nkf.NKF2} at CKD Clinic
-    // - Address:
-    // 109 Whampoa Road
-    // #01-09/11, Singapore 321109
-    // - Clinic operating hours:
-    // Every wednesday (except public holidays), 9.00am to 11.15am, 2.15pm to 3.00pm
-    // - Contact us: 1800-KIDNEYS / 1800-5436397`
+  // `You have indicated interest with National Kidney Foundation on ${nkf.NKF2} at CKD Clinic
+  // - Address:
+  // 109 Whampoa Road
+  // #01-09/11, Singapore 321109
+  // - Clinic operating hours:
+  // Every wednesday (except public holidays), 9.00am to 11.15am, 2.15pm to 3.00pm
+  // - Contact us: 1800-KIDNEYS / 1800-5436397`
 
   // MENTAL
-  k = followUpWith(doc, k, trip, indent, mental.SAMH2 == 'Yes',
-    parseFromLangKey("fw_samh"))
+  k = followUpWith(doc, k, trip, indent, mental.SAMH2 == 'Yes', parseFromLangKey('fw_samh'))
 
   // GRACE
-  k = followUpWith(doc, k, trip, indent, grace.GRACE2 == 'Yes',
-    parseFromLangKey("fw_grace", grace.GRACE3))
-    // `You have been referred to a G-RACE associated partners/polyclinic, ${grace.GRACE3}. `
-    // + `Please contact G-RACE at: g_race@nuhs.edu.sg`)
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    grace.GRACE2 == 'Yes',
+    parseFromLangKey('fw_grace', grace.GRACE3),
+  )
+  // `You have been referred to a G-RACE associated partners/polyclinic, ${grace.GRACE3}. `
+  // + `Please contact G-RACE at: g_race@nuhs.edu.sg`)
   // WHISPERING
-  k = followUpWith(doc, k, trip, indent, geriWhForm.WH1 == 'Yes',
-    parseFromLangKey("fw_wh")
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    geriWhForm.WH1 == 'Yes',
+    parseFromLangKey('fw_wh'),
+
     // 'You have indicated interest to be followed-up with Whispering Hearts. Whispering Hearts '
     // + 'will contact you for follow up. Whispering Hearts can be contacted at: contact@viriya.org.sg'
   )
   // NUS DENTISTRY
-  k = followUpWith(doc, k, trip, indent, oral.DENT4 == 'Yes',
-    parseFromLangKey("fw_dent")
+  k = followUpWith(
+    doc,
+    k,
+    trip,
+    indent,
+    oral.DENT4 == 'Yes',
+    parseFromLangKey('fw_dent'),
     // 'You have indicated interest with NUS Dentistry to be followed up. '
     // + 'Please contact NUS Dentistry at smileclinic@nus.edu.sg for further enquiries.'
   )
 
-  k = followUpWith(doc, k, null, 0, k == clean_k,
-    parseFromLangKey("fw_empty")
-  )
+  k = followUpWith(doc, k, null, 0, k == clean_k, parseFromLangKey('fw_empty'))
 
-  return k;
+  return k
 }
 
 export function followUpWith(doc, k, trip, indent, condition, statement, symbol = 'l') {
   const width = 180
   if (condition) {
     if (trip) k = trip(k)
-    var text = doc.splitTextToSize(
-      statement,
-      width,
-    )
+    var text = doc.splitTextToSize(statement, width)
     k = testOverflow(doc, k, text.length)
 
     if (indent > 0) {
@@ -893,83 +978,90 @@ export function followUpWith(doc, k, trip, indent, condition, statement, symbol 
       doc.setFont(old_font.fontName, 'normal')
     }
 
-    doc.text(10 + indent, 10,
-      doc.splitTextToSize(
-        kNewlines(k) + statement,
-        width,
-      )
-    )
+    doc.text(10 + indent, 10, doc.splitTextToSize(kNewlines(k) + statement, width))
 
     k = k + text.length + 1
   }
-  return k;
+  return k
 }
 
 export function addMemos(doc, k, audioData, dietData, ptData, otData) {
   k = testOverflow(doc, k, 24)
 
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey("memo_title"))
-  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey("memo_title")), calculateY(k))
+  doc.text(10, 10, kNewlines((k = k + 2)) + parseFromLangKey('memo_title'))
+  doc.line(10, calculateY(k), 10 + doc.getTextWidth(parseFromLangKey('memo_title')), calculateY(k))
   doc.setFont(undefined, 'normal')
 
-
-  var audio = parseFromLangKey("memo_audio")
-    + parseFromLangKey("memo_audio_1", audioData.geriAudiometryQ13)
-    + parseFromLangKey("memo_audio_2", audioData.geriAudiometryQ12)
-  var diet = parseFromLangKey("memo_diet")
-    + `${dietData.dietitiansConsultQ4}`
+  var audio =
+    parseFromLangKey('memo_audio') +
+    parseFromLangKey('memo_audio_1', audioData.geriAudiometryQ13) +
+    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12)
+  var diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`
   if (dietData.dietitiansConsultQ5) {
-    diet += parseFromLangKey("memo_diet_1", dietData.dietitiansConsultQ5, dietData.dietitiansConsultQ6)
+    diet += parseFromLangKey(
+      'memo_diet_1',
+      dietData.dietitiansConsultQ5,
+      dietData.dietitiansConsultQ6,
+    )
   }
-  var pt = parseFromLangKey("memo_pt")
-    + `${ptData.geriPtConsultQ1}`
-  var ot = parseFromLangKey("memo_ot")
-    + `${otData.geriOtConsultQ1}`
+  var pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
+  var ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
 
-  doc.autoTable({
+  var audio =
+    parseFromLangKey('memo_audio') +
+    parseFromLangKey('memo_audio_1', audioData.geriAudiometryQ13) +
+    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12)
+  var diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`
+  if (dietData.dietitiansConsultQ5) {
+    diet += parseFromLangKey(
+      'memo_diet_1',
+      dietData.dietitiansConsultQ5,
+      dietData.dietitiansConsultQ6,
+    )
+  }
+  var pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
+  var ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
+
+  autoTable(doc, {
     theme: 'grid',
     styles: {
       font: doc.getFont().fontName,
       cellWidth: 180,
       textColor: 20,
       lineColor: 20,
-      fillColor: null
+      fillColor: null,
     },
-    startY: calculateY(k = k + 1),
+    startY: calculateY((k = k + 1)),
     head: [],
-    body: [
-      [audio],
-      [diet],
-      [pt],
-      [ot]
-    ],
-    didDrawPage: function(data) {
+    body: [[audio], [diet], [pt], [ot]],
+    didDrawPage: function (data) {
       console.log(`Final cursor at ${data.cursor.y}`)
       k = Math.floor(data.cursor.y / 4.2)
     },
-    willDrawCell: function(data) {  // copied from https://github.com/simonbengtsson/jsPDF-AutoTable/blob/master/src/models.ts
+    willDrawCell: function (data) {
+      // copied from https://github.com/simonbengtsson/jsPDF-AutoTable/blob/master/src/models.ts
       if (data.section === 'body' && Array.isArray(data.cell.text)) {
         const PHYSICAL_LINE_HEIGHT = 1.15
         const k = doc.internal.scaleFactor
         const fontSize = doc.internal.getFontSize() / k
 
-        var {x, y} = data.cell.getTextPos()
+        var { x, y } = data.cell.getTextPos()
         y += fontSize * (2 - PHYSICAL_LINE_HEIGHT)
         doc.setFont(undefined, 'bold')
-        doc.text(x, y, data.cell.text[0]);
+        doc.text(x, y, data.cell.text[0])
         doc.setFont(undefined, 'normal')
         data.cell.text[0] = '\n'
       }
-    }
+    },
   })
-  k = k+1
+  k = k + 1
 
   return k
 }
 
 const testOverflow = (doc, k, offset) => {
-  if (k+offset > 70) {
+  if (k + offset > 70) {
     doc.addPage()
     return 0
   }
@@ -981,28 +1073,26 @@ export function addRecommendation(doc, k) {
   let kk = k
 
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((kk = kk + 2)) + parseFromLangKey("rec_title"))
+  doc.text(10, 10, kNewlines((kk = kk + 2)) + parseFromLangKey('rec_title'))
   // doc.line(10, calculateY(kk), 10 + doc.getTextWidth('Recommendation'), calculateY(kk))
   doc.setFont(undefined, 'normal')
 
-  var recommendation = doc.splitTextToSize(
-    kNewlines((kk = kk + 2)) + parseFromLangKey("rec"),
-    180
-  )
+  var recommendation = doc.splitTextToSize(kNewlines((kk = kk + 2)) + parseFromLangKey('rec'), 180)
   doc.text(10, 10, recommendation)
-  kk = kk + doc.splitTextToSize(parseFromLangKey("rec"), 180).length
+  kk = kk + doc.splitTextToSize(parseFromLangKey('rec'), 180).length
 
-  var disclaimer = doc.splitTextToSize(parseFromLangKey("disclaimer"), 180)
+  var disclaimer = doc.splitTextToSize(parseFromLangKey('disclaimer'), 180)
   kk = testOverflow(doc, kk, disclaimer.length + 3)
 
   doc.setFont(undefined, 'bold')
-  doc.text(10, 10, kNewlines((kk = kk + 2)) + parseFromLangKey("disclaimer_title"))
+  doc.text(10, 10, kNewlines((kk = kk + 2)) + parseFromLangKey('disclaimer_title'))
   // doc.line(10, calculateY(kk), 10 + doc.getTextWidth('Recommendation'), calculateY(kk))
   doc.setFont(undefined, 'normal')
-  doc.text(10, 10, doc.splitTextToSize(
-    kNewlines((kk = kk + 2)) + parseFromLangKey("disclaimer"),
-    180
-  ))
+  doc.text(
+    10,
+    10,
+    doc.splitTextToSize(kNewlines((kk = kk + 2)) + parseFromLangKey('disclaimer'), 180),
+  )
 }
 
 export function calculateY(coor) {
@@ -1016,36 +1106,551 @@ export const regexPasswordPattern =
 //   const mongoConnection = mongoDB.currentUser.mongoClient('mongodb-atlas')
 //   const mongoDBConnection = mongoConnection.db('phs')
 
-  // console.log(await mongoDBConnection.collection("patients").deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriPtConsultForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.dietitiansConsultForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.doctorConsultForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.fitForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriAmtForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriEbasDepForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriFrailScaleForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriGeriApptForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriOtConsultForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriOtQuestionnaireForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriParQForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriMmseForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriPhysicalActivityLevelForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriAudiometryForm).deleteMany({}))
-  // console.log("half")
-  // console.log(await mongoDBConnection.collection(forms.geriSppbForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.phlebotomyForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriTugForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.geriVisionForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.hxCancerForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.hxHcsrForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.hxNssForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.hxSocialForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.phleboForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.registrationForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.oralHealthForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.socialServiceForm).deleteMany({}))
-  // console.log(await mongoDBConnection.collection(forms.wceForm).deleteMany({}))
-  // console.log('done')
-  // deletes volunteer accounts
-  // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
+// console.log(await mongoDBConnection.collection("patients").deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriPtConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.dietitiansConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.doctorConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.fitForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriAmtForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriEbasDepForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriFrailScaleForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriGeriApptForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriOtConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriOtQuestionnaireForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriParQForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriMmseForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriPhysicalActivityLevelForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriAudiometryForm).deleteMany({}))
+// console.log("half")
+// console.log(await mongoDBConnection.collection(forms.geriSppbForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.phlebotomyForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriTugForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriVisionForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxCancerForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxHcsrForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxNssForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxSocialForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.phleboForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.registrationForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.oralHealthForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.socialServiceForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.wceForm).deleteMany({}))
+// console.log('done')
+// deletes volunteer accounts
+// console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
+pdfMake.vfs = pdfFonts.vfs
+export function generate_pdf_updated(
+  reg,
+  patients,
+  cancer,
+  phlebotomy,
+  fit,
+  wce,
+  doctorSConsult,
+  socialService,
+  geriMmse,
+  geriVision,
+  geriAudiometry,
+  dietitiansConsult,
+  oralHealth,
+  triage,
+  vaccine,
+  lung,
+  nkf,
+  hsg,
+  grace,
+  hearts,
+  geriPtConsult,
+  geriOtConsult,
+  mental,
+  social,
+) {
+  let content = []
+
+  content.push(...patientSection(reg, patients))
+  content.push(...bloodPressureSection(triage))
+  content.push(...bmiSection(triage.triageQ10, triage.triageQ11))
+  content.push(...otherScreeningModularitiesSection(lung, geriVision, social))
+  //content.push({ text: '', pageBreak: 'before' })
+  content.push(
+    ...followUpSection(
+      reg,
+      vaccine,
+      hsg,
+      phlebotomy,
+      fit,
+      wce,
+      nkf,
+      grace,
+      hearts,
+      oralHealth,
+      mental,
+    ),
+  )
+  content.push(...memoSection(geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult))
+  content.push(...recommendationSection())
+
+  let fileName = 'Report.pdf'
+  if (patients.initials) {
+    fileName = patients.initials.split(' ').join('_') + '_Report.pdf'
+  }
+
+  const docDefinition = {
+    content: content,
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+      subheader: {
+        fontSize: 13,
+        bold: true,
+        margin: [0, 3, 0, 3],
+      },
+      normal: {
+        fontSize: 10,
+        margin: [0, 0, 0, 4],
+      },
+      italicSmall: {
+        italics: true,
+        fontSize: 10,
+      },
+    },
+    defaultStyle: {
+      fontSize: 11,
+    },
+    pageMargins: [40, 60, 40, 60],
+  }
+  pdfMake.createPdf(docDefinition).download(fileName)
+}
+
+function patientSection(reg, patients) {
+  const salutation = reg.registrationQ1 || 'Dear'
+
+  const mainLogo = {
+    image: logo,
+    width: 220,
+  }
+
+  const title = [{ text: parseFromLangKey('title'), style: 'header' }]
+
+  const thanksNote = [
+    { text: `${parseFromLangKey('dear', salutation, patients.initials)}`, style: 'normal' },
+    { text: `${parseFromLangKey('intro')}`, style: 'normal' },
+  ]
+
+  return [mainLogo, ...title, ...thanksNote]
+}
+
+export function bloodPressureSection(triage) {
+  const textSection = [
+    { text: parseFromLangKey('bp_title'), style: 'subheader' },
+    {
+      text: `${parseFromLangKey('bp_reading')} ${triage.triageQ7}/${triage.triageQ8} mmHg.\n`,
+      style: 'normal',
+    },
+    { text: `${parseFromLangKey('bp_tip')}`, style: 'normal' },
+  ]
+
+  const imageSection = [
+    {
+      image: bloodpressureQR,
+      width: 60,
+      margin: [0, 0, 0, 5],
+    },
+    {
+      text: 'https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings',
+      style: 'italicSmall',
+      fontSize: 7,
+      color: 'blue',
+      link: 'https://www.healthhub.sg/a-z/diseases-and-conditions/understanding-blood-pressure-readings',
+    },
+  ]
+
+  return [
+    {
+      columns: [
+        { width: '*', stack: textSection },
+        { width: 'auto', stack: imageSection, alignment: 'right' },
+      ],
+      columnGap: 13,
+      margin: [0, 10, 0, 10],
+    },
+  ]
+}
+
+export function bmiSection(height, weight) {
+  const bmi = calculateBMI(Number(height), Number(weight))
+
+  const imageSection = [
+    {
+      image: bmiQR,
+      width: 60,
+      margin: [0, 0, 0, 5],
+    },
+    {
+      text: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
+      style: 'italicSmall',
+      fontSize: 7,
+      color: 'blue',
+      link: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
+    },
+  ]
+
+  return [
+    { text: parseFromLangKey('bmi_title'), style: 'subheader' },
+    {
+      text: parseFromLangKey('bmi_reading', height, weight, bmi.toString()),
+      style: 'normal',
+    },
+
+    {
+      columns: [
+        {
+          style: 'tableExample',
+          margin: [0, 5, 0, 5],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                { text: parseFromLangKey('bmi_tbl_l_header'), style: 'tableHeader', bold: true },
+                { text: parseFromLangKey('bmi_tbl_r_header'), style: 'tableHeader', bold: true },
+              ],
+              ['18.5 - 22.9', parseFromLangKey('bmi_tbl_low')],
+              ['23.0 - 27.4', parseFromLangKey('bmi_tbl_mod')],
+              ['27.5 - 32.4', parseFromLangKey('bmi_tbl_high')],
+              ['32.5 - 37.4', parseFromLangKey('bmi_tbl_vhigh')],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
+        },
+        { width: 'auto', stack: imageSection, alignment: 'right' },
+      ],
+    },
+    { text: '', margin: [0, 5] },
+  ]
+}
+
+export function otherScreeningModularitiesSection(lung, eye, social) {
+  let other_lung_smoking_text = ''
+
+  if (social.SOCIAL10) {
+    other_lung_smoking_text = parseFromLangKey('other_lung_smoking')
+  }
+
+  return [
+    { text: parseFromLangKey('other_title'), style: 'subheader' },
+    { text: parseFromLangKey('other_lung'), style: 'normal' },
+
+    {
+      columns: [
+        {
+          style: 'tableExample',
+          margin: [0, 5, 0, 5],
+          table: {
+            widths: ['*', '*'],
+            body: [
+              [
+                {
+                  text: parseFromLangKey('other_lung_tbl_l_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                  colSpan: 2, // <-- span across 2 columns
+                },
+                {},
+              ],
+              ['FVC (L)', `${lung.LUNG3}`],
+              ['FEV1 (L)', `${lung.LUNG4}`],
+              ['FVC (%pred)', `${lung.LUNG5}`],
+              ['FEV1 (%pred)', `${lung.LUNG6}`],
+              ['FEV1/FVC (%)', `${lung.LUNG7}`],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
+        },
+        {
+          width: '*', // takes remaining space
+          text: '', // or you can add other content here or leave blank
+        },
+      ],
+    },
+
+    { text: `${other_lung_smoking_text}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
+
+    { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
+    {
+      columns: [
+        {
+          width: '70%',
+          style: 'tableExample',
+          margin: [0, 5, 0, 5],
+          table: {
+            widths: ['*', '*', '*'],
+            body: [
+              [
+                { text: '', style: 'tableHeader' },
+                {
+                  text: parseFromLangKey('other_eye_tbl_l_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                },
+                {
+                  text: parseFromLangKey('other_eye_tbl_r_header'),
+                  style: 'tableHeader',
+                  bold: true,
+                },
+              ],
+              [
+                parseFromLangKey('other_eye_tbl_t_row'),
+                `6/${eye.geriVisionQ3}`,
+                `6/${eye.geriVisionQ4}`,
+              ],
+              [
+                parseFromLangKey('other_eye_tbl_b_row'),
+                `6/${eye.geriVisionQ5}`,
+                `6/${eye.geriVisionQ6}`,
+              ],
+            ],
+          },
+          layout: {
+            hLineWidth: () => 0.5,
+            vLineWidth: () => 0.5,
+            hLineColor: () => 'black',
+            vLineColor: () => 'black',
+          },
+        },
+        {
+          width: '*', // takes remaining space
+          text: '', // or you can add other content here or leave blank
+        },
+      ],
+    },
+    { text: '', margin: [0, 5] },
+    { text: `${parseFromLangKey('other_eye_error')} ${eye.geriVisionQ8}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
+  ]
+}
+
+export function followUpSection(
+  reg,
+  vaccine,
+  hsg,
+  phlebotomy,
+  fit,
+  wce,
+  nkf,
+  grace,
+  geriWhForm,
+  oral,
+  mental,
+) {
+  let vaccineString = null
+  if (vaccine.VAX1 == 'Yes') {
+    vaccineString = `${parseFromLangKey('fw_vax', vaccine.VAX2)}\n`
+  }
+
+  let hsgString = null
+  if (hsg.HSG1 == 'Yes, I signed up for HSG today') {
+    hsgString = `${parseFromLangKey('fw_hsg')}\n`
+  }
+
+  let phlebotomyString = null
+  if (reg.registrationQ15 == 'Yes') {
+    phlebotomyString += `${parseFromLangKey('fw_phlebotomy')}\n`
+    phlebotomyString += `${parseFromLangKey('fw_phlebotomy_1', reg.registrationQ18)}\n`
+  }
+
+  let fitString = null
+  if (fit.fitQ2 == 'Yes') {
+    fitString = `${parseFromLangKey('fw_fit')}\n`
+  }
+
+  let hpvString = null
+  if (wce.wceQ5 == 'Yes') {
+    hpvString += `${parseFromLangKey('fw_wce')}\n`
+    hpvString += `${parseFromLangKey('fw_wce_1')}\n`
+  }
+
+  let nkfString = null
+  if (nkf.NKF1 == 'Yes') {
+    nkfString += `${parseFromLangKey('fw_nkf', nkf.NKF2)}\n`
+    nkfString += `${parseFromLangKey('fw_nkf_1')}\n`
+  }
+
+  let mentalString = null
+  if (mental.SAMH2 == 'Yes') {
+    mentalString = `${parseFromLangKey('fw_samh')}\n`
+  }
+
+  let graceString = null
+  if (grace.GRACE2 == 'Yes') {
+    graceString = `${parseFromLangKey('fw_grace', grace.GRACE3)}\n`
+  }
+
+  let whisperString = null
+  if (geriWhForm.WH1 == 'Yes') {
+    whisperString = `${parseFromLangKey('fw_wh')}\n`
+  }
+
+  let oralString = null
+  if (oral.DENT4 == 'Yes') {
+    oralString = `${parseFromLangKey('fw_dent')}\n`
+  }
+
+  return [
+    { text: parseFromLangKey('fw_title'), style: 'subheader' },
+    { text: parseFromLangKey('fw_intro'), style: 'normal' },
+    ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
+    ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
+    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+    ,
+    ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+    ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+    ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+    ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
+    ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
+    ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
+    ...(oralString ? [{ text: oralString, style: 'normal' }] : []),
+    { text: '', margin: [0, 5] },
+    //{ text: parseFromLangKey('fw_empty'), style: 'normal' },
+  ]
+}
+
+export function memoSection(audioData, dietData, ptData, otData) {
+  let audio =
+    parseFromLangKey('memo_audio') +
+    parseFromLangKey('memo_audio_1', audioData.geriAudiometryQ13) +
+    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12)
+
+  let diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`
+  if (dietData.dietitiansConsultQ5) {
+    diet += parseFromLangKey(
+      'memo_diet_1',
+      dietData.dietitiansConsultQ5,
+      dietData.dietitiansConsultQ6,
+    )
+  }
+
+  const pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
+  const ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
+
+  return [
+    { text: parseFromLangKey('memo_title'), style: 'subheader' },
+    {
+      table: {
+        widths: ['*'],
+        body: [
+          [{ text: audio, style: 'normal' }],
+          [{ text: diet, style: 'normal' }],
+          [{ text: pt, style: 'normal' }],
+          [{ text: ot, style: 'normal' }],
+        ],
+      },
+      layout: {
+        fillColor: () => null,
+        hLineColor: () => '#444',
+        vLineColor: () => '#444',
+      },
+      margin: [0, 0, 0, 10],
+    },
+  ]
+}
+
+export function recommendationSection() {
+  return [
+    { text: parseFromLangKey('rec_title'), style: 'subheader' },
+    { text: `${parseFromLangKey('rec')}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
+    { text: parseFromLangKey('disclaimer_title'), style: 'subheader' },
+    { text: `${parseFromLangKey('disclaimer')}\n`, style: 'normal' },
+  ]
+}
+
+// console.log(await mongoDBConnection.collection("patients").deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriPtConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.dietitiansConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.doctorConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.fitForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriAmtForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriEbasDepForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriFrailScaleForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriGeriApptForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriOtConsultForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriOtQuestionnaireForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriParQForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriMmseForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriPhysicalActivityLevelForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriAudiometryForm).deleteMany({}))
+// console.log("half")
+// console.log(await mongoDBConnection.collection(forms.geriSppbForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.phlebotomyForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriTugForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.geriVisionForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxCancerForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxHcsrForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxNssForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.hxSocialForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.phleboForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.registrationForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.oralHealthForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.socialServiceForm).deleteMany({}))
+// console.log(await mongoDBConnection.collection(forms.wceForm).deleteMany({}))
+// console.log('done')
+// deletes volunteer accounts
+// console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
 // }
+
+export const generateDoctorPdf = (entry) => {
+  const content = [
+    { text: 'Doctor Consultation Summary', style: 'header' },
+    { text: `Patient ID: ${entry.patientId}` },
+    { text: `Doctor: ${entry.doctorName}` },
+    { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
+    { text: '' },
+  ]
+
+  for (const [key, value] of Object.entries(entry.data || {})) {
+    content.push({ text: `${key}: ${value}` })
+  }
+
+  const docDefinition = {
+    content,
+
+    styles: {
+      header: {
+        fontSize: 16,
+        bold: true,
+        margin: [0, 10, 0, 5],
+      },
+      subheader: {
+        fontSize: 11,
+        bold: true,
+      },
+      normal: {
+        fontSize: 10,
+      },
+      italicSmall: {
+        italics: true,
+        fontSize: 8,
+      },
+    },
+    defaultStyle: {
+      fontSize: 10,
+    },
+    pageMargins: [40, 60, 40, 60],
+  }
+
+  pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
+}

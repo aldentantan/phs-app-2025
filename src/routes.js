@@ -19,6 +19,7 @@ import TriageForm from 'src/forms/TriageForm'
 import SocialServiceForm from 'src/forms/SocialServiceForm'
 import HxTabs from './forms/HistoryTakingTabs/HistoryTaking'
 import ManageVolunteers from 'src/pages/ManageVolunteers'
+import DoctorAdmin from 'src/pages/DoctorAdmin'
 import Edit from 'src/pages/EditForms'
 import SummaryForm from 'src/forms/SummaryForm'
 import React from 'react'
@@ -73,6 +74,7 @@ const routes = [
       { path: 'queue', element: <Queue /> },
       { path: 'eligibility', element: <Eligibility /> },
       { path: '*', element: <Navigate to='/404' /> },
+      { path: 'docadmin', element: <DoctorAdmin />}
     ],
   },
   {

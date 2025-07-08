@@ -1,22 +1,24 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
+import { Field, Form, Formik } from 'formik'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
-import { Formik, Form, Field } from 'formik'
+import React from 'react'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
-import TextField from '@mui/material/TextField'
-import Checkbox from '@mui/material/Checkbox'
-import FormControlLabel from '@mui/material/FormControlLabel'
 import Button from '@mui/material/Button'
+import Checkbox from '@mui/material/Checkbox'
+import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
-import { getSavedData, getPdfQueueCollection } from '../services/mongoDB'
-import allForms from './forms.json'
+import { getPdfQueueCollection, getSavedData } from '../services/mongoDB.js'
 import './fieldPadding.css'
+import allForms from './forms.json'
 
 const validationSchema = Yup.object().shape({
   doctorSConsultQ1: Yup.string().required('This field is required'),
@@ -45,13 +47,28 @@ const validationSchema = Yup.object().shape({
   doctorSConsultQ11: Yup.boolean(),
 })
 
+const initialValues = {
+  doctorSConsultQ1: '',
+  doctorSConsultQ2: '',
+  doctorSConsultQ3: '',
+  doctorSConsultQ4: false,
+  doctorSConsultQ5: '',
+  doctorSConsultQ6: false,
+  doctorSConsultQ7: '',
+  doctorSConsultQ8: false,
+  doctorSConsultQ9: '',
+  doctorSConsultQ10: false,
+  doctorSConsultQ11: false,
+  doctorSConsultQ13: false,
+}
+
 const formName = 'doctorConsultForm'
 
 const DoctorsConsultForm = () => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
-  const [saveData, setSaveData] = useState({})
+  const [saveData, setSaveData] = useState(initialValues)
 
   // forms to retrieve for side panel
   const [hcsr, setHcsr] = useState({})
@@ -68,47 +85,50 @@ const DoctorsConsultForm = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const loadPastForms = async () => {
-      const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
-      const geriVisionData = getSavedData(patientId, allForms.geriVisionForm)
-      const geriAudioData = getSavedData(patientId, allForms.geriAudiometryForm)
-      const savedData = getSavedData(patientId, formName)
-      const lungData = getSavedData(patientId, allForms.lungForm)
-      const PHQDATA = getSavedData(patientId, allForms.geriPhqForm)
-      const triageData = getSavedData(patientId, allForms.triageForm)
-      const osteoData = getSavedData(patientId, allForms.osteoForm)
-      const pmhxData = getSavedData(patientId, allForms.hxNssForm)
-      const socialData = getSavedData(patientId, allForms.hxSocialForm)
-      const familyData = getSavedData(patientId, allForms.hxFamilyForm)
+    const fetchData = async () => {
+      const savedData = await getSavedData(patientId, formName)
+      setSaveData(savedData || initialValues)
 
-      Promise.all([
-        hcsrData,
-        savedData,
-        geriVisionData,
-        geriAudioData,
-        lungData,
-        PHQDATA,
-        triageData,
-        osteoData,
-        pmhxData,
-        socialData,
-        familyData,
-      ]).then((result) => {
-        setHcsr(result[0])
-        setSaveData(result[1])
-        setGeriVision(result[2])
-        setGeriAudio(result[3])
-        setLung(result[4])
-        setPHQ(result[5])
-        setTriage(result[6])
-        setOsteo(result[7])
-        setPMHX(result[8])
-        setSocial(result[9])
-        setFamily(result[10])
-        setLoadingSidePanel(false)
-      })
+      const loadPastForms = async () => {
+        const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
+        const geriVisionData = getSavedData(patientId, allForms.geriVisionForm)
+        const geriAudioData = getSavedData(patientId, allForms.geriAudiometryForm)
+        const lungData = getSavedData(patientId, allForms.lungForm)
+        const PHQDATA = getSavedData(patientId, allForms.geriPhqForm)
+        const triageData = getSavedData(patientId, allForms.triageForm)
+        const osteoData = getSavedData(patientId, allForms.osteoForm)
+        const pmhxData = getSavedData(patientId, allForms.hxNssForm)
+        const socialData = getSavedData(patientId, allForms.hxSocialForm)
+        const familyData = getSavedData(patientId, allForms.hxFamilyForm)
+
+        Promise.all([
+          hcsrData,
+          geriVisionData,
+          geriAudioData,
+          lungData,
+          PHQDATA,
+          triageData,
+          osteoData,
+          pmhxData,
+          socialData,
+          familyData,
+        ]).then((result) => {
+          setHcsr(result[0])
+          setGeriVision(result[1])
+          setGeriAudio(result[2])
+          setLung(result[3])
+          setPHQ(result[4])
+          setTriage(result[5])
+          setOsteo(result[6])
+          setPMHX(result[7])
+          setSocial(result[8])
+          setFamily(result[9])
+          setLoadingSidePanel(false)
+        })
+      }
+      loadPastForms()
     }
-    loadPastForms()
+    fetchData()
   }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -142,6 +162,20 @@ const DoctorsConsultForm = () => {
     }
   }
 
+  const FormikCheckbox = ({ field, form, label, ...props }) => (
+    <FormControlLabel
+      control={
+        <Checkbox
+          {...field}
+          {...props}
+          checked={field.value || false}
+          onChange={(event) => form.setFieldValue(field.name, event.target.checked)}
+        />
+      }
+      label={label}
+    />
+  )
+
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
@@ -152,15 +186,15 @@ const DoctorsConsultForm = () => {
                 doctorSConsultQ1: saveData.doctorSConsultQ1 || '',
                 doctorSConsultQ2: saveData.doctorSConsultQ2 || '',
                 doctorSConsultQ3: saveData.doctorSConsultQ3 || '',
-                doctorSConsultQ4: saveData.doctorSConsultQ4 || false,
+                doctorSConsultQ4: saveData.doctorSConsultQ4 === true,
                 doctorSConsultQ5: saveData.doctorSConsultQ5 || '',
-                doctorSConsultQ6: saveData.doctorSConsultQ6 || false,
+                doctorSConsultQ6: saveData.doctorSConsultQ6 === true,
                 doctorSConsultQ7: saveData.doctorSConsultQ7 || '',
-                doctorSConsultQ13: saveData.doctorSConsultQ13 || false,
-                doctorSConsultQ8: saveData.doctorSConsultQ8 || false,
+                doctorSConsultQ8: saveData.doctorSConsultQ8 === true,
                 doctorSConsultQ9: saveData.doctorSConsultQ9 || '',
-                doctorSConsultQ10: saveData.doctorSConsultQ10 || false,
-                doctorSConsultQ11: saveData.doctorSConsultQ11 || false,
+                doctorSConsultQ10: saveData.doctorSConsultQ10 === true,
+                doctorSConsultQ11: saveData.doctorSConsultQ11 === true,
+                doctorSConsultQ13: saveData.doctorSConsultQ13 === true,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -203,89 +237,76 @@ const DoctorsConsultForm = () => {
                       multiline
                       rows={6}
                       variant='outlined'
-                      error={touched.doctorsConsultQ3 && Boolean(errors.doctorsConsultQ3)}
-                      helperText={touched.doctorsConsultQ3 && errors.doctorsConsultQ3}
+                      error={touched.doctorSConsultQ3 && Boolean(errors.doctorSConsultQ3)}
+                      helperText={touched.doctorSConsultQ3 && errors.doctorSConsultQ3}
                     />
-                    <h3>Refer to dietitian?</h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ4' color='primary' />}
-                      label='Yes'
-                    />
-                    {values.doctorsConsultQ4 && (
+                    <Typography variant='h6' component='h3' gutterBottom>
+                      Refer to dietitian?
+                    </Typography>
+                    <Field name='doctorSConsultQ4' component={FormikCheckbox} label='Yes' />
+
+                    {values.doctorSConsultQ4 && (
                       <>
                         <h4>Reason for referral</h4>
                         <Field
                           as={TextField}
-                          name='doctorsConsultQ5'
+                          name='doctorSConsultQ5'
                           label="Doctor's Station Q5"
                           fullWidth
                           multiline
                           rows={2}
                           variant='outlined'
-                          error={touched.doctorsConsultQ5 && Boolean(errors.doctorsConsultQ5)}
-                          helperText={touched.doctorsConsultQ5 && errors.doctorsConsultQ5}
+                          error={touched.doctorSConsultQ5 && Boolean(errors.doctorSConsultQ5)}
+                          helperText={touched.doctorSConsultQ5 && errors.doctorSConsultQ5}
                         />
                       </>
                     )}
                     <h3>Refer to Social Support?</h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ6' color='primary' />}
-                      label='Yes'
-                    />
-                    {values.doctorsConsultQ6 && (
+                    <Field component={FormikCheckbox} name='doctorSConsultQ6' label='Yes' />
+
+                    {values.doctorSConsultQ6 && (
                       <>
                         <h4>Reason for referral</h4>
                         <Field
                           as={TextField}
-                          name='doctorsConsultQ7'
+                          name='doctorSConsultQ7'
                           label="Doctor's Station Q7"
                           fullWidth
                           multiline
                           rows={2}
                           variant='outlined'
-                          error={touched.doctorsConsultQ7 && Boolean(errors.doctorsConsultQ7)}
-                          helperText={touched.doctorsConsultQ7 && errors.doctorsConsultQ7}
+                          error={touched.doctorSConsultQ7 && Boolean(errors.doctorSConsultQ7)}
+                          helperText={touched.doctorSConsultQ7 && errors.doctorSConsultQ7}
                         />
                       </>
                     )}
                     <h3>Refer to Mental Health? (and indicated on Form A)</h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ13' color='primary' />}
-                      label='Yes'
-                    />
+                    <Field component={FormikCheckbox} name='doctorSConsultQ13' label='Yes' />
+
                     <h3>Refer to Dental?</h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ8' color='primary' />}
-                      label='Yes'
-                    />
-                    {values.doctorsConsultQ8 && (
+                    <Field component={FormikCheckbox} name='doctorSConsultQ8' label='Yes' />
+                    {values.doctorSConsultQ8 && (
                       <>
                         <h4>Reason for referral</h4>
                         <Field
                           as={TextField}
-                          name='doctorsConsultQ9'
+                          name='doctorSConsultQ9'
                           label="Doctor's Station Q9"
                           fullWidth
                           multiline
                           rows={2}
                           variant='outlined'
-                          error={touched.doctorsConsultQ9 && Boolean(errors.doctorsConsultQ9)}
-                          helperText={touched.doctorsConsultQ9 && errors.doctorsConsultQ9}
+                          error={touched.doctorSConsultQ9 && Boolean(errors.doctorSConsultQ9)}
+                          helperText={touched.doctorSConsultQ9 && errors.doctorSConsultQ9}
                         />
                       </>
                     )}
                     <h3>Does patient require urgent follow up</h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ10' color='primary' />}
-                      label='Yes'
-                    />
+                    <Field component={FormikCheckbox} name='doctorSConsultQ10' label='Yes' />
                     <h3>
                       Completed Doctor&apos;s Consult station. Please check that Form A is filled.
                     </h3>
-                    <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorSConsultQ11' color='primary' />}
-                      label='Yes'
-                    />
+                    <Field component={FormikCheckbox} name='doctorSConsultQ11' label='Yes' />
                   </div>
 
                   <div>

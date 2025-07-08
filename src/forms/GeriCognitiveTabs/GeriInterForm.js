@@ -1,21 +1,18 @@
+
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
-
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
 import Grid from '@mui/material/Grid'
 import CircularProgress from '@mui/material/CircularProgress'
-
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import allForms from '../forms.json'
-
-import { AutoForm, useField } from 'uniforms'
-import { SubmitField, ErrorsField, RadioField } from 'uniforms-mui'
 import { submitForm } from '../../api/api.js'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB.js'
 import '../fieldPadding.css'
+
 
 const responses = [
   '1 - Hardly ever',
@@ -29,126 +26,121 @@ const responsesValue = [
   { label: '3 - Often', value: '3 - Often' },
 ]
 
-const schema = new SimpleSchema({
-  InterQ1: {
-    type: String,
-    allowedValues: responses,
-    optional: false,
-  },
-  InterQ2: {
-    type: String,
-    allowedValues: responses,
-    optional: false,
-  },
-  InterQ3: {
-    type: String,
-    allowedValues: responses,
-    optional: false,
-  },
+const validationSchema = Yup.object({
+  InterQ1: Yup.string().oneOf(responses).required('Required'),
+  InterQ2: Yup.string().oneOf(responses).required('Required'),
+  InterQ3: Yup.string().oneOf(responses).required('Required'),
 })
+
+
+function getScore(values) {
+  const points = {
+    '1 - Hardly ever': 1,
+    '2 - Some of the time': 2,
+    '3 - Often': 3,
+  }
+  let score = 0
+  for (let i = 1; i <= 3; i++) {
+    score += points[values[`InterQ${i}`]] || 0
+  }
+  return score
+}
 
 const formName = 'geriInterForm'
 
-const geriInterForm = () => {
+const GeriInterForm = () => {
   const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
-  const [loadingSidePanel, isLoadingSidePanel] = useState(true)
-  const [saveData, setSaveData] = useState({})
+  const [loading, setLoading] = useState(false)
+  const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [regi, setRegi] = useState({})
-
-  const form_schema = new SimpleSchema2Bridge(schema)
   const navigate = useNavigate()
+  const [initialValues, setInitialValues] = useState({
+    InterQ1: '',
+    InterQ2: '',
+    InterQ3: '',
+  })
 
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSaveData(savedData)
-
-      const regiData = getSavedData(patientId, allForms.registrationForm)
-      Promise.all([regiData]).then((result) => {
-        setRegi(result[0])
-        isLoadingSidePanel(false)
+      setInitialValues({
+        InterQ1: savedData.InterQ1 || '',
+        InterQ2: savedData.InterQ2 || '',
+        InterQ3: savedData.InterQ3 || '',
       })
+      const regiData = await getSavedData(patientId, allForms.registrationForm)
+      setRegi(regiData)
+      setLoadingSidePanel(false)
     }
     fetchData()
-  }, [])
-
-  const formOptions = {
-    InterQ1: responsesValue,
-    InterQ2: responsesValue,
-    InterQ3: responsesValue,
-  }
-
-  const GetScore = () => {
-    const [{ value: q1 }] = useField('InterQ1', {})
-    const [{ value: q2 }] = useField('InterQ2', {})
-    const [{ value: q3 }] = useField('InterQ3', {})
-
-    let score = 0
-
-    const points = {
-      '1 - Hardly ever': 1,
-      '2 - Some of the time': 2,
-      '3 - Often': 3,
-    }
-
-    const questions = [q1, q2, q3]
-
-    questions.forEach((qn) => {
-      if (!qn) {
-        return
-      }
-      score += points[qn]
-    })
-
-    return <p className='blue'>{score} / 9</p>
-  }
-
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
-        if (response.result) {
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-        isLoading(false)
-      }}
-      model={saveData}
-    >
-      <div className='form--div'>
-        <h1>INTERACTION</h1>
-        <h3>How often do you feel that you lack companionship?</h3>
-        <RadioField name='InterQ1' label='InterQ1' options={formOptions.InterQ1} />
-        <h3>How often do you feel left out?</h3>
-        <RadioField name='InterQ2' label='InterQ2' options={formOptions.InterQ2} />
-        <h3>How often do you feel isolated from others? </h3>
-        <RadioField name='InterQ3' label='InterQ3' options={formOptions.InterQ3} />
-        <h3>Score:</h3>
-        <GetScore />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-      <br />
-      <Divider />
-    </AutoForm>
-  )
+  }, [patientId])
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <Formik
+              enableReinitialize
+              initialValues={initialValues}
+              validationSchema={validationSchema}
+              onSubmit={async (values, { setSubmitting }) => {
+                setLoading(true)
+                const response = await submitForm(values, patientId, formName)
+                setLoading(false)
+                setSubmitting(false)
+                if (response.result) {
+                  setTimeout(() => {
+                    alert('Successfully submitted form')
+                    navigate('/app/dashboard', { replace: true })
+                  }, 80)
+                } else {
+                  setTimeout(() => {
+                    alert(`Unsuccessful. ${response.error}`)
+                  }, 80)
+                }
+              }}
+            >
+              {({ values }) => (
+                <Form className='fieldPadding'>
+                  <div className='form--div'>
+                    <h1>INTERACTION</h1>
+                    <h3>How often do you feel that you lack companionship?</h3>
+                    <div role='group' aria-labelledby='InterQ1'>
+                      {responsesValue.map((opt) => (
+                        <label key={opt.value} style={{ marginRight: 16 }}>
+                          <Field type='radio' name='InterQ1' value={opt.value} /> {opt.label}
+                        </label>
+                      ))}
+                      <ErrorMessage name='InterQ1' component='div' className='error' />
+                    </div>
+                    <h3>How often do you feel left out?</h3>
+                    <div role='group' aria-labelledby='InterQ2'>
+                      {responsesValue.map((opt) => (
+                        <label key={opt.value} style={{ marginRight: 16 }}>
+                          <Field type='radio' name='InterQ2' value={opt.value} /> {opt.label}
+                        </label>
+                      ))}
+                      <ErrorMessage name='InterQ2' component='div' className='error' />
+                    </div>
+                    <h3>How often do you feel isolated from others? </h3>
+                    <div role='group' aria-labelledby='InterQ3'>
+                      {responsesValue.map((opt) => (
+                        <label key={opt.value} style={{ marginRight: 16 }}>
+                          <Field type='radio' name='InterQ3' value={opt.value} /> {opt.label}
+                        </label>
+                      ))}
+                      <ErrorMessage name='InterQ3' component='div' className='error' />
+                    </div>
+                    <h3>Score:</h3>
+                    <p className='blue'>{getScore(values)} / 9</p>
+                  </div>
+                  <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+                  <br />
+                  <Divider />
+                </Form>
+              )}
+            </Formik>
           </Paper>
         </Grid>
         <Grid
@@ -172,6 +164,4 @@ const geriInterForm = () => {
   )
 }
 
-geriInterForm.contextType = FormContext
-
-export default geriInterForm
+export default GeriInterForm
