@@ -8,11 +8,7 @@ import {
   Radio,
   RadioGroup,
   TextField,
-  MenuItem,
   Checkbox,
-  ListItemText,
-  Select,
-  InputLabel,
 } from '@mui/material'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
@@ -243,47 +239,43 @@ const GeriVisionForm = () => {
                       <ErrorMessage name='geriVisionQ11' component='div' className='error' />
                     </PopupText>
                     <h3>7. Type of vision error?</h3>
-                    <FormControl fullWidth>
-                      <InputLabel>Geri - Vision Q8</InputLabel>
-                      <Select
+                    <FormControl component='fieldset'>
+                      <RadioGroup
                         name='geriVisionQ8'
-                        multiple
-                        value={values.geriVisionQ8}
-                        onChange={(e) => setFieldValue('geriVisionQ8', e.target.value)}
-                        renderValue={(selected) => selected.join(', ')}
+                        value={values.geriVisionQ8[0] || ''}
+                        onChange={(e) => setFieldValue('geriVisionQ8', [e.target.value])}
                       >
                         {['Refractive', 'Non-refractive', 'None'].map((option) => (
-                          <MenuItem key={option} value={option}>
-                            <Checkbox checked={values.geriVisionQ8.indexOf(option) > -1} />
-                            <ListItemText primary={option} />
-                          </MenuItem>
+                          <FormControlLabel
+                            key={option}
+                            value={option}
+                            control={<Radio />}
+                            label={option}
+                          />
                         ))}
-                      </Select>
+                      </RadioGroup>
                       <ErrorMessage name='geriVisionQ8' component='div' className='error' />
                     </FormControl>
                     <h4>
                       Please <u>refer to Doctor&apos;s Consult</u> if pinhole visual acuity is{' '}
                       <u>worse than 6/12</u>
                     </h4>
-                    <FormControl fullWidth>
-                      <InputLabel>Geri - Vision Q9</InputLabel>
-                      <Select
-                        name='geriVisionQ9'
-                        multiple
-                        value={values.geriVisionQ9}
-                        onChange={(e) => setFieldValue('geriVisionQ9', e.target.value)}
-                        renderValue={(selected) => selected.join(', ')}
-                      >
-                        <MenuItem value="Referred to Doctor's Consult">
-                          <Checkbox
-                            checked={
-                              values.geriVisionQ9.indexOf("Referred to Doctor's Consult") > -1
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          name='geriVisionQ9'
+                          checked={values.geriVisionQ9.includes("Referred to Doctor's Consult")}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFieldValue('geriVisionQ9', ["Referred to Doctor's Consult"])
+                            } else {
+                              setFieldValue('geriVisionQ9', [])
                             }
-                          />
-                          <ListItemText primary="Referred to Doctor's Consult" />
-                        </MenuItem>
-                      </Select>
-                    </FormControl>
+                          }}
+                        />
+                      }
+                      label="Referred to Doctor's Consult"
+                    />
                     <h2>Refractive Error</h2>
                     Senior Citizens are eligible to receiving subsidy for spectacles under the
                     Senior Mobility Fund (SMF) provided they qualify for the following:

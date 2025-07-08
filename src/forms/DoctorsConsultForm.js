@@ -19,30 +19,30 @@ import allForms from './forms.json'
 import './fieldPadding.css'
 
 const validationSchema = Yup.object().shape({
-  doctorsConsultQ1: Yup.string().required('This field is required'),
-  doctorsConsultQ2: Yup.string().required('This field is required'),
-  doctorsConsultQ3: Yup.string().required('This field is required'),
-  doctorsConsultQ4: Yup.boolean(),
-  doctorsConsultQ5: Yup.string().when('doctorsConsultQ4', {
+  doctorSConsultQ1: Yup.string().required('This field is required'),
+  doctorSConsultQ2: Yup.string().required('This field is required'),
+  doctorSConsultQ3: Yup.string().required('This field is required'),
+  doctorSConsultQ4: Yup.boolean(),
+  doctorSConsultQ5: Yup.string().when('doctorSConsultQ4', {
     is: true,
     then: (schema) => schema.required('Reason is required when referral is selected'),
     otherwise: (schema) => schema.notRequired(),
   }),
-  doctorsConsultQ6: Yup.boolean(),
-  doctorsConsultQ7: Yup.string().when('doctorsConsultQ6', {
+  doctorSConsultQ6: Yup.boolean(),
+  doctorSConsultQ7: Yup.string().when('doctorSConsultQ6', {
     is: true,
     then: (schema) => schema.required('Reason is required when referral is selected'),
     otherwise: (schema) => schema.notRequired(),
   }),
-  doctorsConsultQ13: Yup.boolean(),
-  doctorsConsultQ8: Yup.boolean(),
-  doctorsConsultQ9: Yup.string().when('doctorsConsultQ8', {
+  doctorSConsultQ13: Yup.boolean(),
+  doctorSConsultQ8: Yup.boolean(),
+  doctorSConsultQ9: Yup.string().when('doctorSConsultQ8', {
     is: true,
     then: (schema) => schema.required('Reason is required when referral is selected'),
     otherwise: (schema) => schema.notRequired(),
   }),
-  doctorsConsultQ10: Yup.boolean(),
-  doctorsConsultQ11: Yup.boolean(),
+  doctorSConsultQ10: Yup.boolean(),
+  doctorSConsultQ11: Yup.boolean(),
 })
 
 const formName = 'doctorConsultForm'
@@ -120,7 +120,7 @@ const DoctorsConsultForm = () => {
         const collection = getPdfQueueCollection()
         await collection.insertOne({
           patientId: patientId,
-          doctorName: values.doctorsConsultQ1, // Using doctor's name from Q1
+          doctorName: values.doctorSConsultQ1, // Using doctor's name from Q1
           printed: false,
           createdAt: new Date(),
         })
@@ -149,18 +149,18 @@ const DoctorsConsultForm = () => {
           <Paper elevation={2} p={0} m={0}>
             <Formik
               initialValues={{
-                doctorsConsultQ1: saveData.doctorsConsultQ1 || '',
-                doctorsConsultQ2: saveData.doctorsConsultQ2 || '',
-                doctorsConsultQ3: saveData.doctorsConsultQ3 || '',
-                doctorsConsultQ4: saveData.doctorsConsultQ4 || false,
-                doctorsConsultQ5: saveData.doctorsConsultQ5 || '',
-                doctorsConsultQ6: saveData.doctorsConsultQ6 || false,
-                doctorsConsultQ7: saveData.doctorsConsultQ7 || '',
-                doctorsConsultQ13: saveData.doctorsConsultQ13 || false,
-                doctorsConsultQ8: saveData.doctorsConsultQ8 || false,
-                doctorsConsultQ9: saveData.doctorsConsultQ9 || '',
-                doctorsConsultQ10: saveData.doctorsConsultQ10 || false,
-                doctorsConsultQ11: saveData.doctorsConsultQ11 || false,
+                doctorSConsultQ1: saveData.doctorSConsultQ1 || '',
+                doctorSConsultQ2: saveData.doctorSConsultQ2 || '',
+                doctorSConsultQ3: saveData.doctorSConsultQ3 || '',
+                doctorSConsultQ4: saveData.doctorSConsultQ4 || false,
+                doctorSConsultQ5: saveData.doctorSConsultQ5 || '',
+                doctorSConsultQ6: saveData.doctorSConsultQ6 || false,
+                doctorSConsultQ7: saveData.doctorSConsultQ7 || '',
+                doctorSConsultQ13: saveData.doctorSConsultQ13 || false,
+                doctorSConsultQ8: saveData.doctorSConsultQ8 || false,
+                doctorSConsultQ9: saveData.doctorSConsultQ9 || '',
+                doctorSConsultQ10: saveData.doctorSConsultQ10 || false,
+                doctorSConsultQ11: saveData.doctorSConsultQ11 || false,
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -173,31 +173,31 @@ const DoctorsConsultForm = () => {
                     <h3>Doctor&apos;s Name:</h3>
                     <Field
                       as={TextField}
-                      name='doctorsConsultQ1'
+                      name='doctorSConsultQ1'
                       label="Doctor's Name"
                       fullWidth
                       multiline
                       rows={2}
                       variant='outlined'
-                      error={touched.doctorsConsultQ1 && Boolean(errors.doctorsConsultQ1)}
-                      helperText={touched.doctorsConsultQ1 && errors.doctorsConsultQ1}
+                      error={touched.doctorSConsultQ1 && Boolean(errors.doctorSConsultQ1)}
+                      helperText={touched.doctorCConsultQ1 && errors.doctorSConsultQ1}
                     />
                     <h3>Clinical findings:</h3>
                     <Field
                       as={TextField}
-                      name='doctorsConsultQ2'
+                      name='doctorSConsultQ2'
                       label="Doctor's Clinical Findings"
                       fullWidth
                       multiline
                       rows={4}
                       variant='outlined'
-                      error={touched.doctorsConsultQ2 && Boolean(errors.doctorsConsultQ2)}
-                      helperText={touched.doctorsConsultQ2 && errors.doctorsConsultQ2}
+                      error={touched.doctorSConsultQ2 && Boolean(errors.doctorSConsultQ2)}
+                      helperText={touched.doctorSConsultQ2 && errors.doctorSConsultQ2}
                     />
                     <h3>Doctor&apos;s Memo:</h3>
                     <Field
                       as={TextField}
-                      name='doctorsConsultQ3'
+                      name='doctorSConsultQ3'
                       label="Doctor's Memo"
                       fullWidth
                       multiline
@@ -283,7 +283,7 @@ const DoctorsConsultForm = () => {
                       Completed Doctor&apos;s Consult station. Please check that Form A is filled.
                     </h3>
                     <FormControlLabel
-                      control={<Field as={Checkbox} name='doctorsConsultQ11' color='primary' />}
+                      control={<Field as={Checkbox} name='doctorSConsultQ11' color='primary' />}
                       label='Yes'
                     />
                   </div>
