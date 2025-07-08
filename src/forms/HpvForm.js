@@ -1,99 +1,132 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
+import { Formik, Form, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
+import {
+  Paper,
+  CircularProgress,
+  Divider,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  FormHelperText,
+  Button,
+} from '@mui/material'
 
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-
-import { AutoForm } from 'uniforms'
-import { SubmitField, ErrorsField, SelectField } from 'uniforms-mui'
 import { submitForm } from '../api/api.js'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
-const schema = new SimpleSchema({
-  HPV1: {
-    type: Array,
-    optional: false,
-  },
-  'HPV1.$': {
-    type: String,
-    allowedValues: ['Has completed the registration forms and finished the on-site testing.'],
-  },
+const validationSchema = Yup.object().shape({
+  HPV1: Yup.array()
+    .of(
+      Yup.string().oneOf([
+        'Has completed the registration forms and finished the on-site testing.',
+      ]),
+    )
+    .required('This field is required'),
 })
 
 const formName = 'hpvForm'
 
 const HpvForm = () => {
   const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
-  const [saveData, setSaveData] = useState({})
-  
-  const form_schema = new SimpleSchema2Bridge(schema)
+  const [loading, setLoading] = useState(false)
+  const [initialValues, setInitialValues] = useState({
+    HPV1: [],
+  })
+
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSaveData(savedData)
+      if (savedData) {
+        setInitialValues({
+          HPV1: Array.isArray(savedData.HPV1) ? savedData.HPV1 : [],
+        })
+      }
     }
     fetchData()
-  }, [])
+  }, [patientId])
 
-  const formOptions = {
-    HPV1: [
-      {
-        label: 'Has completed the registration forms and finished the on-site testing.',
-        value: 'Has completed the registration forms and finished the on-site testing.',
-      },
-    ],
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setLoading(true)
+    try {
+      const response = await submitForm(values, patientId, formName)
+      if (response.result) {
+        setTimeout(() => {
+          alert('Successfully submitted form')
+          navigate('/app/dashboard', { replace: true })
+        }, 80)
+      } else {
+        setTimeout(() => {
+          alert(`Unsuccessful. ${response.error}`)
+        }, 80)
+      }
+    } catch (error) {
+      alert(`Error: ${error.message}`)
+    } finally {
+      setLoading(false)
+      setSubmitting(false)
+    }
   }
-
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
-        if (response.result) {
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-        isLoading(false)
-      }}
-      model={saveData}
-    >
-      <div className='form--div'>
-        <h1>On-Site HPV Testing</h1>
-        <h3>Registration & Testing</h3>
-        <SelectField
-          appearance='checkbox'
-          checkboxes
-          name='HPV1'
-          label='HPV1'
-          options={formOptions.HPV1}
-        />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-      <br />
-      <Divider />
-    </AutoForm>
-  )
 
   return (
     <Paper elevation={2} p={0} m={0}>
-      {newForm()}
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={handleSubmit}
+        enableReinitialize
+      >
+        {({ isSubmitting, values, setFieldValue }) => (
+          <Form className='fieldPadding'>
+            <div className='form--div'>
+              <h1>On-Site HPV Testing</h1>
+              <h3>Registration & Testing</h3>
+
+              <FormGroup>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={
+                        values.HPV1?.includes(
+                          'Has completed the registration forms and finished the on-site testing.',
+                        ) || false
+                      }
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFieldValue('HPV1', [
+                            'Has completed the registration forms and finished the on-site testing.',
+                          ])
+                        } else {
+                          setFieldValue('HPV1', [])
+                        }
+                      }}
+                    />
+                  }
+                  label='Has completed the registration forms and finished the on-site testing.'
+                />
+                <ErrorMessage name='HPV1' component={FormHelperText} error />
+              </FormGroup>
+            </div>
+
+            <div>
+              {loading ? (
+                <CircularProgress />
+              ) : (
+                <Button type='submit' variant='contained' color='primary' disabled={isSubmitting}>
+                  Submit
+                </Button>
+              )}
+            </div>
+            <br />
+            <Divider />
+          </Form>
+        )}
+      </Formik>
     </Paper>
   )
 }

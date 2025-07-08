@@ -9,7 +9,7 @@ import NotFound from 'src/pages/NotFound'
 import Register from 'src/pages/Register'
 import Registration from 'src/pages/Registration'
 import Settings from 'src/pages/Settings'
-import DoctorSConsultForm from 'src/forms/DoctorSConsultForm'
+import DoctorsConsultForm from 'src/forms/DoctorsConsultForm'
 import DietitiansConsultForm from 'src/forms/DietitiansConsultForm'
 import OralHealthForm from 'src/forms/OralHealthForm'
 import FitForm from 'src/forms/FitForm'
@@ -47,7 +47,7 @@ const routes = [
       { path: 'registration', element: <Registration /> },
       { path: 'dashboard', element: <Dashboard /> },
       { path: 'settings', element: <Settings /> },
-      { path: 'doctorsconsult', element: <DoctorSConsultForm /> },
+      { path: 'doctorsconsult', element: <DoctorsConsultForm /> },
       { path: 'summary', element: <SummaryForm /> },
       { path: 'fit', element: <FitForm /> },
       { path: 'lungfn', element: <LungFnForm /> },
