@@ -97,31 +97,17 @@ const Eligibility = () => {
         return { name, eligibility }
       }
 
-      const isPhlebotomyEligible = reg.registrationQ15 === 'Yes'
       const isVaccinationEligible =
         reg?.registrationQ4 >= 65 && reg.registrationQ7 === 'Singapore Citizen 新加坡公民'
       const isHealthierSGEligible = reg.registrationQ11 !== 'Yes'
       const isLungFunctionEligible =
         hxsocial.SOCIAL10 === 'Yes, (please specify how many pack-years)' ||
         hxsocial.SOCIAL11 === 'Yes, (please specify)'
-      const isFITEligible =
-        reg.registrationQ4 >= 50 && pmhx.PMHX10 === 'No' && pmhx?.PMHX11 === 'No'
       const isWomenCancerEducationEligible = reg.registrationQ5 === 'Female'
       const isOsteoporosisEligible =
         (reg.registrationQ5 === 'Female' && reg.registrationQ4 >= 45) ||
         (reg.registrationQ5 === 'Male' && reg.registrationQ4 >= 55)
 
-      const isHaveConditions =
-        pmhx.PMHX7 !== undefined &&
-        (pmhx.PMHX7.includes('Kidney Disease') ||
-          pmhx.PMHX7.includes('Diabetes') ||
-          pmhx.PMHX7.includes('Hypertension'))
-      const isHaveFamilyCondition = hxfamily.FAMILY3 !== undefined && hxfamily.FAMILY3.length > 0
-      const isExceedTriage = triage.triageQ12 >= 27.5
-      const isNKFEligible =
-        (isHaveConditions || isHaveFamilyCondition || isExceedTriage) &&
-        pmhx.PMHX9 === 'No' &&
-        reg.registrationQ4 <= 80
       const isMentalHealthEligible =
         (phq.PHQ10 >= 10 && reg.registrationQ4 < 60) || phq.PHQ11 === 'Yes'
       const isAudiometryEligible = reg.registrationQ4 >= 60 && pmhx.PMHX13 === 'No'
@@ -142,12 +128,9 @@ const Eligibility = () => {
 
       const rowsData = [
         createData('Healthier SG Booth', isHealthierSGEligible),
-        createData('Phlebotomy', isPhlebotomyEligible),
-        createData('Faecal Immunochemical Testing (FIT)', isFITEligible),
         createData('Lung Function Testing', isLungFunctionEligible),
         createData("Women's Cancer Education", isWomenCancerEducationEligible),
         createData('Osteoporosis', isOsteoporosisEligible),
-        createData('Kidney Screening', isNKFEligible),
         createData('Mental Health', isMentalHealthEligible),
         createData('Vaccination', isVaccinationEligible),
         createData('Geriatric Screening', isGeriatricScreeningEligible),

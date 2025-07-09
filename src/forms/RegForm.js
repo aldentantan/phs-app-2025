@@ -81,13 +81,13 @@ const RegForm = () => {
       if (patientId == -1) {
         savedData.registrationQ3 = birthday
       }
-      
+
       // Calculate age if birthday exists in saved data
       if (savedData.registrationQ3) {
         const calculatedAge = calculateAge(savedData.registrationQ3)
         setPatientAge(calculatedAge)
       }
-      
+
       setSlots(temp)
       setSaveData(savedData)
     }
@@ -116,12 +116,12 @@ const RegForm = () => {
       const birth = new Date(birthDate)
       let age = today.getFullYear() - birth.getFullYear()
       const monthDiff = today.getMonth() - birth.getMonth()
-      
+
       // Adjust age if birthday hasn't occurred this year yet
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
         age--
       }
-      
+
       setBirthday(birth)
       setPatientAge(age)
       return age
@@ -281,7 +281,7 @@ const RegForm = () => {
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h2>Registration</h2>
-              
+
               <h3>Salutation 称谓</h3>
               <FormControl fullWidth error={touched.registrationQ1 && !!errors.registrationQ1}>
                 <Field name="registrationQ1">
@@ -531,75 +531,6 @@ const RegForm = () => {
                 <ErrorMessage name="registrationQ14" component="div" style={{ color: 'red' }} />
               </FormControl>
 
-              <h2>Going for Phlebotomy?</h2>
-              <h3>
-                Conditions:
-                <br />
-                1) Singaporeans ONLY
-                <br />
-                2) Not enrolled under HealthierSG
-                <br />
-                3) Have not undergone a government screening for the past 3 years
-                <br />
-                4) Have not been diagnosed with diabetes, hyperlipidemia or high blood pressure
-              </h3>
-              <FormControl error={touched.registrationQ15 && !!errors.registrationQ15}>
-                <Field name="registrationQ15">
-                  {({ field }) => (
-                    <RadioGroup {...field} row>
-                      {formOptions.registrationQ15.map(option => (
-                        <FormControlLabel
-                          key={option.value}
-                          value={option.value}
-                          control={<Radio />}
-                          label={option.label}
-                        />
-                      ))}
-                    </RadioGroup>
-                  )}
-                </Field>
-                <ErrorMessage name="registrationQ15" component="div" style={{ color: 'red' }} />
-              </FormControl>
-
-              <PopupText qnNo='registrationQ15' triggerValue='Yes'>
-                <h2>Phlebotomy Eligibility</h2>
-                <p>
-                  Before entering our screening, do note the following eligibility criteria for Phlebotomy:
-                  <ol type='A'>
-                    <li>NOT previously diagnosed with Diabetes/ High Cholesterol/ High Blood Pressure.</li>
-                    <li>Have not done a blood test within the past 3 years.</li>
-                  </ol>
-                </p>
-                <p>
-                  Rationale: PHS aims to reach out to undiagnosed people. Patients that are already aware of
-                  their condition would have regular follow-ups with the GPs/polyclinics/hospitals. This
-                  information is available in our publicity material. Please approach our registration
-                  volunteers should you have any queries. We are happy to explain further. Thank you!
-                </p>
-                <p>
-                  抽血合格标准:
-                  <br />
-                  1) 在过去的三年内沒有验过血。
-                  <br />
-                  2) 没有糖尿病, 高血压, 高胆固醇。
-                </p>
-                <FormControlLabel
-                  control={
-                    <Field name="registrationQ16">
-                      {({ field }) => (
-                        <Checkbox
-                          {...field}
-                          checked={field.value}
-                          onChange={(e) => setFieldValue('registrationQ16', e.target.checked)}
-                        />
-                      )}
-                    </Field>
-                  }
-                  label="I have read and acknowledged the eligibility criteria for Phlebotomy. 我知道抽血的合格标准。"
-                />
-                <ErrorMessage name="registrationQ16" component="div" style={{ color: 'red' }} />
-              </PopupText>
-
               <br />
 
               <h2>Compliance to PDPA 同意书</h2>
@@ -646,7 +577,7 @@ const RegForm = () => {
               </h4>
               <br />
               {displayVacancy}
-              
+
               <FormControl error={touched.registrationQ18 && !!errors.registrationQ18}>
                 <Field name="registrationQ18">
                   {({ field }) => (
