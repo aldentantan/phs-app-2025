@@ -10,10 +10,9 @@ import { parseFromLangKey, setLang } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
+import axios from 'axios'
 
 pdfMake.vfs = pdfFonts.vfs
-
-const axios = require('axios').default
 
 export async function preRegister(preRegArgs) {
   let gender = preRegArgs.gender

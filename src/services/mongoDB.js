@@ -1,6 +1,6 @@
 import * as Realm from 'realm-web'
 
-const REALM_APP_ID = process.env.REACT_APP_MONGO_KEY
+const REALM_APP_ID = import.meta.env.VITE_MONGO_KEY
 // contact developer for .env file for key
 const app = new Realm.App({ id: REALM_APP_ID })
 
