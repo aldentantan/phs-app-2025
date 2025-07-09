@@ -1,5 +1,5 @@
-src/forms/SummaryForm.js
-src/api/api.js
-src/pages/Eligibility.js
-src/forms/GeriMobilityTabs/GeriPtConsultForm.js
-src/forms/GeriMobilityTabs/GeriOtConsultForm.js
+src/forms/SummaryForm.jsx
+src/api/api.jsx
+src/pages/Eligibility.jsx
+src/forms/GeriMobilityTabs/GeriPtConsultForm.jsx
+src/forms/GeriMobilityTabs/GeriOtConsultForm.jsx
