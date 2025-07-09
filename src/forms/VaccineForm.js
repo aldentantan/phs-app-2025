@@ -1,106 +1,117 @@
-import React, {  useContext, useEffect, useState } from 'react'
-import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2'
-import SimpleSchema from 'simpl-schema'
-
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
-
-import allForms from './forms.json'
-
-import { AutoForm } from 'uniforms'
-import { SubmitField, ErrorsField } from 'uniforms-mui'
-import { RadioField } from 'uniforms-mui'
-import { submitForm } from '../api/api.js'
+import React, { useContext, useEffect, useState } from 'react'
+import {
+  Paper, Divider, Typography, CircularProgress,
+  FormControl, FormLabel, RadioGroup, FormControlLabel,
+  Radio, Button, Grid
+} from '@mui/material'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
+import { submitForm } from '../api/api.js'
+import allForms from './forms.json'
 import './fieldPadding.css'
 import { useNavigate } from 'react-router'
 
-const schema = new SimpleSchema({
-  VAX1: {
-    type: String,
-    allowedValues: ['Yes', 'No'],
-    optional: false,
-  }
-})
-
 const formName = 'vaccineForm'
 
-const VaccineForm = () => {
-  const { patientId } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
-  const [loadingSidePanel, isLoadingSidePanel] = useState(true)
-  const [saveData, setSaveData] = useState({})
-  const [regi, setRegi] = useState({})
+const RadioGroupField = ({ name, label, values }) => (
+  <FormControl fullWidth sx={{ mb: 3 }}>
+    <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
+    <Field name={name}>
+      {({ field }) => (
+        <RadioGroup {...field} row>
+          {values.map((val) => (
+            <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
+          ))}
+        </RadioGroup>
+      )}
+    </Field>
+    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
+  </FormControl>
+)
 
+const initialValues = {
+  VAX1: ''
+}
+
+export default function VaccineForm() {
+  const { patientId } = useContext(FormContext)
+  const [saveData, setSaveData] = useState(initialValues)
+  const [loading, setLoading] = useState(false)
+  const [loadingSidePanel, setLoadingSidePanel] = useState(true)
+  const [regi, setRegi] = useState({})
   const navigate = useNavigate()
-  const form_schema = new SimpleSchema2Bridge(schema)
+
+  const validationSchema = Yup.object({
+    VAX1: Yup.string()
+      .oneOf(['Yes', 'No'], 'Please select Yes or No')
+      .required('Required')
+  })
 
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSaveData(savedData)
+      setSaveData(savedData || initialValues)
+
       const regiData = getSavedData(patientId, allForms.registrationForm)
-      Promise.all([ regiData ]).then((result) => {
+      Promise.all([regiData]).then((result) => {
         setRegi(result[0])
-        isLoadingSidePanel(false)
+        setLoadingSidePanel(false)
       })
     }
     fetchData()
-  }, [])
+  }, [patientId])
 
-  const formOptions = {
-    VAX1: [
-      {
-        label: 'Yes',
-        value: 'Yes',
-      },
-      { label: 'No', value: 'No' },
-    ]
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setLoading(true)
+    const response = await submitForm(values, patientId, formName)
+    setLoading(false)
+    setSubmitting(false)
+    if (response.result) {
+      setTimeout(() => {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      }, 80)
+    } else {
+      setTimeout(() => {
+        alert(`Unsuccessful. ${response.error}`)
+      }, 80)
+    }
   }
-
-  const newForm = () => (
-    <AutoForm
-      schema={form_schema}
-      className='fieldPadding'
-      onSubmit={async (model) => {
-        isLoading(true)
-        const response = await submitForm(model, patientId, formName)
-        if (response.result) {
-          isLoading(false)
-          setTimeout(() => {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          }, 80)
-        } else {
-          isLoading(false)
-          setTimeout(() => {
-            alert(`Unsuccessful. ${response.error}`)
-          }, 80)
-        }
-      }}
-      model={saveData}
-    >
-      <div className='form--div'>
-        <h1>Vaccination</h1>
-        <h3>You have signed up for your complimentary influenza vaccination.</h3>
-        <RadioField name='VAX1' label='VAX1' options={formOptions.VAX1} />
-      </div>
-      <ErrorsField />
-      <div>{loading ? <CircularProgress /> : <SubmitField inputRef={() => { }} />}</div>
-
-      <Divider />
-    </AutoForm>
-  )
 
   return (
     <Paper elevation={2} p={0} m={0}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
           <Paper elevation={2} p={0} m={0}>
-            {newForm()}
+            <Formik
+              initialValues={saveData}
+              validationSchema={validationSchema}
+              enableReinitialize
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting }) => (
+                <Form className="fieldPadding">
+                  <Typography variant="h6" gutterBottom>Vaccination</Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    You have signed up for your complimentary influenza vaccination.
+                  </Typography>
+
+                  <RadioGroupField name="VAX1" label="VAX1" values={["Yes", "No"]} />
+
+                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+                    {loading || isSubmitting ? <CircularProgress /> : (
+                      <Button type="submit" variant="contained" color="primary">
+                        Submit
+                      </Button>
+                    )}
+                  </div>
+                  <br />
+                  <Divider />
+                </Form>
+              )}
+            </Formik>
           </Paper>
         </Grid>
         <Grid
@@ -114,14 +125,14 @@ const VaccineForm = () => {
             <CircularProgress />
           ) : (
             <div className='summary--question-div'>
-              <h2>Patient Info</h2>
+              <Typography variant="h6" gutterBottom>Patient Info</Typography>
               {regi ? (
                 <>
-                  <p className='blue'>Age: {regi.registrationQ4}</p>
-                  <p className='blue'>Citizenship: {regi.registrationQ7}</p>
+                  <Typography variant="body1" className='blue'>Age: {regi.registrationQ4}</Typography>
+                  <Typography variant="body1" className='blue'>Citizenship: {regi.registrationQ7}</Typography>
                 </>
               ) : (
-                <p className='red'>NO REGI DATA</p>
+                <Typography variant="body1" className='red'>NO REGI DATA</Typography>
               )}
             </div>
           )}
@@ -132,5 +143,3 @@ const VaccineForm = () => {
 }
 
 VaccineForm.contextType = FormContext
-
-export default VaccineForm
