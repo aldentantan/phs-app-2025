@@ -12,8 +12,6 @@ import Settings from 'src/pages/Settings'
 import DoctorsConsultForm from 'src/forms/DoctorsConsultForm'
 import DietitiansConsultForm from 'src/forms/DietitiansConsultForm'
 import OralHealthForm from 'src/forms/OralHealthForm'
-import FitForm from 'src/forms/FitForm'
-import PhleboForm from 'src/forms/PhleboForm'
 import RegForm from 'src/forms/RegForm'
 import TriageForm from 'src/forms/TriageForm'
 import SocialServiceForm from 'src/forms/SocialServiceForm'
@@ -27,7 +25,6 @@ import React from 'react'
 import HsgForm from './forms/HsgForm'
 import LungFnForm from './forms/LungFnForm'
 import OsteoForm from './forms/OsteoForm'
-import NkfForm from './forms/NkfForm'
 import MentalHealthForm from './forms/MentalHealthTabs/MentalHealthMain'
 import HpvForm from './forms/HpvForm'
 import VaccineForm from './forms/VaccineForm'
@@ -49,11 +46,9 @@ const routes = [
       { path: 'settings', element: <Settings /> },
       { path: 'doctorsconsult', element: <DoctorsConsultForm /> },
       { path: 'summary', element: <SummaryForm /> },
-      { path: 'fit', element: <FitForm /> },
       { path: 'lungfn', element: <LungFnForm /> },
       { path: 'gerimobility', element: <GeriMobilityTabs /> },
       { path: 'hxtaking', element: <HxTabs /> },
-      { path: 'phlebo', element: <PhleboForm /> },
       { path: 'reg', element: <RegForm /> },
       { path: 'vax', element: <VaccineForm /> },
       { path: 'hsg', element: <HsgForm /> },
@@ -62,7 +57,6 @@ const routes = [
       { path: 'gericog', element: <GeriCognitiveTabs /> },
       { path: 'triage', element: <TriageForm /> },
       { path: 'osteoporosis', element: <OsteoForm /> },
-      { path: 'nkf', element: <NkfForm /> },
       { path: 'dietitiansconsultation', element: <DietitiansConsultForm /> },
       { path: 'socialservice', element: <SocialServiceForm /> },
       { path: 'mentalhealth', element: <MentalHealthForm /> },

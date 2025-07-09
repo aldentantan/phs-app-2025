@@ -23,7 +23,6 @@ import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 import { useNavigate } from 'react-router'
 
-// Yup validation schema - replacing simpl-schema
 const validationSchema = Yup.object({
   HSG1: Yup.string()
     .oneOf([
@@ -155,14 +154,14 @@ const HsgForm = () => {
             <div className='form--div'>
               <h1>HealthierSG</h1>
               <h3>Previously not signed up for HealthierSG and sign-up for HealthierSG today.</h3>
-              
-              <RadioField 
-                name='HSG1' 
-                label='HSG1' 
+
+              <RadioField
+                name='HSG1'
+                label='HSG1'
                 options={formOptions.HSG1}
                 formik={formik}
               />
-              
+
               <ConditionalContent condition={formik.values.HSG1 === 'No, I did not sign up for HSG'}>
                 <div style={{ marginTop: '16px' }}>
                   <h4 style={{ marginBottom: '16px' }}>If no, why?</h4>
@@ -170,7 +169,7 @@ const HsgForm = () => {
                 </div>
               </ConditionalContent>
             </div>
-            
+
             {/* Error display - replacing ErrorsField */}
             {Object.keys(formik.errors).length > 0 && formik.submitCount > 0 && (
               <div style={{ color: 'red', margin: '10px 0' }}>
@@ -179,7 +178,7 @@ const HsgForm = () => {
                 ))}
               </div>
             )}
-            
+
             {/* Submit button - replacing SubmitField */}
             <div>
               {loading ? (
@@ -195,7 +194,7 @@ const HsgForm = () => {
                 </Button>
               )}
             </div>
-            
+
             <br />
             <Divider />
           </Form>

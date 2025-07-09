@@ -18,12 +18,9 @@ const timelineItems = [
   { key: 'hxtaking', label: 'History Taking', path: 'hxtaking' },
   { key: 'triage', label: 'Triage', path: 'triage' },*/
   { key: 'hsg', label: 'HealthierSG', path: 'hsg' },
-  { key: 'phlebo', label: 'Phlebotomy', path: 'phlebo' },
-  { key: 'fit', label: 'FIT', path: 'fit' },
   { key: 'lungfn', label: 'Lung Function', path: 'lungfn' },
   { key: 'wce', label: 'WCE', path: 'wce' },
   { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
-  { key: 'nkf', label: 'NKF', path: 'nkf' },
   { key: 'mentalhealth', label: 'Mental Health', path: 'mentalhealth' },
   { key: 'vax', label: 'Vaccination', path: 'vax' },
   { key: 'gericog', label: 'Geriatrics - Cognitive', path: 'gericog' },
@@ -42,12 +39,9 @@ const eligibilityKeyMap = {
   hxtaking: 'History Taking',
   triage: 'Triage',
   hsg: 'Healthier SG Booth',
-  phlebo: 'Phlebotomy',
-  fit: 'Faecal Immunochemical Testing (FIT)',
   lungfn: 'Lung Function Testing',
   wce: "Women's Cancer Education",
   osteo: 'Osteoporosis',
-  nkf: 'Kidney Screening',
   mentalhealth: 'Mental Health',
   vax: 'Vaccination',
   gericog: 'Geriatric Screening',
@@ -69,13 +63,10 @@ function generateStatusObject(record) {
     hxtaking: false,
     vax: false,
     hsg: false,
-    phlebo: false,
-    fit: false,
     lungfn: false,
     gynae: false,
     wce: false,
     osteo: false,
-    nkf: false,
     mentalhealth: false,
     hpv: false,
     gerimobility: false,
@@ -100,13 +91,10 @@ function generateStatusObject(record) {
         record.hxWellbeingForm !== undefined,
       triage: record.triageForm !== undefined, // triage
       hsg: record.hsgForm !== undefined,
-      phlebo: record.phlebotomyForm !== undefined, // phlebotomy
-      fit: record.fitForm !== undefined, // fit
       lungfn: record.lungFnForm !== undefined,
       gynae: record.gynaeForm !== undefined,
       wce: record.wceForm !== undefined, // wce
       osteo: record.osteoForm !== undefined,
-      nkf: record.nkfForm !== undefined,
       mentalhealth: record.mentalHealthForm !== undefined,
       vax: record.vaccineForm !== undefined,
       gericog:
