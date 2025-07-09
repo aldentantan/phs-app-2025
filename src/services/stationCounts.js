@@ -6,7 +6,7 @@ export const getEligibilityRows = (forms = {}) => {
     reg = {},
     pmhx = {},
     hxsocial = {},
-    hxfamily = {},
+    // hxfamily = {},
     triage = {},
     hcsr = {},
     hxoral = {},
