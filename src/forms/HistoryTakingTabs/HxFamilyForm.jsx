@@ -70,14 +70,17 @@ const CheckboxGroupField = ({ name, label, options }) => (
 
 export default function HxFamilyForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
-  const [savedValues, setSavedValues] = useState(initialValues)
+  const [savedData, setSavedData] = useState(initialValues)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    getSavedData(patientId, formName).then((res) => {
-      setSavedValues({ ...initialValues, ...res })
-    })
-  }, [patientId])
+    const fetchData = async () => {
+      const res = await getSavedData(patientId, formName);
+      setSavedData({ ...initialValues, ...res });
+    };
+
+    fetchData();
+  }, [patientId]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true)
@@ -95,7 +98,7 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
   return (
     <Paper elevation={2}>
       <Formik
-        initialValues={savedValues}
+        initialValues={savedData}
         validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}

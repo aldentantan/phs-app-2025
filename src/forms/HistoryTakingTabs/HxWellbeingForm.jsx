@@ -34,19 +34,19 @@ const RadioGroupField = ({ name, label, values }) => (
   </FormControl>
 )
 
+const initialValues = {
+  hxWellbeingQ1: '', hxWellbeingQ2: '', hxWellbeingQ3: '', hxWellbeingQ4: '', hxWellbeingQ5: '',
+  hxWellbeingQ6: '', hxWellbeingQ7: '', hxWellbeingQ8: '', hxWellbeingQ9: '', hxWellbeingQ10: '',
+  hxWellbeingQ11: ''
+}
+
 const HxWellbeingForm = () => {
   const { patientId } = useContext(FormContext)
-  const [savedValues, setSavedValues] = useState({})
+  const [savedData, setSavedData] = useState(initialValues)
   const [regForm, setRegForm] = useState({})
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const navigate = useNavigate()
-
-  const initialValues = {
-    hxWellbeingQ1: '', hxWellbeingQ2: '', hxWellbeingQ3: '', hxWellbeingQ4: '', hxWellbeingQ5: '',
-    hxWellbeingQ6: '', hxWellbeingQ7: '', hxWellbeingQ8: '', hxWellbeingQ9: '', hxWellbeingQ10: '',
-    hxWellbeingQ11: ''
-  }
 
   const validationSchema = Yup.object({
     hxWellbeingQ1: Yup.string().required('Required'),
@@ -63,14 +63,15 @@ const HxWellbeingForm = () => {
   })
 
   useEffect(() => {
-    Promise.all([
-      getSavedData(patientId, formName),
-      getSavedData(patientId, allForms.registrationForm)
-    ]).then(([savedData, regFormData]) => {
-      setSavedValues({ ...initialValues, ...savedData })
-      setRegForm(regFormData)
+    const fetchData = async () => {
+      const savedData = await getSavedData(patientId, formName)
+      const regForm = await getSavedData(patientId, allForms.registrationForm)
+      setSavedData({ ...initialValues, ...savedData })
+      setRegForm(regForm)
       setLoadingSidePanel(false)
-    })
+    }
+
+    fetchData()
   }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -101,7 +102,7 @@ const HxWellbeingForm = () => {
       <Grid container>
         <Grid item xs={9}>
           <Formik
-            initialValues={savedValues}
+            initialValues={savedData}
             validationSchema={validationSchema}
             enableReinitialize
             onSubmit={handleSubmit}

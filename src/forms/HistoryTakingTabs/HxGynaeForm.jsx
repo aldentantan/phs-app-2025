@@ -31,12 +31,7 @@ const RadioGroupField = ({ name, label, values }) => (
   </FormControl>
 )
 
-export default function HxGynaeForm({ changeTab, nextTab }) {
-  const { patientId } = useContext(FormContext)
-  const [savedValues, setSavedValues] = useState({})
-  const [loading, setLoading] = useState(false)
-
-  const initialValues = {
+const initialValues = {
     GYNAE1: '', GYNAE2: '', GYNAEShortAns2: '', GYNAE3: '', GYNAEShortAns3: '',
     GYNAE4: '', GYNAEShortAns4: '', GYNAE5: '', GYNAEShortAns5: '',
     GYNAE6: '', GYNAEShortAns6: '', GYNAE7: '', GYNAEShortAns7: '',
@@ -44,15 +39,23 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
     GYNAE11: '', GYNAEShortAns11: '', GYNAE13: '', GYNAEShortAns13: '',
   }
 
+export default function HxGynaeForm({ changeTab, nextTab }) {
+  const { patientId } = useContext(FormContext)
+  const [savedData, setSavedData] = useState(initialValues)
+  const [loading, setLoading] = useState(false)
+
   const validationSchema = Yup.object({
     GYNAE1: Yup.string().required('Required'),
   })
 
   useEffect(() => {
-    getSavedData(patientId, formName).then((res) => {
-      setSavedValues({ ...initialValues, ...res })
-    })
-  }, [patientId])
+    const fetchData = async () => {
+      const res = await getSavedData(patientId, formName);
+      setSavedData({ ...initialValues, ...res });
+    };
+
+    fetchData();
+  }, [patientId]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true)
@@ -70,7 +73,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
   return (
     <Paper elevation={2}>
       <Formik
-        initialValues={savedValues}
+        initialValues={savedData}
         validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}

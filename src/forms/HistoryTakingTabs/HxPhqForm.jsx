@@ -53,16 +53,16 @@ const GetScore = () => {
   )
 }
 
-export default function HxPhqForm({ changeTab, nextTab }) {
-  const { patientId } = useContext(FormContext)
-  const [savedValues, setSavedValues] = useState({})
-  const [loading, setLoading] = useState(false)
-
-  const initialValues = {
+const initialValues = {
     PHQ1: '', PHQ2: '', PHQ3: '', PHQ4: '', PHQ5: '',
     PHQ6: '', PHQ7: '', PHQ8: '', PHQ9: '', PHQextra9: '',
     PHQ10: 0, PHQ11: '', PHQShortAns11: ''
   }
+
+export default function HxPhqForm({ changeTab, nextTab }) {
+  const { patientId } = useContext(FormContext)
+  const [savedData, setSavedData] = useState(initialValues)
+  const [loading, setLoading] = useState(false)
 
   const validationSchema = Yup.object({
     PHQ1: Yup.string().required('Required'),
@@ -78,10 +78,13 @@ export default function HxPhqForm({ changeTab, nextTab }) {
   })
 
   useEffect(() => {
-    getSavedData(patientId, formName).then((res) => {
-      setSavedValues({ ...initialValues, ...res })
-    })
-  }, [patientId])
+    const fetchData = async () => {
+      const res = await getSavedData(patientId, formName);
+      setSavedData({ ...initialValues, ...res });
+    };
+
+    fetchData();
+  }, [patientId]);
 
   const handleSubmit = async (values, { setSubmitting }) => {
     const pointsMap = {
@@ -109,7 +112,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
   return (
     <Paper elevation={2}>
       <Formik
-        initialValues={savedValues}
+        initialValues={savedData}
         validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}

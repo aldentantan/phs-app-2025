@@ -55,17 +55,18 @@ const RadioGroupField = ({ name, label, options }) => (
 
 export default function HxSocialForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
-  const [savedValues, setSavedValues] = useState(initialValues)
+  const [savedData, setSavedData] = useState(initialValues)
   const [regForm, setRegForm] = useState({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    getSavedData(patientId, formName).then((res) => {
-      setSavedValues({ ...initialValues, ...res })
-    })
-    getSavedData(patientId, 'registrationForm').then((res) => {
-      setRegForm(res)
-    })
+    const fetchData = async () => {
+      const savedData = await getSavedData(patientId, formName)
+      const regForm = await getSavedData(patientId, 'registrationForm')
+      setSavedData({ ...initialValues, ...savedData })
+      setRegForm(regForm)
+    }
+    fetchData()
   }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
@@ -84,7 +85,7 @@ export default function HxSocialForm({ changeTab, nextTab }) {
   return (
     <Paper elevation={2}>
       <Formik
-        initialValues={savedValues}
+        initialValues={savedData}
         validationSchema={validationSchema}
         enableReinitialize
         onSubmit={handleSubmit}
