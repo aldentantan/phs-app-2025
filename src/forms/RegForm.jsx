@@ -14,9 +14,10 @@ import {
   TextField,
   Typography,
   Box,
+  InputLabel,
 } from '@mui/material'
 
-import { submitForm, submitRegClinics } from '../api/api.jsx'
+import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getClinicSlotsCollection, getSavedData } from '../services/mongoDB'
 import PopupText from 'src/utils/popupText'
@@ -25,18 +26,6 @@ import './forms.css'
 import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckbox from '../components/form-components/CustomCheckbox'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
-
-const postalCodeToLocations = {
-  648886:
-    'Dr Koo & Loo Associate, +65 6792 2669: 1 Jurong West Central 2, 01-16a&b Jurong Point, S648886',
-  610064: 'Drs Tangs & Partner, +65 6265 6077: Blk 64, Yung Kuang Rd #01- 115, S610064',
-  640638:
-    'Healthmark Pionner Mall, +65 6861 3100: Blk 638, Jurong West St 61 Pioneer Mall #02-08, S640638',
-  641518: 'Lakeside FMC, +65 6262 6434: Blk 518A, Jurong West St 52 #01-02, S641518',
-  640762:
-    'Lee Family Clinic, +65 6794 0217: Blk 762 Jurong West St 75 #02-262 Gek Poh Shopping Ctr, S640762',
-  None: 'None',
-}
 
 export const defaultSlots = {
   648886: 50,
@@ -47,44 +36,62 @@ export const defaultSlots = {
   None: 10000,
 }
 
+const initialValues = {
+  registrationQ1: 'Mr',
+  registrationQ2: '',
+  registrationQ3: new Date(),
+  registrationQ4: 0,
+  registrationQ5: '',
+  registrationQ6: '',
+  registrationQ7: '',
+  registrationQ8: '',
+  registrationQ9: '',
+  registrationQ10: '',
+  registrationQ11: '',
+  registrationQ12: '',
+  registrationQ13: '',
+  registrationQ14: '',
+  registrationQ17: false,
+  registrationQ18: '',
+  registrationQ20: '',
+  registrationShortAnsQ6: '',
+}
+
 const formName = 'registrationForm'
 
 const RegForm = () => {
   const { patientId, updatePatientId, updatePatientInfo } = useContext(FormContext)
-  const [loading, isLoading] = useState(false)
+  const [loading, isLoading] = useState(true)
   const navigate = useNavigate()
-  const [saveData, setSaveData] = useState({})
+  const [savedData, setSavedData] = useState(initialValues)
   const [birthday, setBirthday] = useState(new Date())
-  const [slots, setSlots] = useState(defaultSlots)
   const [patientAge, setPatientAge] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
       console.log('Patient ID: ' + patientId)
-      const savedData = await getSavedData(patientId, formName)
+      const res = await getSavedData(patientId, formName)
 
-      const phlebCountersCollection = getClinicSlotsCollection()
-      const phlebCounters = await phlebCountersCollection.find()
-      const temp = { ...defaultSlots }
-      for (const { postalCode, counterItems } of phlebCounters) {
-        if (postalCode && counterItems) {
-          temp[postalCode] -= counterItems.length
-        }
-      }
+      // const phlebCountersCollection = getClinicSlotsCollection()
+      // const phlebCounters = await phlebCountersCollection.find()
+      // for (const { postalCode, counterItems } of phlebCounters) {
+      //   if (postalCode && counterItems) {
+      //     temp[postalCode] -= counterItems.length
+      //   }
+      // }
 
       // Set date to current date if no birthday was previously saved
       if (patientId == -1) {
-        savedData.registrationQ3 = birthday
+        res.registrationQ3 = birthday
       }
 
       // Calculate age if birthday exists in saved data
-      if (savedData.registrationQ3) {
-        const calculatedAge = calculateAge(savedData.registrationQ3)
+      if (res.registrationQ3) {
+        const calculatedAge = calculateAge(res.registrationQ3)
         setPatientAge(calculatedAge)
       }
-
-      setSlots(temp)
-      setSaveData(savedData)
+      setSavedData(res)
+      isLoading(false)
     }
     fetchData()
   }, [patientId])
@@ -113,22 +120,6 @@ const RegForm = () => {
     setSubmitting(true)
     values.registrationQ4 = patientAge
 
-    const location = values.registrationQ18
-    if (location) {
-      const postalCode =
-        values.registrationQ18 === 'None' ? 'None' : values.registrationQ18.trim().slice(-6)
-
-      const counterResponse = await submitRegClinics(postalCode, patientId)
-      if (!counterResponse.result) {
-        isLoading(false)
-        setSubmitting(false)
-        setTimeout(() => {
-          alert(`Unsuccessful. ${counterResponse.error}`)
-        }, 80)
-        return
-      }
-    }
-
     console.log('Patient ID: ' + patientId)
     const response = await submitForm(values, patientId, formName)
 
@@ -154,48 +145,90 @@ const RegForm = () => {
   }
 
   // Custom Field Components
-  const FormikSelect = ({ field, form, options, ...props }) => (
-    <FormControl
-      fullWidth
-      margin='normal'
-      error={form.touched[field.name] && Boolean(form.errors[field.name])}
-    >
-      <Select {...field} {...props} displayEmpty value={field.value || ''}>
-        {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
-      </Select>
-      {form.touched[field.name] && form.errors[field.name] && (
-        <Typography variant='caption' color='error'>
-          {form.errors[field.name]}
-        </Typography>
-      )}
-    </FormControl>
-  )
+  const FormikSelect = ({ field, form, options, label, ...props }) => {
+    const selectId = `${field.name}-select`
 
-  const FormikDateField = ({ field, form, ...props }) => (
-    <TextField
-      {...field}
-      {...props}
-      type='date'
-      fullWidth
-      margin='normal'
-      error={form.touched[field.name] && Boolean(form.errors[field.name])}
-      helperText={form.touched[field.name] && form.errors[field.name]}
-      value={field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value}
-      onChange={(e) => {
-        const date = new Date(e.target.value)
-        form.setFieldValue(field.name, date)
-      }}
-      onBlur={(e) => {
-        const date = new Date(e.target.value)
-        const calculatedAge = calculateAge(date)
-        form.setFieldValue('registrationQ4', calculatedAge)
-      }}
-    />
-  )
+    return (
+      <FormControl
+        fullWidth
+        margin='normal'
+        error={form.touched[field.name] && Boolean(form.errors[field.name])}
+        variant='outlined'
+      >
+        {label && (
+          <InputLabel shrink htmlFor={selectId}>
+            {label}
+          </InputLabel>
+        )}
+        <Select
+          {...field}
+          {...props}
+          label={label}
+          id={selectId}
+          displayEmpty
+          value={field.value || ''}
+        >
+          {options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+        {form.touched[field.name] && form.errors[field.name] && (
+          <Typography variant='caption' color='error'>
+            {form.errors[field.name]}
+          </Typography>
+        )}
+      </FormControl>
+    )
+  }
+
+  const FormikDateField = ({ field, form, ...props }) => {
+    const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime())
+
+    // Convert Date object to YYYY-MM-DD string for input
+    const dateToString = (date) => {
+      if (isValidDate(date)) {
+        return date.toISOString().split('T')[0]
+      }
+      return ''
+    }
+
+    return (
+      <TextField
+        {...props}
+        type='date'
+        fullWidth
+        margin='normal'
+        error={form.touched[field.name] && Boolean(form.errors[field.name])}
+        helperText={form.touched[field.name] && form.errors[field.name]}
+        value={dateToString(field.value)}
+        onChange={(e) => {
+          const dateValue = e.target.value
+          if (dateValue) {
+            const date = new Date(dateValue)
+            if (isValidDate(date)) {
+              form.setFieldValue(field.name, date)
+            }
+          } else {
+            // Set to null instead of empty string to avoid reinitialize
+            form.setFieldValue(field.name, null)
+          }
+        }}
+        onBlur={(e) => {
+          const dateValue = e.target.value
+          if (dateValue) {
+            const date = new Date(dateValue)
+            if (isValidDate(date)) {
+              const calculatedAge = calculateAge(date)
+              form.setFieldValue('registrationQ4', calculatedAge)
+            }
+          }
+          // Don't set field value on blur - let onChange handle it
+        }}
+      />
+    )
+  }
 
   const formOptions = {
     registrationQ1: [
@@ -260,7 +293,7 @@ const RegForm = () => {
       { label: 'Malay', value: 'Malay' },
       { label: 'Tamil', value: 'Tamil' },
     ],
-    registrationQ15: [
+    registrationQ18: [
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' },
     ],
@@ -274,49 +307,9 @@ const RegForm = () => {
     ],
   }
 
-  const displayVacancy = Object.entries(slots).map(([postalCode, n], i) => {
-    return (
-      <div key={i} className='paragraph--text'>
-        {postalCodeToLocations[postalCode]}
-        <b> Slots: {n}</b>
-      </div>
-    )
-  })
-
-  const displayLocations = () => {
-    return Object.values(postalCodeToLocations).map((item) => ({
-      label: item,
-      value: item,
-    }))
-  }
-
-  const initialValues = {
-    registrationQ1: saveData.registrationQ1 || 'Mr',
-    registrationQ2: saveData.registrationQ2 || '',
-    registrationQ3: saveData.registrationQ3 || new Date(),
-    registrationQ4: saveData.registrationQ4 || patientAge,
-    registrationQ5: saveData.registrationQ5 || '',
-    registrationQ6: saveData.registrationQ6 || '',
-    registrationQ7: saveData.registrationQ7 || '',
-    registrationQ8: saveData.registrationQ8 || '',
-    registrationQ9: saveData.registrationQ9 || '',
-    registrationQ10: saveData.registrationQ10 || '',
-    registrationQ11: saveData.registrationQ11 || '',
-    registrationQ12: saveData.registrationQ12 || '',
-    registrationQ13: saveData.registrationQ13 || '',
-    registrationQ14: saveData.registrationQ14 || '',
-    registrationQ15: saveData.registrationQ15 || '',
-    registrationQ16: saveData.registrationQ16 || false,
-    registrationQ17: saveData.registrationQ17 || false,
-    registrationQ18: saveData.registrationQ18 || '',
-    registrationQ19: saveData.registrationQ19 || '',
-    registrationQ20: saveData.registrationQ20 || '',
-    registrationShortAnsQ6: saveData.registrationShortAnsQ6 || '',
-  }
-
   const renderForm = () => (
     <Formik
-      initialValues={initialValues}
+      initialValues={savedData}
       validationSchema={validationSchema}
       onSubmit={handleSubmit}
       enableReinitialize={true}
@@ -333,6 +326,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ1'
+              label='registrationQ1'
               component={FormikSelect}
               options={formOptions.registrationQ1}
             />
@@ -340,15 +334,23 @@ const RegForm = () => {
             <Typography variant='h6' component='h3' gutterBottom>
               Initials (e.g Chen Ren Ying - Chen R Y, Christie Tan En Ning - Christie T E N)
             </Typography>
-            <FastField name='registrationQ2' component={CustomTextField} multiline />
+            <FastField
+              name='registrationQ2'
+              label='registrationQ2'
+              component={CustomTextField}
+              multiline
+            />
 
             <Typography variant='h6' component='h3' gutterBottom>
               Birthday
             </Typography>
-            <FastField name='registrationQ3' component={FormikDateField} />
+            <FastField name='registrationQ3' label='registrationQ3' component={FormikDateField} />
 
             <Typography variant='h6' component='h3' gutterBottom>
               Age
+            </Typography>
+            <Typography variant='body2' color='text.secondary'>
+              registrationQ4
             </Typography>
             <Typography className='blue'>{patientAge}</Typography>
 
@@ -357,6 +359,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ5'
+              label='registrationQ5'
               component={CustomRadioGroup}
               options={formOptions.registrationQ5}
               row
@@ -367,6 +370,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ6'
+              label='registrationQ6'
               component={CustomRadioGroup}
               options={formOptions.registrationQ6}
             />
@@ -374,6 +378,7 @@ const RegForm = () => {
             <PopupText qnNo='registrationQ6' triggerValue='Others 其他'>
               <Field
                 name='registrationShortAnsQ6'
+                label='registrationShortAnsQ6'
                 component={CustomTextField}
                 multiline
                 rows={2}
@@ -390,6 +395,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ7'
+              label='registrationQ7'
               component={CustomRadioGroup}
               options={formOptions.registrationQ7}
             />
@@ -399,6 +405,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ8'
+              label='registrationQ8'
               component={FormikSelect}
               options={formOptions.registrationQ8}
             />
@@ -406,7 +413,7 @@ const RegForm = () => {
             <Typography variant='h6' component='h3' gutterBottom>
               Occupation 工作
             </Typography>
-            <FastField name='registrationQ9' component={CustomTextField} />
+            <FastField name='registrationQ9' label='registrationQ9' component={CustomTextField} />
 
             <Typography variant='h6' component='h3' gutterBottom>
               GRC/SMC Subdivision{' '}
@@ -420,6 +427,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ10'
+              label='registrationQ10'
               component={FormikSelect}
               options={formOptions.registrationQ10}
             />
@@ -429,6 +437,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ11'
+              label='registrationQ11'
               component={CustomRadioGroup}
               options={formOptions.registrationQ11}
               row
@@ -439,6 +448,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ12'
+              label='registrationQ12'
               component={FormikSelect}
               options={formOptions.registrationQ12}
             />
@@ -448,6 +458,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ13'
+              label='registrationQ13'
               component={CustomRadioGroup}
               options={formOptions.registrationQ13}
             />
@@ -457,6 +468,7 @@ const RegForm = () => {
             </Typography>
             <FastField
               name='registrationQ14'
+              label='registrationQ14'
               component={CustomRadioGroup}
               options={formOptions.registrationQ14}
             />
@@ -480,30 +492,35 @@ const RegForm = () => {
               confidential, will only be disseminated to members of the PHS Executive Committee, and
               will be strictly used by these parties for the purposes stated.
             </Typography>
+            <Typography variant='body2' color='text.secondary'>
+              registrationQ17
+            </Typography>
             <Field
               name='registrationQ17'
               component={CustomCheckbox}
               label='I agree and consent to the above.'
             />
 
-            <Typography variant='h4' component='h2' gutterBottom sx={{ mt: 4 }}>
-              Follow up at GP Clinics
+            <Typography variant='h6' component='h3' gutterBottom sx={{ mt: 4 }}>
+              Has patient attended any health screenings before? (e.g. Annual Health Screening etc.)
             </Typography>
-            <Typography paragraph>
-              Your Health Report & Blood Test Results (if applicable) will be mailed out to the GP
-              you have selected <b>4-6 weeks</b> after the screening.
-            </Typography>
-            <Typography variant='h6' component='h4' gutterBottom>
-              All results, included those that are normal, have to be collected from the GP clinic
-              via an appointment
-            </Typography>
-            <br />
-            {displayVacancy}
-
-            <Field
+            <FastField
               name='registrationQ18'
+              label='registrationQ18'
               component={CustomRadioGroup}
-              options={displayLocations()}
+              options={formOptions.registrationQ18}
+              row
+            />
+
+            <Typography variant='h6' component='h3' gutterBottom>
+              Has patient pre-registered for the Mammobus station?
+            </Typography>
+            <FastField
+              name='registrationQ19'
+              label='registrationQ19'
+              component={CustomRadioGroup}
+              options={formOptions.registrationQ19}
+              row
             />
 
             <Typography variant='h6' component='h3' gutterBottom>
@@ -511,18 +528,8 @@ const RegForm = () => {
               (Patient has to sign and tick Form C)
             </Typography>
             <FastField
-              name='registrationQ19'
-              component={CustomRadioGroup}
-              options={formOptions.registrationQ19}
-              row
-            />
-
-            <Typography variant='h6' component='h3' gutterBottom>
-              Participant consent to participation in Research? (Participant has to sign IRB Consent
-              Form)
-            </Typography>
-            <FastField
               name='registrationQ20'
+              label='registrationQ20'
               component={CustomRadioGroup}
               options={formOptions.registrationQ20}
               row
