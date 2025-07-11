@@ -1,6 +1,6 @@
 import * as Yup from 'yup'
 
-export const registrationValidationSchema = Yup.object({
+export const validationSchema = Yup.object({
   registrationQ1: Yup.string()
     .oneOf(['Mr', 'Ms', 'Mrs', 'Dr'], 'Invalid salutation')
     .required('Salutation is required'),
