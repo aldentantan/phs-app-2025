@@ -1,7 +1,7 @@
 import React from 'react'
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from '@mui/material'
 
-export const CustomRadioGroup = ({ field, form, options, label, ...props }) => (
+const CustomRadioGroup = ({ field, form, options, label, ...props }) => (
     <FormControl
       component='fieldset'
       margin='normal'
@@ -30,3 +30,5 @@ export const CustomRadioGroup = ({ field, form, options, label, ...props }) => (
       )}
     </FormControl>
   )
+
+export default CustomRadioGroup

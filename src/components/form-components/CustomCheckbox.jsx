@@ -1,7 +1,7 @@
 import React from 'react'
 import { Checkbox, FormControlLabel } from '@mui/material'
 
-export const CustomCheckbox = ({ field, form, label, ...props }) => (
+const CustomCheckbox = ({ field, form, label, ...props }) => (
     <FormControlLabel
       control={
         <Checkbox
@@ -14,3 +14,5 @@ export const CustomCheckbox = ({ field, form, label, ...props }) => (
       label={label}
     />
   )
+
+export default CustomCheckbox

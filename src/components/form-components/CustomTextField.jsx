@@ -1,7 +1,7 @@
 import React from 'react'
 import { TextField } from '@mui/material'
 
-export const CustomTextField = ({ field, form, ...props }) => (
+const CustomTextField = ({ field, form, ...props }) => (
   <TextField
     {...field}
     {...props}
@@ -11,3 +11,5 @@ export const CustomTextField = ({ field, form, ...props }) => (
     helperText={form.touched[field.name] && form.errors[field.name]}
   />
 )
+
+export default CustomTextField
