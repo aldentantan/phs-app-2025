@@ -3,38 +3,18 @@ import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field, FastField } from 'formik'
 import { validationSchema } from './registrationSchema'
 
-import {
-  Divider,
-  Paper,
-  CircularProgress,
-  Button,
-  FormControl,
-  Select,
-  MenuItem,
-  TextField,
-  Typography,
-  Box,
-  InputLabel,
-} from '@mui/material'
+import { Divider, Paper, CircularProgress, Button, TextField, Typography, Box } from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
-import { getClinicSlotsCollection, getSavedData } from '../services/mongoDB'
+import { getSavedData } from '../services/mongoDB'
 import PopupText from 'src/utils/popupText'
 import './fieldPadding.css'
 import './forms.css'
 import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckbox from '../components/form-components/CustomCheckbox'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
-
-export const defaultSlots = {
-  648886: 50,
-  610064: 50,
-  640638: 50,
-  641518: 50,
-  640762: 50,
-  None: 10000,
-}
+import CustomSelect from '../components/form-components/CustomSelect'
 
 const initialValues = {
   registrationQ1: 'Mr',
@@ -43,6 +23,7 @@ const initialValues = {
   registrationQ4: 0,
   registrationQ5: '',
   registrationQ6: '',
+  registrationShortAnsQ6: '',
   registrationQ7: '',
   registrationQ8: '',
   registrationQ9: '',
@@ -53,8 +34,8 @@ const initialValues = {
   registrationQ14: '',
   registrationQ17: false,
   registrationQ18: '',
+  registrationQ19: '',
   registrationQ20: '',
-  registrationShortAnsQ6: '',
 }
 
 const formName = 'registrationForm'
@@ -145,53 +126,16 @@ const RegForm = () => {
   }
 
   // Custom Field Components
-  const FormikSelect = ({ field, form, options, label, ...props }) => {
-    const selectId = `${field.name}-select`
-
-    return (
-      <FormControl
-        fullWidth
-        margin='normal'
-        error={form.touched[field.name] && Boolean(form.errors[field.name])}
-        variant='outlined'
-      >
-        {label && (
-          <InputLabel shrink htmlFor={selectId}>
-            {label}
-          </InputLabel>
-        )}
-        <Select
-          {...field}
-          {...props}
-          label={label}
-          id={selectId}
-          displayEmpty
-          value={field.value || ''}
-        >
-          {options.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Select>
-        {form.touched[field.name] && form.errors[field.name] && (
-          <Typography variant='caption' color='error'>
-            {form.errors[field.name]}
-          </Typography>
-        )}
-      </FormControl>
-    )
-  }
-
   const FormikDateField = ({ field, form, ...props }) => {
     const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime())
+    const showError = form.errors[field.name] && (form.touched[field.name] || form.submitCount > 0)
 
     // Convert Date object to YYYY-MM-DD string for input
     const dateToString = (date) => {
-      if (isValidDate(date)) {
+      if (date && isValidDate(date)) {
         return date.toISOString().split('T')[0]
       }
-      return ''
+      return '' // Handle null, undefined, or invalid dates
     }
 
     return (
@@ -200,8 +144,8 @@ const RegForm = () => {
         type='date'
         fullWidth
         margin='normal'
-        error={form.touched[field.name] && Boolean(form.errors[field.name])}
-        helperText={form.touched[field.name] && form.errors[field.name]}
+        error={showError}
+        helperText={showError ? form.errors[field.name] : ''}
         value={dateToString(field.value)}
         onChange={(e) => {
           const dateValue = e.target.value
@@ -211,7 +155,7 @@ const RegForm = () => {
               form.setFieldValue(field.name, date)
             }
           } else {
-            // Set to null instead of empty string to avoid reinitialize
+            // Set to null instead of invalid Date object
             form.setFieldValue(field.name, null)
           }
         }}
@@ -224,7 +168,6 @@ const RegForm = () => {
               form.setFieldValue('registrationQ4', calculatedAge)
             }
           }
-          // Don't set field value on blur - let onChange handle it
         }}
       />
     )
@@ -327,7 +270,7 @@ const RegForm = () => {
             <FastField
               name='registrationQ1'
               label='registrationQ1'
-              component={FormikSelect}
+              component={CustomSelect}
               options={formOptions.registrationQ1}
             />
 
@@ -406,7 +349,7 @@ const RegForm = () => {
             <FastField
               name='registrationQ8'
               label='registrationQ8'
-              component={FormikSelect}
+              component={CustomSelect}
               options={formOptions.registrationQ8}
             />
 
@@ -428,7 +371,7 @@ const RegForm = () => {
             <FastField
               name='registrationQ10'
               label='registrationQ10'
-              component={FormikSelect}
+              component={CustomSelect}
               options={formOptions.registrationQ10}
             />
 
@@ -449,7 +392,7 @@ const RegForm = () => {
             <FastField
               name='registrationQ12'
               label='registrationQ12'
-              component={FormikSelect}
+              component={CustomSelect}
               options={formOptions.registrationQ12}
             />
 

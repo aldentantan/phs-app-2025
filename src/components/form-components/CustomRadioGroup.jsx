@@ -1,11 +1,14 @@
 import React from 'react'
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from '@mui/material'
 
-const CustomRadioGroup = ({ field, form, options, label, ...props }) => (
+const CustomRadioGroup = ({ field, form, options, label, ...props }) => {
+  const showError = form.errors[field.name] && (form.touched[field.name] || form.submitCount > 0)
+
+  return (
     <FormControl
       component='fieldset'
       margin='normal'
-      error={form.touched[field.name] && Boolean(form.errors[field.name])}
+      error={showError}
     >
       <FormLabel component='legend'>{label}</FormLabel>
       <RadioGroup
@@ -23,12 +26,13 @@ const CustomRadioGroup = ({ field, form, options, label, ...props }) => (
           />
         ))}
       </RadioGroup>
-      {form.touched[field.name] && form.errors[field.name] && (
+      {showError && (
         <Typography variant='caption' color='error'>
           {form.errors[field.name]}
         </Typography>
       )}
     </FormControl>
   )
+}
 
 export default CustomRadioGroup
