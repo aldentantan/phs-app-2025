@@ -17,14 +17,12 @@ const dayRange = [
   '3 - Nearly everyday',
 ]
 
-
 const dayRangeFormOptions = [
   { label: '0 - Not at all', value: '0 - Not at all' },
   { label: '1 - Several days', value: '1 - Several days' },
   { label: '2 - More than half the days', value: '2 - More than half the days' },
   { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
 ]
-
 
 const validationSchema = Yup.object({
   PHQ1: Yup.string().oneOf(dayRange).required('Required'),
@@ -44,7 +42,6 @@ const validationSchema = Yup.object({
 
 const formName = 'geriPhqForm'
 
-
 function getScore(values) {
   const points = {
     '0 - Not at all': 0,
@@ -62,6 +59,7 @@ function getScore(values) {
 const GeriPhqForm = (props) => {
   const { patientId } = useContext(FormContext)
   const { changeTab, nextTab } = props
+  const disabled = true
   const [loading, setLoading] = useState(false)
   const [initialValues, setInitialValues] = useState({
     PHQ1: '',
@@ -108,6 +106,7 @@ const GeriPhqForm = (props) => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={async (values, { setSubmitting }) => {
+          if (disabled) return
           setLoading(true)
           const score = getScore(values)
           values.PHQ10 = score
@@ -133,13 +132,15 @@ const GeriPhqForm = (props) => {
             <Form className='fieldPadding'>
               <div className='form--div'>
                 <h2>
-                  Over the last 2 weeks, how often have you been bothered by any of the following problems?
+                  Over the last 2 weeks, how often have you been bothered by any of the following
+                  problems?
                 </h2>
                 <h3>1. Little interest or pleasure in doing things</h3>
                 <div role='group' aria-labelledby='PHQ1'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ1' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ1' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ1' component='div' className='error' />
@@ -147,8 +148,9 @@ const GeriPhqForm = (props) => {
                 <h3>2. Feeling down, depressed or hopeless</h3>
                 <div role='group' aria-labelledby='PHQ2'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ2' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ2' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ2' component='div' className='error' />
@@ -156,8 +158,9 @@ const GeriPhqForm = (props) => {
                 <h3>3. Trouble falling asleep or staying asleep, or sleeping too much</h3>
                 <div role='group' aria-labelledby='PHQ3'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ3' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ3' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ3' component='div' className='error' />
@@ -165,8 +168,9 @@ const GeriPhqForm = (props) => {
                 <h3>4. Feeling tired or having little energy</h3>
                 <div role='group' aria-labelledby='PHQ4'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ4' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ4' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ4' component='div' className='error' />
@@ -174,56 +178,79 @@ const GeriPhqForm = (props) => {
                 <h3>5. Poor appetite or overeating</h3>
                 <div role='group' aria-labelledby='PHQ5'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ5' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ5' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ5' component='div' className='error' />
                 </div>
-                <h3>6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down</h3>
+                <h3>
+                  6. Feeling bad about yourself, or that you are a failure or have let yourself or
+                  your family down
+                </h3>
                 <div role='group' aria-labelledby='PHQ6'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ6' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ6' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ6' component='div' className='error' />
                 </div>
-                <h3>7. Trouble concentrating on things, such as reading the newspaper or television</h3>
+                <h3>
+                  7. Trouble concentrating on things, such as reading the newspaper or television
+                </h3>
                 <div role='group' aria-labelledby='PHQ7'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ7' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ7' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ7' component='div' className='error' />
                 </div>
-                <h3>8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual</h3>
+                <h3>
+                  8. Moving or speaking so slowly that other people have noticed? Or the opposite,
+                  being so fidgety or restless that you have been moving around a lot more than
+                  usual
+                </h3>
                 <div role='group' aria-labelledby='PHQ8'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ8' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ8' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ8' component='div' className='error' />
                 </div>
-                <h3>9. Thoughts that you would be better off dead or hurting yourself in some way</h3>
+                <h3>
+                  9. Thoughts that you would be better off dead or hurting yourself in some way
+                </h3>
                 <div role='group' aria-labelledby='PHQ9'>
                   {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ9' value={opt.value} /> {opt.label}
+                    <label key={opt.value} style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQ9' value={opt.value} disabled={disabled} />{' '}
+                      {opt.label}
                     </label>
                   ))}
                   <ErrorMessage name='PHQ9' component='div' className='error' />
                 </div>
-                <PopupText qnNo='PHQ9' triggerValue={['1 - Several days', '2 - More than half the days', '3 - Nearly everyday']}>
+                <PopupText
+                  qnNo='PHQ9'
+                  triggerValue={[
+                    '1 - Several days',
+                    '2 - More than half the days',
+                    '3 - Nearly everyday',
+                  ]}
+                >
                   <h3>*Do you want to take your life now?*</h3>
                   <div role='group' aria-labelledby='PHQextra9'>
-                    <label style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQextra9' value='Yes' /> Yes
+                    <label style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQextra9' value='Yes' disabled={disabled} /> Yes
                     </label>
-                    <label style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQextra9' value='No' /> No
+                    <label style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                      <Field type='radio' name='PHQextra9' value='No' disabled={disabled} /> No
                     </label>
                     <ErrorMessage name='PHQextra9' component='div' className='error' />
                   </div>
@@ -247,20 +274,26 @@ const GeriPhqForm = (props) => {
                 )}
                 <h3>Do you feel like the patient will benefit from counselling? Specify why.</h3>
                 <div role='group' aria-labelledby='PHQ11'>
-                  <label style={{ marginRight: 16 }}>
-                    <Field type='radio' name='PHQ11' value='Yes' /> Yes
+                  <label style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                    <Field type='radio' name='PHQ11' value='Yes' disabled={disabled} /> Yes
                   </label>
-                  <label style={{ marginRight: 16 }}>
-                    <Field type='radio' name='PHQ11' value='No' /> No
+                  <label style={{ marginRight: 16, opacity: disabled ? 0.6 : 1 }}>
+                    <Field type='radio' name='PHQ11' value='No' disabled={disabled} /> No
                   </label>
                   <ErrorMessage name='PHQ11' component='div' className='error' />
                 </div>
                 <h4>Please specify.</h4>
-                <Field as='textarea' name='PHQShortAns11' className='form-control' />
+                <Field
+                  as='textarea'
+                  name='PHQShortAns11'
+                  className='form-control'
+                  disabled={disabled}
+                  style={{ opacity: disabled ? 0.6 : 1 }}
+                />
                 <ErrorMessage name='PHQShortAns11' component='div' className='error' />
                 <br />
               </div>
-              <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+
               <Divider />
             </Form>
           )

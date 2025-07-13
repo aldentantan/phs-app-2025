@@ -26,7 +26,7 @@ const timelineItems = [
   { key: 'gericog', label: 'Geriatrics - Cognitive', path: 'gericog' },
   { key: 'gerimobility', label: 'Geriatrics - Mobility', path: 'gerimobility' },
   { key: 'gerivision', label: 'Geriatrics - Vision', path: 'gerivision' },
-  { key: 'geriaudio', label: 'Geriatrics - Audiometry', path: 'geriaudio' },
+  { key: 'audio', label: 'Audiometry', path: 'audio' },
   { key: 'hpv', label: 'HPV', path: 'hpv' },
   { key: 'doctorsconsult', label: "Doctor's Station", path: 'doctorsconsult' },
   { key: 'dietitiansconsult', label: "Dietitian's Consultation", path: 'dietitiansconsultation' },
@@ -47,7 +47,7 @@ const eligibilityKeyMap = {
   gericog: 'Geriatric Screening',
   gerimobility: 'Geriatric Screening',
   gerivision: 'Geriatric Screening',
-  geriaudio: 'Audiometry',
+  audio: 'Audiometry',
   hpv: 'HPV On-Site Testing',
   doctorsconsult: "Doctor's Station",
   dietitiansconsult: "Dietitian's Consult",
@@ -70,7 +70,7 @@ function generateStatusObject(record) {
     mentalhealth: false,
     hpv: false,
     gerimobility: false,
-    geriaudio: false,
+    audio: false,
     gerivision: false,
     doctorsconsult: false,
     dietitiansconsult: false,
@@ -109,7 +109,7 @@ function generateStatusObject(record) {
         record.geriPtConsultForm !== undefined &&
         record.geriOtConsultForm !== undefined,
       gerivision: record.geriVisionForm !== undefined,
-      geriaudio: record.geriAudiometryForm !== undefined,
+      audio: record.AudiometryForm !== undefined,
       hpv: record.hpvForm !== undefined,
       doctorsconsult: record.doctorConsultForm !== undefined, // doctor's consult
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult

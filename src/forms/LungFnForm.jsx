@@ -15,14 +15,13 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Box
+  Box,
 } from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 
 import allForms from './forms.json'
-
 
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
@@ -34,36 +33,24 @@ const schema = Yup.object({
   LUNG1: Yup.string()
     .oneOf(['Yes', 'No'], 'Please select a valid option')
     .required('This field is required'),
-  LUNGShortAns1: Yup.string()
-    .when('LUNG1', {
-      is: 'No',
-      then: (schema) => schema.required('Please specify'),
-      otherwise: (schema) => schema
-    }),
+  LUNGShortAns1: Yup.string().when('LUNG1', {
+    is: 'No',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   LUNG2: Yup.string()
     .oneOf(['Yes', 'No'], 'Please select a valid option')
     .required('This field is required'),
-  LUNGShortAns2: Yup.string()
-    .when('LUNG2', {
-      is: 'No',
-      then: (schema) => schema.required('Please specify why'),
-      otherwise: (schema) => schema
-    }),
-  LUNG3: Yup.number()
-    .typeError('Must be a number')
-    .required('This field is required'),
-  LUNG4: Yup.number()
-    .typeError('Must be a number')
-    .required('This field is required'),
-  LUNG5: Yup.number()
-    .typeError('Must be a number')
-    .required('This field is required'),
-  LUNG6: Yup.number()
-    .typeError('Must be a number')
-    .required('This field is required'),
-  LUNG7: Yup.number()
-    .typeError('Must be a number')
-    .required('This field is required'),
+  LUNGShortAns2: Yup.string().when('LUNG2', {
+    is: 'No',
+    then: (schema) => schema.required('Please specify why'),
+    otherwise: (schema) => schema,
+  }),
+  LUNG3: Yup.number().typeError('Must be a number').required('This field is required'),
+  LUNG4: Yup.number().typeError('Must be a number').required('This field is required'),
+  LUNG5: Yup.number().typeError('Must be a number').required('This field is required'),
+  LUNG6: Yup.number().typeError('Must be a number').required('This field is required'),
+  LUNG7: Yup.number().typeError('Must be a number').required('This field is required'),
   LUNG14: Yup.string()
     .oneOf(['Yes', 'No'], 'Please select a valid option')
     .required('This field is required'),
@@ -85,13 +72,14 @@ const LungFnForm = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-    const savedData = getSavedData(patientId, formName)
-    const socialData = getSavedData(patientId, allForms.hxSocialForm)
-    Promise.all([savedData, socialData]).then((result) => {
-      setSaveData(result[0])
-      setSocial(result[1])
-      isLoadingSidePanel(false)
-    })}
+      const savedData = getSavedData(patientId, formName)
+      const socialData = getSavedData(patientId, allForms.hxSocialForm)
+      Promise.all([savedData, socialData]).then((result) => {
+        setSaveData(result[0])
+        setSocial(result[1])
+        isLoadingSidePanel(false)
+      })
+    }
     fetchData()
   }, [])
 
@@ -120,20 +108,20 @@ const LungFnForm = () => {
   }
 
   const LungType_cal = (lung5, lung7) => {
-    if ((lung5 >= 80) && (lung7 < 70)) {
-      const typeOfLung = "Obstructive Defect"
+    if (lung5 >= 80 && lung7 < 70) {
+      const typeOfLung = 'Obstructive Defect'
       setLungType(typeOfLung)
       return <p className='blue'>{typeOfLung}</p>
-    } else if ((lung5 < 80) && (lung7 < 70)) {
-      const typeOfLung = "Mixed Pattern"
+    } else if (lung5 < 80 && lung7 < 70) {
+      const typeOfLung = 'Mixed Pattern'
       setLungType(typeOfLung)
       return <p className='blue'>{typeOfLung}</p>
-    } else if ((lung5 < 80) && (lung7 >= 70)) {
-      const typeOfLung = "Restrictive Defect"
+    } else if (lung5 < 80 && lung7 >= 70) {
+      const typeOfLung = 'Restrictive Defect'
       setLungType(typeOfLung)
       return <p className='blue'>{typeOfLung}</p>
-    } else if ((lung5 >= 80) && (lung7 >= 70)) {
-      const typeOfLung = "Normal"
+    } else if (lung5 >= 80 && lung7 >= 70) {
+      const typeOfLung = 'Normal'
       setLungType(typeOfLung)
       return <p className='blue'>{typeOfLung}</p>
     } else {
@@ -143,12 +131,9 @@ const LungFnForm = () => {
   }
 
   const RadioField = ({ name, label, options, values, setFieldValue, errors, touched }) => (
-    <FormControl component="fieldset" margin="normal" fullWidth>
-      <FormLabel component="legend">{label}</FormLabel>
-      <RadioGroup
-        value={values[name] || ''}
-        onChange={(e) => setFieldValue(name, e.target.value)}
-      >
+    <FormControl component='fieldset' margin='normal' fullWidth>
+      <FormLabel component='legend'>{label}</FormLabel>
+      <RadioGroup value={values[name] || ''} onChange={(e) => setFieldValue(name, e.target.value)}>
         {options.map((option) => (
           <FormControlLabel
             key={option.value}
@@ -159,7 +144,7 @@ const LungFnForm = () => {
         ))}
       </RadioGroup>
       {errors[name] && touched[name] && (
-        <Box color="error.main" fontSize="0.75rem" mt={0.5}>
+        <Box color='error.main' fontSize='0.75rem' mt={0.5}>
           {errors[name]}
         </Box>
       )}
@@ -169,20 +154,20 @@ const LungFnForm = () => {
   const NumField = ({ name, label, values, setFieldValue, errors, touched }) => (
     <TextField
       fullWidth
-      margin="normal"
+      margin='normal'
       name={name}
       label={label}
-      type="number"
+      type='number'
       value={values[name] || ''}
       onChange={(e) => setFieldValue(name, parseFloat(e.target.value) || '')}
       error={errors[name] && touched[name]}
       helperText={errors[name] && touched[name] ? errors[name] : ''}
       sx={{
-        "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-          display: "none",
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+          display: 'none',
         },
-        "& input[type=number]": {
-          MozAppearance: "textfield",
+        '& input[type=number]': {
+          MozAppearance: 'textfield',
         },
       }}
     />
@@ -191,7 +176,7 @@ const LungFnForm = () => {
   const LongTextField = ({ name, label, values, setFieldValue, errors, touched }) => (
     <TextField
       fullWidth
-      margin="normal"
+      margin='normal'
       name={name}
       label={label}
       multiline
@@ -207,18 +192,18 @@ const LungFnForm = () => {
     <Form className='fieldPadding'>
       <div className='form--div'>
         <h1>Lung Function</h1>
-        <h3>Are you well today? (Any flu, fever etc)</h3>
-        <RadioField 
-          name='LUNG1' 
-          label='LUNG1' 
+        <h3>Do you have any flu, fever now?</h3>
+        <RadioField
+          name='LUNG1'
+          label='LUNG1'
           options={formOptions.LUNG1}
           values={values}
           setFieldValue={setFieldValue}
           errors={errors}
           touched={touched}
         />
-        <LongTextField 
-          name='LUNGShortAns1' 
+        <LongTextField
+          name='LUNGShortAns1'
           label='LUNG1'
           values={values}
           setFieldValue={setFieldValue}
@@ -226,9 +211,9 @@ const LungFnForm = () => {
           touched={touched}
         />
         <h3>Lung function test completed?</h3>
-        <RadioField 
-          name='LUNG2' 
-          label='LUNG2' 
+        <RadioField
+          name='LUNG2'
+          label='LUNG2'
           options={formOptions.LUNG2}
           values={values}
           setFieldValue={setFieldValue}
@@ -238,8 +223,8 @@ const LungFnForm = () => {
         {values.LUNG2 === 'No' && (
           <div>
             <h4>If no, why?</h4>
-            <LongTextField 
-              name='LUNGShortAns2' 
+            <LongTextField
+              name='LUNGShortAns2'
               label='LUNG2'
               values={values}
               setFieldValue={setFieldValue}
@@ -248,11 +233,12 @@ const LungFnForm = () => {
             />
           </div>
         )}
-        <h2>Results of lung function test:</h2><br />
+        <h2>Results of lung function test:</h2>
+        <br />
         <h2>Pre-bronchodilator</h2>
         <h3>FVC (L)</h3>
-        <NumField 
-          name='LUNG3' 
+        <NumField
+          name='LUNG3'
           label='LUNG3'
           values={values}
           setFieldValue={setFieldValue}
@@ -260,8 +246,8 @@ const LungFnForm = () => {
           touched={touched}
         />
         <h3>FEV1 (L)</h3>
-        <NumField 
-          name='LUNG4' 
+        <NumField
+          name='LUNG4'
           label='LUNG4'
           values={values}
           setFieldValue={setFieldValue}
@@ -269,8 +255,8 @@ const LungFnForm = () => {
           touched={touched}
         />
         <h3>FVC (%pred)</h3>
-        <NumField 
-          name='LUNG5' 
+        <NumField
+          name='LUNG5'
           label='LUNG5'
           values={values}
           setFieldValue={setFieldValue}
@@ -278,8 +264,8 @@ const LungFnForm = () => {
           touched={touched}
         />
         <h3>FEV1 (%pred)</h3>
-        <NumField 
-          name='LUNG6' 
+        <NumField
+          name='LUNG6'
           label='LUNG6'
           values={values}
           setFieldValue={setFieldValue}
@@ -287,20 +273,21 @@ const LungFnForm = () => {
           touched={touched}
         />
         <h3>FEV1:FVC (%)</h3>
-        <NumField 
-          name='LUNG7' 
+        <NumField
+          name='LUNG7'
           label='LUNG7'
           values={values}
           setFieldValue={setFieldValue}
           errors={errors}
           touched={touched}
-        /><br />
+        />
+        <br />
         <h3>What defect does the patient have? </h3>
         <LungType_cal lung5={values.LUNG5} lung7={values.LUNG7} />
         <h3>Patient needs to be referred to doctor&apos;s station for followup on their result?</h3>
-        <RadioField 
-          name='LUNG14' 
-          label='LUNG14' 
+        <RadioField
+          name='LUNG14'
+          label='LUNG14'
           options={formOptions.LUNG14}
           values={values}
           setFieldValue={setFieldValue}
@@ -308,17 +295,12 @@ const LungFnForm = () => {
           touched={touched}
         />
       </div>
-      
+
       <Box mt={2}>
         {loading || isSubmitting ? (
           <CircularProgress />
         ) : (
-          <Button 
-            type="submit" 
-            variant="contained" 
-            color="primary"
-            disabled={isSubmitting}
-          >
+          <Button type='submit' variant='contained' color='primary' disabled={isSubmitting}>
             Submit
           </Button>
         )}
@@ -368,7 +350,7 @@ const LungFnForm = () => {
                 setSubmitting(false)
               }}
             >
-              {({ values, errors, touched, setFieldValue, isSubmitting }) => 
+              {({ values, errors, touched, setFieldValue, isSubmitting }) =>
                 newForm(values, setFieldValue, errors, touched, isSubmitting)
               }
             </Formik>

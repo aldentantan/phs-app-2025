@@ -14,8 +14,8 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormHelperText
-} from '@mui/material';
+  FormHelperText,
+} from '@mui/material'
 
 import { submitFormSpecial } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
@@ -26,24 +26,21 @@ import allForms from '../forms.json'
 
 // Yup validation schema
 const validationSchema = Yup.object({
-  wceQ3: Yup.string()
-    .oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ4: Yup.string()
-    .oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ5: Yup.string()
-    .oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ7: Yup.string()
-    .oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ8: Yup.string()
-    .oneOf(['Never before', 'Less than 5 years', '5 years or longer'], 'Invalid selection'),
-  wceQ9: Yup.string()
-    .oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ10: Yup.string()
-    .oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ11: Yup.string()
-    .oneOf(['Never before', 'Within the last 3 years', '3 years or longer'], 'Invalid selection'),
-  wceQ12: Yup.string()
-    .oneOf(['Yes', 'No'], 'Invalid selection')
+  wceQ3: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
+  wceQ4: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
+  wceQ5: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
+  wceQ7: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  wceQ8: Yup.string().oneOf(
+    ['Never before', 'Less than 5 years', '5 years or longer'],
+    'Invalid selection',
+  ),
+  wceQ9: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  wceQ10: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  wceQ11: Yup.string().oneOf(
+    ['Never before', 'Within the last 3 years', '3 years or longer'],
+    'Invalid selection',
+  ),
+  wceQ12: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
 })
 
 // Initial values
@@ -56,32 +53,27 @@ const initialValues = {
   wceQ9: '',
   wceQ10: '',
   wceQ11: '',
-  wceQ12: ''
+  wceQ12: '',
 }
 
 // Custom Radio Field Component
 const RadioField = ({ name, label, options, ...props }) => {
   const { values, errors, touched, setFieldValue } = useFormikContext()
-  
+
   return (
     <FormControl error={touched[name] && !!errors[name]} {...props}>
-      <FormLabel component="legend">{label}</FormLabel>
-      <RadioGroup
-        value={values[name] || ''}
-        onChange={(e) => setFieldValue(name, e.target.value)}
-      >
+      <FormLabel component='legend'>{label}</FormLabel>
+      <RadioGroup value={values[name] || ''} onChange={(e) => setFieldValue(name, e.target.value)}>
         {options.map((option) => (
-          <FormControlLabel 
+          <FormControlLabel
             key={option.value}
-            value={option.value} 
-            control={<Radio />} 
-            label={option.label} 
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
           />
         ))}
       </RadioGroup>
-      {touched[name] && errors[name] && (
-        <FormHelperText>{errors[name]}</FormHelperText>
-      )}
+      {touched[name] && errors[name] && <FormHelperText>{errors[name]}</FormHelperText>}
     </FormControl>
   )
 }
@@ -93,14 +85,16 @@ function CheckHpvEligibility() {
 
   if (
     (wceQ8 === '5 years or longer' || wceQ8 === 'Never before') &&
-    (wceQ9 === 'Yes') &&
-    (wceQ10 === 'No') &&
+    wceQ9 === 'Yes' &&
+    wceQ10 === 'No' &&
     (wceQ11 === '3 years or longer' || wceQ11 === 'Never before')
   ) {
     if (wceQ12 === 'Yes') {
       return (
         <Fragment>
-          <p className='blue'>Patient is eligibile for HPV Test at both off-site clinic site and on-site</p>
+          <p className='blue'>
+            Patient is eligibile for HPV Test at both off-site clinic site and on-site
+          </p>
         </Fragment>
       )
     } else if (wceQ12 === 'No') {
@@ -228,83 +222,54 @@ const WceForm = (props) => {
               onSubmit={handleSubmit}
               enableReinitialize={true}
             >
-              {()  => (
+              {() => (
                 <Form>
                   <div className='form--div fieldPadding'>
                     <h1>WCE</h1>
-                    
+
                     <h3>Completed Breast Self Examination station?</h3>
-                    <RadioField 
-                      name='wceQ3' 
-                      label='WCE Q3' 
-                      options={formOptions.wceQ3} 
-                    />
+                    <RadioField name='wceQ3' label='WCE Q3' options={formOptions.wceQ3} />
 
                     <h3>Completed Cervical Education station?</h3>
-                    <RadioField 
-                      name='wceQ4' 
-                      label='WCE Q4' 
-                      options={formOptions.wceQ4} 
-                    />
+                    <RadioField name='wceQ4' label='WCE Q4' options={formOptions.wceQ4} />
 
                     <h3>
-                      When, if any, was the last hpv test you have taken? (Please verify on health hub) (HPV is different from Pap Smear, answer Pap Smear in the next question)
+                      When, if any, was the last hpv test you have taken? (Please verify on health
+                      hub) (HPV is different from Pap Smear, answer Pap Smear in the next question)
                     </h3>
-                    <RadioField 
-                      name='wceQ8' 
-                      label='WCE Q8' 
-                      options={formOptions.wceQ8} 
-                    />
+                    <RadioField name='wceQ8' label='WCE Q8' options={formOptions.wceQ8} />
 
                     <h3>
-                      When if any, was the last Pap Smear test you have taken? (Please verify on health hub)
+                      When if any, was the last Pap Smear test you have taken? (Please verify on
+                      health hub)
                     </h3>
-                    <RadioField 
-                      name='wceQ11' 
-                      label='WCE Q11' 
-                      options={formOptions.wceQ11} 
-                    />
+                    <RadioField name='wceQ11' label='WCE Q11' options={formOptions.wceQ11} />
 
                     <h3>
-                      I am asking the next few questions to check your eligibility for a Pap Smear. This question may be sensitive, but could I ask if you have engaged in sexual intercourse before?
+                      I am asking the next few questions to check your eligibility for a Pap Smear.
+                      This question may be sensitive, but could I ask if you have engaged in sexual
+                      intercourse before?
                     </h3>
-                    <RadioField 
-                      name='wceQ9' 
-                      label='WCE Q9' 
-                      options={formOptions.wceQ9} 
-                    />
+                    <RadioField name='wceQ9' label='WCE Q9' options={formOptions.wceQ9} />
 
                     <h3>Are you pregnant?</h3>
-                    <RadioField 
-                      name='wceQ10' 
-                      label='WCE Q10' 
-                      options={formOptions.wceQ10} 
-                    />
+                    <RadioField name='wceQ10' label='WCE Q10' options={formOptions.wceQ10} />
 
                     <h3>
-                      Was your last menstrual period within the window where the first day falls between 29 July and 5 August 2024? If you are post-menopausal or use contraception, please indicate &apos;yes&apos;
+                      Was your last menstrual period within the window where the first day falls
+                      between 28 July and 4 August 2025? If you are post-menopausal or use
+                      contraception, please indicate &apos;yes&apos;
                     </h3>
-                    <RadioField 
-                      name='wceQ12' 
-                      label='WCE Q12' 
-                      options={formOptions.wceQ12} 
-                    />
+                    <RadioField name='wceQ12' label='WCE Q12' options={formOptions.wceQ12} />
 
                     <h3>Indicated interest for HPV Test under SCS?</h3>
-                    <RadioField 
-                      name='wceQ5' 
-                      label='WCE Q5' 
-                      options={formOptions.wceQ5} 
-                    />
+                    <RadioField name='wceQ5' label='WCE Q5' options={formOptions.wceQ5} />
 
                     <h3>
-                      Is patient indicated for on-site testing? Please circle On-Site Testing on Form A as well
+                      Is patient indicated for on-site testing? Please circle On-Site Testing on
+                      Form A as well
                     </h3>
-                    <RadioField 
-                      name='wceQ7' 
-                      label='WCE Q7' 
-                      options={formOptions.wceQ7} 
-                    />
+                    <RadioField name='wceQ7' label='WCE Q7' options={formOptions.wceQ7} />
 
                     <h3>HPV Test Eligibility</h3>
                     <CheckHpvEligibility />
@@ -314,12 +279,7 @@ const WceForm = (props) => {
                     {loading ? (
                       <CircularProgress />
                     ) : (
-                      <Button 
-                        type='submit' 
-                        variant='contained' 
-                        color='primary'
-                        disabled={loading}
-                      >
+                      <Button type='submit' variant='contained' color='primary' disabled={loading}>
                         Submit
                       </Button>
                     )}
@@ -358,7 +318,9 @@ const WceForm = (props) => {
                 <p className='blue'>nil</p>
               )}
 
-              <p className='underlined'>Patient on any other Government Financial Assistance, other than CHAS and PG:</p>
+              <p className='underlined'>
+                Patient on any other Government Financial Assistance, other than CHAS and PG:
+              </p>
               {hxSocial && hxSocial.SOCIAL3 ? (
                 <p className='blue'>{hxSocial.SOCIAL3}</p>
               ) : (
@@ -371,8 +333,11 @@ const WceForm = (props) => {
               )}
 
               <h2>Family History</h2>
-              <p className='underlined'>Is there positive family history{' '}
-                <span className='red'>(AMONG FIRST DEGREE RELATIVES)</span> for the following cancers?:</p>
+              <p className='underlined'>
+                Is there positive family history{' '}
+                <span className='red'>(AMONG FIRST DEGREE RELATIVES)</span> for the following
+                cancers?:
+              </p>
               {hxFamily && hxFamily.FAMILY1 ? (
                 <p className='blue'>{hxFamily.FAMILY1}</p>
               ) : (

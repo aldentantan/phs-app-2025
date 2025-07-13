@@ -69,8 +69,8 @@ export default function GeriCognitiveTabs() {
           <Tab label='PHQ' {...a11yProps(0)} />
           <Tab label='AMT' {...a11yProps(1)} />
           <Tab label='G-RACE' {...a11yProps(2)} />
-          <Tab label='Whispering Hearts' {...a11yProps(3)} />
-          <Tab label='Interaction' {...a11yProps(3)} />
+          {/*<Tab label='Whispering Hearts' {...a11yProps(3)} />*/}
+          {/*<Tab label='Interaction' {...a11yProps(3)} />*/}
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>

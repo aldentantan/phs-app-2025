@@ -29,7 +29,7 @@ import MentalHealthForm from './forms/MentalHealthTabs/MentalHealthMain'
 import HpvForm from './forms/HpvForm'
 import VaccineForm from './forms/VaccineForm'
 import WceTabs from './forms/WceTabs/WceMain'
-import GeriAudiometryForm from './forms/GeriAudiometryForm'
+import AudiometryForm from './forms/AudiometryForm'
 import GeriVisionForm from './forms/GeriVisionForm'
 import GeriMobilityTabs from './forms/GeriMobilityTabs/GeriMobility'
 import GeriCognitiveTabs from './forms/GeriCognitiveTabs/GeriCognitive'
@@ -52,7 +52,7 @@ const routes = [
       { path: 'reg', element: <RegForm /> },
       { path: 'vax', element: <VaccineForm /> },
       { path: 'hsg', element: <HsgForm /> },
-      { path: 'geriaudio', element: <GeriAudiometryForm /> },
+      { path: 'audio', element: <AudiometryForm /> },
       { path: 'gerivision', element: <GeriVisionForm /> },
       { path: 'gericog', element: <GeriCognitiveTabs /> },
       { path: 'triage', element: <TriageForm /> },
@@ -68,7 +68,7 @@ const routes = [
       { path: 'queue', element: <Queue /> },
       { path: 'eligibility', element: <Eligibility /> },
       { path: '*', element: <Navigate to='/404' /> },
-      { path: 'docadmin', element: <DoctorAdmin />}
+      { path: 'docadmin', element: <DoctorAdmin /> },
     ],
   },
   {
