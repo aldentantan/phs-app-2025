@@ -275,7 +275,7 @@ const TriageForm = () => {
                   </Typography>
                   <Field name='triageQHR2' component={CustomNumberField} label='TriageQHR2' min={0} />
                 </Grid>
-                {/* First row warnings for high BP */}
+                {/* Second row warnings for high BP */}
                 <Grid item xs={12} sm={4} sx={{ mt: -2 }}>
                   <IsHighBP systolic={values.triageQ3} />
                 </Grid>
@@ -308,9 +308,13 @@ const TriageForm = () => {
                   </Typography>
                   <Field name='triageQHR3' component={CustomNumberField} label='TriageQHR3' min={0} />
                 </Grid>
-                <Grid item xs={12}>
-                  <IsHighBP systolic={values.triageQ5} diastolic={values.triageQ6} />
+                <Grid item xs={12} sm={4} sx={{ mt: -2 }} >
+                  <IsHighBP systolic={values.triageQ5} />
                 </Grid>
+                <Grid item xs={12} sm={4} sx={{ mt: -2 }} >
+                  <IsHighBP diastolic={values.triageQ6} />
+                </Grid>
+                <Grid item xs={12} sm={4} sx={{ mt: -2 }}></Grid>
               </Grid>
 
               <h3>Average Reading Systolic (average of closest 2 readings):</h3>
