@@ -1,5 +1,5 @@
-import { getSavedData, getSavedPatientData, updateStationCounts } from './mongoDB'
 import allForms from '../forms/forms.json'
+import { getSavedData, getSavedPatientData, updateStationCounts } from './mongoDB'
 
 export const getEligibilityRows = (forms = {}) => {
   const {
@@ -31,8 +31,8 @@ export const getEligibilityRows = (forms = {}) => {
   const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
 
   const isDoctorStationEligible = triage?.triageQ9 === 'Yes' ||
-    hcsr?.hxHcsrQ3 === 'Yes' ||
-    hcsr?.hxHcsrQ8 === 'Yes' ||
+    hcsr?.hxHcsrQ7 === 'Yes' ||
+    hcsr?.hxHcsrQ6 === 'Yes' ||
     pmhx?.PMHX12 === 'Yes' ||
     //phq?.PHQ9 !== '0 - Not at all'
     // NOTE^ this makes Doctor's Station Eligible with phq?.PHQ9 !== '0 - Not at all'

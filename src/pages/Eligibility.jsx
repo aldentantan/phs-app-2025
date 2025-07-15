@@ -1,30 +1,30 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
-import { Helmet } from 'react-helmet-async'
-import CircularProgress from '@mui/material/CircularProgress'
 import {
   Box,
-  TableContainer,
+  Button,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  Button,
 } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 pdfMake.vfs = pdfFonts.vfs
 
 import logo from 'src/icons/Icon'
-import { parseFromLangKey, setLang } from '../api/langutil'
+import { parseFromLangKey } from '../api/langutil'
 
-import { getSavedData, getSavedPatientData, updateStationCounts } from '../services/mongoDB'
 import { FormContext } from '../api/utils.js'
 import allForms from '../forms/forms.json'
+import { getSavedData, getSavedPatientData, updateStationCounts } from '../services/mongoDB'
 import {
-  getEligibilityRows,
   computeVisitedStationsCount,
+  getEligibilityRows,
   getVisitedStationNames,
 } from '../services/stationCounts'
 
@@ -114,8 +114,8 @@ const Eligibility = () => {
       const isGeriatricScreeningEligible = reg.registrationQ4 >= 60
       const isDoctorStationEligible =
         triage.triageQ9 === 'Yes' ||
-        hcsr.hxHcsrQ3 === 'Yes' ||
-        hcsr.hxHcsrQ8 === 'Yes' ||
+        hcsr.hxHcsrQ7 === 'Yes' ||
+        hcsr.hxHcsrQ6 === 'Yes' ||
         pmhx.PMHX12 === 'Yes' ||
         phq.PHQ10 >= 10 ||
         phq.PHQ9 !== '0 - Not at all'

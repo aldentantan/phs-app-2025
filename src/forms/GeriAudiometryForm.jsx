@@ -412,13 +412,13 @@ const GeriAudiometryForm = () => {
             <div className='summary--question-div'>
               <h2>Hearing Issues</h2>
               <p className='underlined'>Hearing problems</p>
-              {hcsr && hcsr.hxHcsrQ8 ? (
-                <p className='blue'>{hcsr.hxHcsrQ8}</p>
+              {hcsr && hcsr.hxHcsrQ4 ? (
+                <p className='blue'>{hcsr.hxHcsrQ4}</p>
               ) : (
                 <p className='blue'>nil</p>
               )}
-              {hcsr && hcsr.hxHcsrQ9 ? (
-                <p className='blue'>{hcsr.hxHcsrQ9}</p>
+              {hcsr && hcsr.hxHcsrShortAnsQ4 ? (
+                <p className='blue'>{hcsr.hxHcsrShortAnsQ4}</p>
               ) : (
                 <p className='blue'>nil</p>
               )}

@@ -197,14 +197,6 @@ export default function HxNssForm({ changeTab, nextTab }) {
             <RadioGroupField name="PMHX12" label="PMHX12" values={options.PMHX12} />
             <Field name="PMHXShortAns12" as={TextField} label="Please specify" fullWidth multiline sx={{ mb: 3 }} />
 
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              <span style={{ color: '#d32f2f' }}>
-                If you are 60 and above,
-              </span>{' '}
-              do you currently use hearing aids/have been detected to require hearing aids?
-            </Typography>
-            <RadioGroupField name="PMHX13" label="PMHX13" values={options.PMHX13} />
-
             <Typography variant="subtitle1" fontWeight="bold">
               <span style={{ color: '#d32f2f' }}>
                 For geriatric participants,
