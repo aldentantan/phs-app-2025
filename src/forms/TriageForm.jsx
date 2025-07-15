@@ -4,14 +4,7 @@ import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { Typography } from '@mui/material'
 
-import {
-  Divider,
-  Paper,
-  CircularProgress,
-  Button,
-  Box,
-  Grid,
-} from '@mui/material'
+import { Divider, Paper, CircularProgress, Button, Box, Grid } from '@mui/material'
 
 import { submitForm, formatBmi } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
@@ -244,7 +237,12 @@ const TriageForm = () => {
                   <Typography variant='h6' component='h3' sx={{ fontWeight: 'bold' }}>
                     1st Reading Heart Rate (bpm)
                   </Typography>
-                  <Field name='triageQHR1' component={CustomNumberField} label='TriageQHR1' min={0} />
+                  <Field
+                    name='triageQHR1'
+                    component={CustomNumberField}
+                    label='TriageQHR1'
+                    min={0}
+                  />
                 </Grid>
 
                 {/* First row warnings for high BP */}
@@ -273,7 +271,12 @@ const TriageForm = () => {
                   <Typography variant='h6' component='h3' sx={{ fontWeight: 'bold' }}>
                     2nd Reading Heart Rate (bpm)
                   </Typography>
-                  <Field name='triageQHR2' component={CustomNumberField} label='TriageQHR2' min={0} />
+                  <Field
+                    name='triageQHR2'
+                    component={CustomNumberField}
+                    label='TriageQHR2'
+                    min={0}
+                  />
                 </Grid>
                 {/* Second row warnings for high BP */}
                 <Grid item xs={12} sm={4} sx={{ mt: -2 }}>
@@ -306,12 +309,17 @@ const TriageForm = () => {
                     3rd Reading Heart Rate (ONLY if 1st and 2nd heart rate reading differ by{' '}
                     <b>&gt;5bpm</b>)
                   </Typography>
-                  <Field name='triageQHR3' component={CustomNumberField} label='TriageQHR3' min={0} />
+                  <Field
+                    name='triageQHR3'
+                    component={CustomNumberField}
+                    label='TriageQHR3'
+                    min={0}
+                  />
                 </Grid>
-                <Grid item xs={12} sm={4} sx={{ mt: -2 }} >
+                <Grid item xs={12} sm={4} sx={{ mt: -2 }}>
                   <IsHighBP systolic={values.triageQ5} />
                 </Grid>
-                <Grid item xs={12} sm={4} sx={{ mt: -2 }} >
+                <Grid item xs={12} sm={4} sx={{ mt: -2 }}>
                   <IsHighBP diastolic={values.triageQ6} />
                 </Grid>
                 <Grid item xs={12} sm={4} sx={{ mt: -2 }}></Grid>
