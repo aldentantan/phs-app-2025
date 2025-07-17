@@ -116,7 +116,7 @@ const Eligibility = () => {
         triage.triageQ9 === 'Yes' ||
         hcsr.hxHcsrQ7 === 'Yes' ||
         hcsr.hxHcsrQ6 === 'Yes' ||
-        pmhx.PMHX12 === 'Yes' ||
+        pmhx.PMHX7 === 'Yes' ||
         phq.PHQ10 >= 10 ||
         phq.PHQ9 !== '0 - Not at all'
       const isDietitianEligible = hxsocial.SOCIAL15 === 'Yes'

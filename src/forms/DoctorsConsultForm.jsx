@@ -598,26 +598,26 @@ const DoctorsConsultForm = () => {
                       </li>
                       <li>
                         <p>
-                          Drug allergies: <strong>{pmhx.PMHX5}</strong>
+                          Drug allergies: <strong>{pmhx.PMHX3}</strong>
                           <br></br>
-                          <strong>{pmhx.PMHXShortAns5}</strong>
+                          <strong>{pmhx.PMHXShortAns3}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Alternative medicine: <strong>{pmhx.PMHX6}</strong>
+                          Alternative medicine: <strong>{pmhx.PMHX4}</strong>
                           <br></br>
-                          <strong>{pmhx.PMHXShortAns6}</strong>
+                          <strong>{pmhx.PMHXShortAns4}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Regular screening: <strong>{pmhx.PMHX8}</strong>
+                          Regular screening: <strong>{pmhx.PMHX6}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Reason for referral: <strong>{pmhx.PMHXShortAns12}</strong>
+                          Reason for referral: <strong>{pmhx.PMHXShortAns7}</strong>
                         </p>
                       </li>
                     </ul>

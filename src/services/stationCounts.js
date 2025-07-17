@@ -33,7 +33,7 @@ export const getEligibilityRows = (forms = {}) => {
   const isDoctorStationEligible = triage?.triageQ9 === 'Yes' ||
     hcsr?.hxHcsrQ7 === 'Yes' ||
     hcsr?.hxHcsrQ6 === 'Yes' ||
-    pmhx?.PMHX12 === 'Yes' ||
+    pmhx?.PMHX7 === 'Yes' ||
     //phq?.PHQ9 !== '0 - Not at all'
     // NOTE^ this makes Doctor's Station Eligible with phq?.PHQ9 !== '0 - Not at all'
     phq?.PHQ10 >= 10 ||

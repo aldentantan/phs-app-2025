@@ -1,27 +1,27 @@
-import React, { Fragment, useContext, useEffect, useState } from 'react'
-import * as Yup from 'yup'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
 import {
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  FormControl,
-  FormLabel,
   Checkbox,
-  TextField,
+  FormControl,
+  FormControlLabel,
   FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  TextField,
 } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import { ErrorMessage, Field, Form, Formik } from 'formik'
+import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
-import Grid from '@mui/material/Grid'
 import allForms from './forms.json'
-import { useNavigate } from 'react-router-dom'
 
 const validationSchema = Yup.object().shape({
   geriAudiometryQ1: Yup.string()
@@ -456,8 +456,8 @@ const GeriAudiometryForm = () => {
                   <p className='underlined'>
                     For geriatric participants, has the senior seen an ENT specialist before?
                   </p>
-                  <p className='blue'>{pmhx.PMHX14}</p>
-                  <p className='blue'>{pmhx.PMHXShortAns14}</p>
+                  <p className='blue'>{pmhx.PMHX8}</p>
+                  <p className='blue'>{pmhx.PMHXShortAns8}</p>
 
                   <p className='underlined'>
                     <span className='red'>For geriatric participants,</span> did he/she answer yes
@@ -471,8 +471,8 @@ const GeriAudiometryForm = () => {
                     </li>
                     <li>Are your hearing aids spoilt/not working?</li>
                   </ol>
-                  <p className='blue'>{pmhx.PMHX15}</p>
-                  <p className='blue'>{pmhx.PMHXShortAns15}</p>
+                  <p className='blue'>{pmhx.PMHX9}</p>
+                  <p className='blue'>{pmhx.PMHXShortAns9}</p>
                 </>
               ) : (
                 <p className='red'>nil pmhx data</p>
