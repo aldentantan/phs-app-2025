@@ -1,72 +1,44 @@
 import React, { useContext, useEffect, useState } from 'react'
 import {
-  Paper, Divider, Typography, CircularProgress,
-  FormControl, FormLabel, FormGroup, FormControlLabel,
-  Checkbox, TextField, Button
+  Paper,
+  Divider,
+  Typography,
+  CircularProgress,
+  Button,
 } from '@mui/material'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import { submitForm } from '../../api/api.jsx'
+import CustomCheckboxGroup from '../../components/form-components/CustomCheckboxGroup'
+import CustomTextField from '../../components/form-components/CustomTextField'
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import PopupText from '../../utils/PopupText'
 
 const formName = 'hxFamilyForm'
 
 const initialValues = {
-  FAMILY1: [],
-  FAMILYShortAns1: '',
-  FAMILY2: '',
-  FAMILY3: []
+  FAMILY1: '',
+  FAMILYShortAns2: '',
+  FAMILY2: [],
 }
 
 const validationSchema = Yup.object({
-  FAMILY1: Yup.array().min(1, 'At least one option must be selected'),
+  FAMILY1: Yup.string().required('This field is required'),
 })
 
-const checkboxOptions1 = [
-  'Cervical Cancer 子宫颈癌',
-  'Breast Cancer 乳癌',
-  'Colorectal Cancer 大肠癌',
-  'Others',
-  'No, I have never been told I have any of these conditions before',
-]
-
-const checkboxOptions3 = [
-  'Kidney Disease',
-  'Diabetes',
-  'Hypertension'
-]
-
-const CheckboxGroupField = ({ name, label, options }) => (
-  <FormControl fullWidth sx={{ mb: 3 }} component="fieldset">
-    <FormLabel component="legend">
-      <Typography variant="subtitle1" fontWeight="bold">{label}</Typography>
-    </FormLabel>
-    <Field name={name}>
-      {({ field, form }) => (
-        <FormGroup>
-          {options.map(option => (
-            <FormControlLabel
-              key={option}
-              control={
-                <Checkbox
-                  checked={field.value.includes(option)}
-                  onChange={() => {
-                    const set = new Set(field.value)
-                    set.has(option) ? set.delete(option) : set.add(option)
-                    form.setFieldValue(name, Array.from(set))
-                  }}
-                />
-              }
-              label={option}
-            />
-          ))}
-        </FormGroup>
-      )}
-    </Field>
-    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
-  </FormControl>
-)
+const formOptions = {
+  FAMILY1: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  FAMILY2: [
+    { label: 'Kidney Disease', value: 'Kidney Disease' },
+    { label: 'Diabetes', value: 'Diabetes' },
+    { label: 'Hypertension', value: 'Hypertension' },
+  ]
+}
 
 export default function HxFamilyForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
@@ -75,12 +47,12 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getSavedData(patientId, formName);
-      setSavedData({ ...initialValues, ...res });
-    };
+      const res = await getSavedData(patientId, formName)
+      setSavedData({ ...initialValues, ...res })
+    }
 
-    fetchData();
-  }, [patientId]);
+    fetchData()
+  }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true)
@@ -104,26 +76,44 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form className="fieldPadding">
-            <Typography variant="h6" gutterBottom>
-              Is there positive family history <span style={{ color: 'red' }}>(AMONG FIRST DEGREE RELATIVES)</span> for the following cancers?
-              Please specify age of diagnosis.
+          <Form className='fieldPadding'>
+
+            <Typography variant='h6'>
+              Does the patient have any relevant family history they would like the doctor to know
+              about?
             </Typography>
+            <FastField
+              name='FAMILY1'
+              label='FAMILY1'
+              component={CustomRadioGroup}
+              options={formOptions.FAMILY1}
+              row
+            />
+            <PopupText qnNo='FAMILY1' triggerValue='Yes'>
+              <Typography fontWeight='bold'>Please specify:</Typography>
+              <FastField
+                name='FAMILYShortAns2'
+                label='FAMILYShortAns2'
+                component={CustomTextField}
+                fullWidth
+                multiline
+                sx={{ mb: 3, mt: 1 }}
+              />
+            </PopupText>
 
-            <CheckboxGroupField name="FAMILY1" label="FAMILY1" options={checkboxOptions1} />
-
-            <Typography variant="subtitle1" fontWeight="bold">Please specify:</Typography>
-            <Field name="FAMILYShortAns1" as={TextField} label="FAMILYShortAns1" fullWidth multiline sx={{ mb: 3, mt: 1 }} />
-
-            <Typography variant="h6">Does the patient have any relevant family history they would like the doctor to know about?</Typography>
-            <Field name="FAMILY2" as={TextField} label="FAMILY2" fullWidth multiline sx={{ mb: 3, mt: 1 }} />
-
-            <Typography variant="h6">Any positive family history for these conditions?</Typography>
-            <CheckboxGroupField name="FAMILY3" label="FAMILY3" options={checkboxOptions3} />
+            <Typography variant='h6'>Any positive family history for these conditions?</Typography>
+            <FastField
+              name='FAMILY2'
+              label='FAMILY2'
+              component={CustomCheckboxGroup}
+              options={formOptions.FAMILY2}
+            />
 
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? <CircularProgress /> : (
-                <Button type="submit" variant="contained" color="primary">
+              {loading || isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button type='submit' variant='contained' color='primary'>
                   Submit
                 </Button>
               )}
