@@ -20,7 +20,7 @@ const formName = 'hxFamilyForm'
 
 const initialValues = {
   FAMILY1: '',
-  FAMILYShortAns2: '',
+  FAMILYShortAns1: '',
   FAMILY2: [],
 }
 
@@ -92,8 +92,8 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
             <PopupText qnNo='FAMILY1' triggerValue='Yes'>
               <Typography fontWeight='bold'>Please specify:</Typography>
               <FastField
-                name='FAMILYShortAns2'
-                label='FAMILYShortAns2'
+                name='FAMILYShortAns1'
+                label='FAMILYShortAns1'
                 component={CustomTextField}
                 fullWidth
                 multiline
