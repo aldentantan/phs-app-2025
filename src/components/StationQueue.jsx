@@ -5,7 +5,7 @@ import {
   getSavedData,
   getProfile,
 } from '../services/mongoDB'
-import { Box, Button, Typography, TextField, CircularProgress } from '@mui/material'
+import { Box, Button, Typography, TextField, CircularProgress, Tooltip } from '@mui/material'
 import allForms from '../forms/forms.json'
 
 const StationQueue = () => {
@@ -259,9 +259,15 @@ const StationQueue = () => {
                 width: '400px',
               }}
             >
-              <Typography color='textPrimary' gutterBottom variant='h4'>
-                {stationName}
-              </Typography>
+              <Tooltip title={stationName}>
+                <Typography color='textPrimary' gutterBottom variant='h4' noWrap
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {stationName}
+                </Typography>
+              </Tooltip>
 
               <TextField
                 id={stationName}
