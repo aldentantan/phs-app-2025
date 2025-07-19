@@ -14,15 +14,6 @@ import allForms from '../forms.json'
 // IMPORTANT: Formerly NSS, renamed to PMHX as of PHS 2022. MongoDB forms not renamed, only tab name
 const formName = 'hxNssForm'
 
-const validationSchema = Yup.object({
-  PMHX1: Yup.string().required('Required'),
-  PMHX2: Yup.string().required('Required'),
-  PMHX3: Yup.string().required('Required'),
-  PMHX4: Yup.string().required('Required'),
-  PMHX6: Yup.string().required('Required'),
-  PMHX7: Yup.string().required('Required'),
-})
-
 const initialValues = {
   PMHX1: '',
   PMHX2: '',
@@ -41,7 +32,16 @@ const initialValues = {
   PMHXShortAns9: '',
 }
 
-const options = {
+const validationSchema = Yup.object({
+  PMHX1: Yup.string().required('Required'),
+  PMHX2: Yup.string().required('Required'),
+  PMHX3: Yup.string().required('Required'),
+  PMHX4: Yup.string().required('Required'),
+  PMHX6: Yup.string().required('Required'),
+  PMHX7: Yup.string().required('Required'),
+})
+
+const formOptions = {
   PMHX3: [
     { label: 'Yes, please specify', value: 'Yes' },
     { label: 'No', value: 'No' },
@@ -75,7 +75,7 @@ const options = {
 export default function HxNssForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
   const [savedData, setSavedData] = useState(initialValues)
-  const [reg, setReg] = useState({})
+  const [regForm, setRegForm] = useState({})
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
       const res = await getSavedData(patientId, formName)
       const regData = await getSavedData(patientId, allForms.registrationForm)
       setSavedData({ ...initialValues, ...res })
-      setReg(regData)
+      setRegForm(regData)
     }
 
     fetchData()
@@ -169,7 +169,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
               name='PMHX3'
               label='PMHX3'
               component={CustomRadioGroup}
-              options={options.PMHX3}
+              options={formOptions.PMHX3}
               row
             />
             <PopupText qnNo='PMHX3' triggerValue='Yes'>
@@ -192,7 +192,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
               name='PMHX4'
               label='PMHX4'
               component={CustomRadioGroup}
-              options={options.PMHX4}
+              options={formOptions.PMHX4}
               row
             />
             <PopupText qnNo='PMHX4' triggerValue='Yes'>
@@ -215,7 +215,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
             <FastField
               name='PMHX5'
               component={CustomCheckboxGroup}
-              options={options.PMHX5}
+              options={formOptions.PMHX5}
               label='PMHX5'
               row
             />
@@ -260,7 +260,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
               name='PMHX7'
               label='PMHX7'
               component={CustomRadioGroup}
-              options={options.PMHX7}
+              options={formOptions.PMHX7}
               row
             />
             <FastField
@@ -271,7 +271,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
               multiline
               sx={{ mb: 3 }}
             />
-            {reg.registrationQ4 >= 60 && (
+            {regForm.registrationQ4 >= 60 && (
               <>
                 <Typography variant='subtitle1' fontWeight='bold'>
                   <span style={{ color: '#d32f2f' }}>For geriatric participants,</span> has the
@@ -281,7 +281,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
                   name='PMHX8'
                   component={CustomRadioGroup}
                   label='PMHX8'
-                  options={options.PMHX8}
+                  options={formOptions.PMHX8}
                   row
                 />
                 <PopupText qnNo='PMHX8' triggerValue='Yes'>
@@ -311,7 +311,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
                   name='PMHX9'
                   label='PMHX9'
                   component={CustomRadioGroup}
-                  options={options.PMHX9}
+                  options={formOptions.PMHX9}
                   row
                 />
                 <PopupText qnNo='PMHX9' triggerValue='Yes'>
