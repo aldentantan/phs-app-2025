@@ -51,12 +51,12 @@ const formOptions = {
     { label: 'No', value: 'No' },
   ],
   PMHX5: [
-    'Kidney Disease',
-    'Hypertension',
-    'Hyperlipidemia',
-    'Diabetes',
-    'Heart disease (includes heart attack, heart failure, heart valve disease, stroke, blood vessel/vascular disease)',
-    'Others',
+    { label: 'Kidney Disease', value: 'Kidney Disease' },
+    { label: 'Hypertension', value: 'Hypertension' },
+    { label: 'Hyperlipidemia', value: 'Hyperlipidemia' },
+    { label: 'Diabetes', value: 'Diabetes' },
+    { label: 'Heart disease (includes heart attack, heart failure, heart valve disease, stroke, blood vessel/vascular disease)', value: 'Heart disease' },
+    { label: 'Others', value: 'Others' },
   ],
   PMHX7: [
     { label: 'Yes', value: 'Yes' },
