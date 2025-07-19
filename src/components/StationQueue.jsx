@@ -87,6 +87,13 @@ const StationQueue = () => {
     isLoading(true)
 
     const patientIdText = stationPatientAddId[stationName]
+
+    if (!patientIdText || patientIdText.trim() === '') {
+      alert('Patient ID must be a number.')
+      isLoading(false)
+      return
+    }
+
     const patientIds = patientIdText
       .trim()
       .split(' ')
@@ -124,6 +131,13 @@ const StationQueue = () => {
     isLoading(true)
 
     const patientIdText = stationPatientRemoveId[stationName]
+
+    if (!patientIdText || patientIdText.trim() === '') {
+      alert('Patient ID must be a number.')
+      isLoading(false)
+      return
+    }
+
     const patientIds = patientIdText
       .trim()
       .split(' ')
