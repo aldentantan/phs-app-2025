@@ -1,19 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, Field,  FastField } from 'formik'
 import * as Yup from 'yup'
 import {
-  Paper, Divider, CircularProgress, RadioGroup,
-  FormControlLabel, Radio, FormControl, FormLabel,
-  TextField, Button, Typography
+  Paper,
+  Divider,
+  CircularProgress,
+  TextField,
+  Button,
+  Typography,
 } from '@mui/material'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import { submitForm } from '../../api/api.jsx'
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import PopupText from '../../utils/PopupText'
 
 const formName = 'hxOralForm'
 
 const initialValues = {
-  ORAL1: '', ORALShortAns1: '', ORAL2: '', ORAL3: '', ORAL4: '', ORAL5: '', ORALShortAns5: ''
+  ORAL1: '',
+  ORALShortAns1: '',
+  ORAL2: '',
+  ORAL3: '',
+  ORAL4: '',
+  ORAL5: '',
+  ORALShortAns5: '',
 }
 
 const validationSchema = Yup.object({
@@ -24,24 +35,29 @@ const validationSchema = Yup.object({
   ORAL5: Yup.string().required('Required'),
 })
 
-const yesNoOptions = ['Yes', 'No']
-const oral1Options = ['Healthy', 'Moderate', 'Poor, (please specify)']
-
-const RadioGroupField = ({ name, label, values }) => (
-  <FormControl fullWidth sx={{ mb: 3 }}>
-    <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
-    <Field name={name}>
-      {({ field }) => (
-        <RadioGroup {...field} row>
-          {values.map((val) => (
-            <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
-          ))}
-        </RadioGroup>
-      )}
-    </Field>
-    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
-  </FormControl>
-)
+const formOptions = {
+  ORAL1: [
+    { label: 'Healthy', value: 'Healthy' },
+    { label: 'Moderate', value: 'Moderate' },
+    { label: 'Poor, please specify', value: 'Poor' },
+  ],
+  ORAL2: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  ORAL3: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  ORAL4: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  ORAL5: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+}
 
 export default function HxOralForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
@@ -50,12 +66,12 @@ export default function HxOralForm({ changeTab, nextTab }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getSavedData(patientId, formName);
-      setSavedData({ ...initialValues, ...res });
-    };
+      const res = await getSavedData(patientId, formName)
+      setSavedData({ ...initialValues, ...res })
+    }
 
-    fetchData();
-  }, [patientId]);
+    fetchData()
+  }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true)
@@ -79,58 +95,124 @@ export default function HxOralForm({ changeTab, nextTab }) {
         onSubmit={handleSubmit}
       >
         {({ values, isSubmitting }) => (
-          <Form className="fieldPadding">
-            <Typography variant="h4" gutterBottom><strong>ORAL ISSUES</strong></Typography>
+          <Form className='fieldPadding'>
+            <Typography variant='h4' gutterBottom>
+              <strong>ORAL ISSUES</strong>
+            </Typography>
 
-            <Typography variant="subtitle1" color="error" fontWeight="bold">
+            <Typography variant='subtitle1' color='error' fontWeight='bold'>
               Please do a quick inspection of participant&apos;s oral health status:
               <ol>
                 <li>Lips, Tongue, Gums & Tissues (Healthy - pink and moist)</li>
-                <li>Natural Teeth, Oral Cleanliness & Dentures (Tooth/Root decay, no cracked/broken dentures, no food particles/tartar in mouth)</li>
+                <li>
+                  Natural Teeth, Oral Cleanliness & Dentures (Tooth/Root decay, no cracked/broken
+                  dentures, no food particles/tartar in mouth)
+                </li>
                 <li>Saliva status (free-flowing) and any dental pain</li>
               </ol>
             </Typography>
 
-            <Typography variant="subtitle1" fontWeight="bold">How is the participant&apos;s Oral Health?</Typography>
-            <RadioGroupField name="ORAL1" label="ORAL1" values={oral1Options} />
+            <Typography variant='subtitle1' fontWeight='bold'>
+              How is the participant&apos;s Oral Health?
+            </Typography>
+            <FastField
+              name='ORAL1'
+              label='ORAL1'
+              component={CustomRadioGroup}
+              options={formOptions.ORAL1}
+            />
 
-            {values.ORAL1 === 'Poor, (please specify)' && (
-              <>
-                <Typography variant="subtitle1" fontWeight="bold">Please specify:</Typography>
-                <Field name="ORALShortAns1" as={TextField} label="ORALShortAns1" fullWidth multiline sx={{ mb: 3, mt: 1 }} />
-              </>
-            )}
+            <PopupText qnNo='ORAL1' triggerValue='Poor'>
+              <Typography variant='subtitle1' fontWeight='bold'>
+                Please specify:
+              </Typography>
+              <Field
+                name='ORALShortAns1'
+                as={TextField}
+                label='ORALShortAns1'
+                fullWidth
+                multiline
+                sx={{ mb: 3, mt: 1 }}
+              />
+            </PopupText>
 
-            <Typography variant="subtitle1" fontWeight="bold">Do you wear dentures?</Typography>
-            <RadioGroupField name="ORAL2" label="ORAL2" values={yesNoOptions} />
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Do you wear dentures?
+            </Typography>
+            <FastField
+              name='ORAL2'
+              label='ORAL2'
+              component={CustomRadioGroup}
+              options={formOptions.ORAL2}
+              row
+            />
 
-            <Typography variant="subtitle1" fontWeight="bold">Are you currently experiencing any pain in your mouth area?</Typography>
-            <RadioGroupField name="ORAL3" label="ORAL3" values={yesNoOptions} />
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Are you currently experiencing any pain in your mouth area?
+            </Typography>
+            <FastField
+              name='ORAL3'
+              label='ORAL3'
+              component={CustomRadioGroup}
+              options={formOptions.ORAL3}
+              row
+            />
 
-            <Typography variant="subtitle1" fontWeight="bold">Have you visited a dentist in the past 1 year?</Typography>
-            <RadioGroupField name="ORAL4" label="ORAL4" values={yesNoOptions} />
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Have you visited a dentist in the past 1 year?
+            </Typography>
+            <FastField
+              name='ORAL4'
+              label='ORAL4'
+              component={CustomRadioGroup}
+              options={formOptions.ORAL4}
+              row
+            />
 
-            <Typography variant="subtitle1" fontWeight="bold">
-              Would you like to go through free Oral Health Education by NUS Dentistry dentists and students?
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Would you like to go through free Oral Health Education by NUS Dentistry dentists and
+              students?
             </Typography>
             <Typography gutterBottom>
-              If the patient has any queries regarding dental health, or if you think that the patient would benefit from an Oral Health Consult.
+              If the patient has any queries regarding dental health, or if you think that the
+              patient would benefit from an Oral Health Consult.
             </Typography>
-            <RadioGroupField name="ORAL5" label="ORAL5" values={yesNoOptions} />
-            <Typography variant="subtitle1" fontWeight="bold">Please specify:</Typography>
-            <Field name="ORALShortAns5" as={TextField} label="ORALShortAns5" fullWidth multiline sx={{ mb: 3, mt: 1 }} />
+            <FastField
+              name='ORAL5'
+              label='ORAL5'
+              component={CustomRadioGroup}
+              options={formOptions.ORAL5}
+              row
+            />
+            <PopupText qnNo='ORAL5' triggerValue='Yes'>
+              <Typography variant='subtitle1' fontWeight='bold'>
+                Please specify:
+              </Typography>
+              <Field
+                name='ORALShortAns5'
+                as={TextField}
+                label='ORALShortAns5'
+                fullWidth
+                multiline
+                sx={{ mb: 3, mt: 1 }}
+              />
+            </PopupText>
 
-            <Typography variant="subtitle1" fontWeight="bold">
-              The dental examination booth will only provide <u>simple dental screening</u>, there will be no treatment provided on site (e.g. scaling and polishing)
+            <Typography variant='subtitle1' fontWeight='bold'>
+              The dental examination booth will only provide <u>simple dental screening</u>, there
+              will be no treatment provided on site (e.g. scaling and polishing)
             </Typography>
-            <Typography variant="subtitle1" fontWeight="bold">
+            <Typography variant='subtitle1' fontWeight='bold'>
               <span style={{ color: 'red' }}>Please help to emphasise that: </span>
-              screening DOES NOT take the place of a thorough oral health examination with a dentist.
+              screening DOES NOT take the place of a thorough oral health examination with a
+              dentist.
             </Typography>
 
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? <CircularProgress /> : (
-                <Button type="submit" variant="contained" color="primary">
+              {loading || isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button type='submit' variant='contained' color='primary'>
                   Submit
                 </Button>
               )}
