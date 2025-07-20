@@ -1,6 +1,6 @@
 import React from 'react'
 import { Fragment, useContext, useEffect, useState } from 'react'
-import { Formik, Form, useFormikContext } from 'formik'
+import { Formik, Form, useFormikContext, Field } from 'formik'
 import * as Yup from 'yup'
 
 import {
@@ -23,6 +23,8 @@ import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import allForms from '../forms.json'
+
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 
 // Yup validation schema
 const validationSchema = Yup.object({
@@ -54,28 +56,6 @@ const initialValues = {
   wceQ10: '',
   wceQ11: '',
   wceQ12: '',
-}
-
-// Custom Radio Field Component
-const RadioField = ({ name, label, options, ...props }) => {
-  const { values, errors, touched, setFieldValue } = useFormikContext()
-
-  return (
-    <FormControl error={touched[name] && !!errors[name]} {...props}>
-      <FormLabel component='legend'>{label}</FormLabel>
-      <RadioGroup value={values[name] || ''} onChange={(e) => setFieldValue(name, e.target.value)}>
-        {options.map((option) => (
-          <FormControlLabel
-            key={option.value}
-            value={option.value}
-            control={<Radio />}
-            label={option.label}
-          />
-        ))}
-      </RadioGroup>
-      {touched[name] && errors[name] && <FormHelperText>{errors[name]}</FormHelperText>}
-    </FormControl>
-  )
 }
 
 // HPV Eligibility Checker Component
@@ -228,48 +208,93 @@ const WceForm = (props) => {
                     <h1>WCE</h1>
 
                     <h3>Completed Breast Self Examination station?</h3>
-                    <RadioField name='wceQ3' label='WCE Q3' options={formOptions.wceQ3} />
+                    <Field
+                      name='wceQ3'
+                      label='WCE Q3'
+                      options={formOptions.wceQ3}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>Completed Cervical Education station?</h3>
-                    <RadioField name='wceQ4' label='WCE Q4' options={formOptions.wceQ4} />
+                    <Field
+                      name='wceQ4'
+                      label='WCE Q4'
+                      options={formOptions.wceQ4}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>
                       When, if any, was the last hpv test you have taken? (Please verify on health
                       hub) (HPV is different from Pap Smear, answer Pap Smear in the next question)
                     </h3>
-                    <RadioField name='wceQ8' label='WCE Q8' options={formOptions.wceQ8} />
+                    <Field
+                      name='wceQ8'
+                      label='WCE Q8'
+                      options={formOptions.wceQ8}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>
                       When if any, was the last Pap Smear test you have taken? (Please verify on
                       health hub)
                     </h3>
-                    <RadioField name='wceQ11' label='WCE Q11' options={formOptions.wceQ11} />
+                    <Field
+                      name='wceQ11'
+                      label='WCE Q11'
+                      options={formOptions.wceQ11}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>
                       I am asking the next few questions to check your eligibility for a Pap Smear.
                       This question may be sensitive, but could I ask if you have engaged in sexual
                       intercourse before?
                     </h3>
-                    <RadioField name='wceQ9' label='WCE Q9' options={formOptions.wceQ9} />
+                    <Field
+                      name='wceQ9'
+                      label='WCE Q9'
+                      options={formOptions.wceQ9}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>Are you pregnant?</h3>
-                    <RadioField name='wceQ10' label='WCE Q10' options={formOptions.wceQ10} />
+                    <Field
+                      name='wceQ10'
+                      label='WCE Q10'
+                      options={formOptions.wceQ10}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>
                       Was your last menstrual period within the window where the first day falls
                       between 28 July and 4 August 2025? If you are post-menopausal or use
                       contraception, please indicate &apos;yes&apos;
                     </h3>
-                    <RadioField name='wceQ12' label='WCE Q12' options={formOptions.wceQ12} />
+                    <Field
+                      name='wceQ12'
+                      label='WCE Q12'
+                      options={formOptions.wceQ12}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>Indicated interest for HPV Test under SCS?</h3>
-                    <RadioField name='wceQ5' label='WCE Q5' options={formOptions.wceQ5} />
+                    <Field
+                      name='wceQ5'
+                      label='WCE Q5'
+                      options={formOptions.wceQ5}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>
                       Is patient indicated for on-site testing? Please circle On-Site Testing on
                       Form A as well
                     </h3>
-                    <RadioField name='wceQ7' label='WCE Q7' options={formOptions.wceQ7} />
+                    <Field
+                      name='wceQ7'
+                      label='WCE Q7'
+                      options={formOptions.wceQ7}
+                      component={CustomRadioGroup}
+                    />
 
                     <h3>HPV Test Eligibility</h3>
                     <CheckHpvEligibility />

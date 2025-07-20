@@ -1,53 +1,82 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Formik, Form, useFormikContext } from 'formik'
+import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
-
-import {
-  Divider,
-  Paper,
-  CircularProgress,
-  Button,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormHelperText,
-  TextField
-} from '@mui/material';
+import { Paper, CircularProgress, Button, Divider } from '@mui/material'
+import { useNavigate } from 'react-router'
 
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
-
 import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import '../forms.css'
-import { useNavigate } from 'react-router'
 
-// Yup validation schema
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import CustomTextField from '../../components/form-components/CustomTextField'
+
+// Yup validation schema (updated with .when as you requested)
 const validationSchema = Yup.object({
   GYNAE1: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
   GYNAE2: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns2: Yup.string(),
+  GYNAEShortAns2: Yup.string().when('GYNAE2', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE3: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns3: Yup.string(),
+  GYNAEShortAns3: Yup.string().when('GYNAE3', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE4: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns4: Yup.string(),
+  GYNAEShortAns4: Yup.string().when('GYNAE4', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE5: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns5: Yup.string(),
+  GYNAEShortAns5: Yup.string().when('GYNAE5', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE6: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns6: Yup.string(),
+  GYNAEShortAns6: Yup.string().when('GYNAE6', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE7: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns7: Yup.string(),
+  GYNAEShortAns7: Yup.string().when('GYNAE7', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE8: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns8: Yup.string(),
+  GYNAEShortAns8: Yup.string().when('GYNAE8', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE9: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
   GYNAE10: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns10: Yup.string(),
+  GYNAEShortAns10: Yup.string().when('GYNAE10', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE11: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns11: Yup.string(),
+  GYNAEShortAns11: Yup.string().when('GYNAE11', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
   GYNAE13: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAEShortAns13: Yup.string(),
+  GYNAEShortAns13: Yup.string().when('GYNAE13', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
 })
 
 // Initial values
@@ -76,116 +105,30 @@ const initialValues = {
   GYNAEShortAns13: '',
 }
 
-// Custom Radio Field Component
-const RadioField = ({ name, label, options, ...props }) => {
-  const { values, errors, touched, setFieldValue } = useFormikContext()
-  
-  return (
-    <FormControl error={touched[name] && !!errors[name]} {...props}>
-      <FormLabel component="legend">{label}</FormLabel>
-      <RadioGroup
-        value={values[name] || ''}
-        onChange={(e) => setFieldValue(name, e.target.value)}
-      >
-        {options.map((option) => (
-          <FormControlLabel 
-            key={option.value}
-            value={option.value} 
-            control={<Radio />} 
-            label={option.label} 
-          />
-        ))}
-      </RadioGroup>
-      {touched[name] && errors[name] && (
-        <FormHelperText>{errors[name]}</FormHelperText>
-      )}
-    </FormControl>
-  )
+const formOptions = {
+  yesNo: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
 }
-
-// Custom Text Field Component
-const TextFieldFormik = ({ name, label, multiline = false, rows = 1, ...props }) => {
-  const { values, errors, touched, setFieldValue } = useFormikContext()
-  
-  return (
-    <TextField
-      name={name}
-      label={label}
-      value={values[name] || ''}
-      onChange={(e) => setFieldValue(name, e.target.value)}
-      error={touched[name] && !!errors[name]}
-      helperText={touched[name] && errors[name]}
-      multiline={multiline}
-      rows={rows}
-      fullWidth
-      margin="normal"
-      {...props}
-    />
-  )
-}
-
-// Referral Component
-const GetReferral = () => {
-  const { values } = useFormikContext()
-  const { GYNAE2, GYNAE3, GYNAE4, GYNAE5, GYNAE6, GYNAE7, GYNAE8, GYNAE9, GYNAE10, GYNAE11 } = values
-
-  const generalGynae = [GYNAE2, GYNAE3, GYNAE4, GYNAE5, GYNAE6, GYNAE7]
-  const reproMedicine = [GYNAE8, GYNAE9]
-  const urogynae = [GYNAE10, GYNAE11]
-
-  let result = ''
-  for (const qn of generalGynae) {
-    if (qn === 'Yes') {
-      result += 'General Gynecology Clinic'
-      break
-    }
-  }
-  for (const qn of reproMedicine) {
-    if (qn === 'Yes') {
-      result += '\nReproductive Medicine Clinic (if patient is keen for fertility)'
-      break
-    }
-  }
-  for (const qn of urogynae) {
-    if (qn === 'Yes') {
-      result += '\nUrogynecology Clinic'
-      break
-    }
-  }
-  return (
-    <p style={{ whiteSpace: 'pre-line' }} className='blue'>
-      {result}
-    </p>
-  )
-}
-
-const formName = 'gynaeForm'
 
 const GynaeForm = () => {
   const navigate = useNavigate()
-  const [loading, isLoading] = useState(false)
   const { patientId } = useContext(FormContext)
+  const [loading, isLoading] = useState(false)
   const [saveData, setSaveData] = useState(initialValues)
 
   useEffect(() => {
     const fetchData = async () => {
-      const savedData = await getSavedData(patientId, formName)
-      // Merge saved data with initial values to ensure all fields are present
+      const savedData = await getSavedData(patientId, 'gynaeForm')
       setSaveData({ ...initialValues, ...savedData })
     }
     fetchData()
-  }, [])
-
-  const formOptions = {
-    yesNo: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-  }
+  }, [patientId])
 
   const handleSubmit = async (values) => {
     isLoading(true)
-    const response = await submitForm(values, patientId, formName)
+    const response = await submitForm(values, patientId, 'gynaeForm')
     if (response.result) {
       isLoading(false)
       setTimeout(() => {
@@ -206,217 +149,217 @@ const GynaeForm = () => {
         initialValues={saveData}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-        enableReinitialize={true}
+        enableReinitialize
       >
         {({ values }) => (
-          <Form>
-            <div className='form--div fieldPadding'>
-              <h1>Gynecology</h1>
-              <h3 className='red'>Only ask if participant is female: </h3>
-              
-              <h3>Are you menopaused?</h3>
-              <p>i.e. &gt; 1 year from your last menstrual period</p>
-              <RadioField 
-                name='GYNAE1' 
-                label='GYNAE1' 
-                options={formOptions.yesNo} 
-              />
+          <Form className='form--div fieldPadding'>
+            <h1>Gynecology</h1>
+            <h3 className='red'>Only ask if participant is female:</h3>
 
-              {values.GYNAE1 === 'Yes' && (
-                <>
-                  <h3>Do you have any postmenopausal bleeding? (bleeding after menopause)</h3>
-                  <RadioField 
-                    name='GYNAE2' 
-                    label='GYNAE2' 
-                    options={formOptions.yesNo} 
-                  />
-                  <h4>Please specify:</h4>
-                  <TextFieldFormik 
-                    name='GYNAEShortAns2' 
-                    label='GYNAE2 Details' 
-                    multiline 
-                    rows={3} 
-                  />
-                </>
-              )}
+            <FastField
+              name='GYNAE1'
+              label='Are you menopaused? (i.e. > 1 year from your last menstrual period)'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
 
-              <h3>Do you have any abnormal per vaginal bleeding?</h3>
-              <p>
-                e.g. bleeding between periods (intermenstrual bleeding), prolonged menses, bleeding after
-                intercourse (post-coital bleeding)
-              </p>
-              <RadioField 
-                name='GYNAE3' 
-                label='GYNAE3' 
-                options={formOptions.yesNo} 
-              />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns3' 
-                label='GYNAE3 Details' 
-                multiline 
-                rows={3} 
-              />
+            {values.GYNAE1 === 'Yes' && (
+              <>
+                <FastField
+                  name='GYNAE2'
+                  label='Do you have any postmenopausal bleeding? (bleeding after menopause)'
+                  component={CustomRadioGroup}
+                  options={formOptions.yesNo}
+                  row
+                />
+                <FastField
+                  name='GYNAEShortAns2'
+                  label='Please specify:'
+                  component={CustomTextField}
+                  multiline
+                  rows={3}
+                />
+              </>
+            )}
 
-              <h3>Do you have irregular period or less than 4 menstrual cycles a year?</h3>
-              <RadioField 
-                name='GYNAE4' 
-                label='GYNAE4' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE3'
+              label='Do you have any abnormal per vaginal bleeding? e.g. bleeding between periods, prolonged menses, bleeding after intercourse'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE3 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns3'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns4' 
-                label='GYNAE4 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>
-                Do you have any menstrual concerns such as extremely heavy menses/severe pain during
-                menses?
-              </h3>
-              <RadioField 
-                name='GYNAE5' 
-                label='GYNAE5' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE4'
+              label='Do you have irregular period or less than 4 menstrual cycles a year?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE4 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns4'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns5' 
-                label='GYNAE5 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>Do you feel any abnormal abdominal masses?</h3>
-              <RadioField 
-                name='GYNAE6' 
-                label='GYNAE6' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE5'
+              label='Do you have any menstrual concerns such as extremely heavy menses/severe pain during menses?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE5 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns5'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns6' 
-                label='GYNAE6 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>Do you have any new onset abdominal pain/bloatedness?</h3>
-              <RadioField 
-                name='GYNAE7' 
-                label='GYNAE7' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE6'
+              label='Do you feel any abnormal abdominal masses?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE6 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns6'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns7' 
-                label='GYNAE7 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>
-                Do you have any fertility concerns or any difficulties conceiving after trying for more
-                than 1 year?
-              </h3>
-              <RadioField 
-                name='GYNAE8' 
-                label='GYNAE8' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE7'
+              label='Do you have any new onset abdominal pain/bloatedness?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE7 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns7'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns8' 
-                label='GYNAE8 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              {values.GYNAE8 === 'Yes' && (
-                <>
-                  <h3>
-                    If so, are you keen to investigate for the cause of subfertility and to pursue fertility
-                    treatment?
-                  </h3>
-                  <RadioField 
-                    name='GYNAE9' 
-                    label='GYNAE9' 
-                    options={formOptions.yesNo} 
-                  />
-                </>
-              )}
+            <FastField
+              name='GYNAE8'
+              label='Do you have any fertility concerns or any difficulties conceiving after trying for more than 1 year?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE8 === 'Yes' && (
+              <>
+                <FastField
+                  name='GYNAEShortAns8'
+                  label='Please specify:'
+                  component={CustomTextField}
+                  multiline
+                  rows={3}
+                />
+                <FastField
+                  name='GYNAE9'
+                  label='If so, are you keen to investigate for the cause of subfertility and to pursue fertility treatment?'
+                  component={CustomRadioGroup}
+                  options={formOptions.yesNo}
+                  row
+                />
+              </>
+            )}
 
-              <h3>
-                Do you have any urinary symptoms such as urinary leakage, recurrent urinary infection,
-                urgency or nocturia?
-              </h3>
-              <RadioField 
-                name='GYNAE10' 
-                label='GYNAE10' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE10'
+              label='Do you have any urinary symptoms such as urinary leakage, recurrent urinary infection, urgency or nocturia?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE10 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns10'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns10' 
-                label='GYNAE10 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>Do you feel any lump in vagina or have any pelvic organ prolapse?</h3>
-              <RadioField 
-                name='GYNAE11' 
-                label='GYNAE11' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE11'
+              label='Do you feel any lump in vagina or have any pelvic organ prolapse?'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE11 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns11'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns11' 
-                label='GYNAE11 Details' 
-                multiline 
-                rows={3} 
-              />
+            )}
 
-              <h3>
-                Based on Advanced Gynae Screening, please kindly refer her to the following gynecological
-                service for further evaluation:
-              </h3>
-              <GetReferral />
+            <h3>
+              Based on Advanced Gynae Screening, please kindly refer her to the following
+              gynecological service for further evaluation:
+            </h3>
+            {/* You can keep your GetReferral component here if needed */}
 
-              <h3>Referral was given</h3>
-              <RadioField 
-                name='GYNAE13' 
-                label='GYNAE13' 
-                options={formOptions.yesNo} 
+            <FastField
+              name='GYNAE13'
+              label='Referral was given'
+              component={CustomRadioGroup}
+              options={formOptions.yesNo}
+              row
+            />
+            {values.GYNAE13 === 'Yes' && (
+              <FastField
+                name='GYNAEShortAns13'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
               />
-              <h4>Please specify:</h4>
-              <TextFieldFormik 
-                name='GYNAEShortAns13' 
-                label='GYNAE13 Details' 
-                multiline 
-                rows={3} 
-              />
-              <br />
-            </div>
+            )}
 
-            <div style={{ paddingLeft: '16px', paddingBottom: '16px' }}>
+            <div style={{ paddingLeft: 16, paddingBottom: 16 }}>
               {loading ? (
                 <CircularProgress />
               ) : (
-                <Button 
-                  type='submit' 
-                  variant='contained' 
-                  color='primary'
-                  disabled={loading}
-                >
+                <Button type='submit' variant='contained' color='primary' disabled={loading}>
                   Submit
                 </Button>
               )}
             </div>
-
-            <br />
             <Divider />
           </Form>
         )}
@@ -424,7 +367,5 @@ const GynaeForm = () => {
     </Paper>
   )
 }
-
-GynaeForm.contextType = FormContext
 
 export default GynaeForm

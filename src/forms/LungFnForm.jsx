@@ -12,6 +12,7 @@ import './fieldPadding.css'
 
 import CustomTextField from '../components/form-components/CustomTextField'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+import CustomNumberField from '../components/form-components/CustomNumberField'
 
 const initialValues = {
   LUNG1: '',
@@ -27,36 +28,78 @@ const initialValues = {
 }
 
 const validationSchema = Yup.object({
-  LUNG1: Yup.string()
-    .oneOf(['Yes', 'No'], 'Please select a valid option')
-    .required('This field is required'),
-  LUNGShortAns1: Yup.string().when('LUNG1', {
+  GYNAE1: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE2: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns2: Yup.string().when('GYNAE2', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  LUNG1a: Yup.string()
-    .oneOf(['Yes', 'No'], 'Please select a valid option')
-    .required('This field is required'),
-  LUNG2: Yup.string()
-    .oneOf(['Yes', 'No'], 'Please select a valid option')
-    .required('This field is required'),
-  LUNGShortAns2: Yup.string().when('LUNG2', {
-    is: 'No',
-    then: (schema) => schema.required('Please specify why'),
+  GYNAE3: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns3: Yup.string().when('GYNAE3', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  LUNG3: Yup.number().typeError('Must be a number').required('This field is required'),
-  LUNG4: Yup.number().typeError('Must be a number').required('This field is required'),
-  LUNG5: Yup.number().typeError('Must be a number').required('This field is required'),
-  LUNG6: Yup.number().typeError('Must be a number').required('This field is required'),
-  LUNG7: Yup.number().typeError('Must be a number').required('This field is required'),
-  LUNG14: Yup.string()
-    .oneOf(['Yes', 'No'], 'Please select a valid option')
-    .required('This field is required'),
+  GYNAE4: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns4: Yup.string().when('GYNAE4', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE5: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns5: Yup.string().when('GYNAE5', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE6: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns6: Yup.string().when('GYNAE6', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE7: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns7: Yup.string().when('GYNAE7', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE8: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns8: Yup.string().when('GYNAE8', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE9: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE10: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns10: Yup.string().when('GYNAE10', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE11: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns11: Yup.string().when('GYNAE11', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
+  GYNAE13: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAEShortAns13: Yup.string().when('GYNAE13', {
+    is: 'Yes',
+    then: (schema) => schema.required('Please specify'),
+    otherwise: (schema) => schema,
+  }),
 })
 
 const formName = 'lungFnForm'
+
+const formOptions = {
+  yesNoOptions: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+}
 
 const LungFnForm = () => {
   const { patientId } = useContext(FormContext)
@@ -64,7 +107,6 @@ const LungFnForm = () => {
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
   const [savedData, setSavedData] = useState(initialValues)
   const [socialData, setSocialData] = useState({})
-  const [lungType, setLungType] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -116,20 +158,14 @@ const LungFnForm = () => {
     setSubmitting(false)
   }
 
-  const formOptions = {
-    LUNG1: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-    LUNG1a: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-    LUNG2: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-  }
+  const renderFormSection = (title, children) => (
+    <Box sx={{ mb: 3 }}>
+      <Typography variant='h6' component='h3' gutterBottom>
+        {title}
+      </Typography>
+      {children}
+    </Box>
+  )
 
   const renderForm = () => (
     <Formik
@@ -139,108 +175,98 @@ const LungFnForm = () => {
       enableReinitialize={true}
     >
       {({ isSubmitting, submitCount, values, errors, touched }) => {
-        // Calculate lung type whenever values change
         const currentLungType = calculateLungType(values.LUNG5, values.LUNG7)
 
         return (
           <Form className='fieldPadding'>
-            <div className='form--div'>
-              <Typography variant='h4' component='h1' gutterBottom>
-                Lung Function
-              </Typography>
+            <Typography variant='h4' component='h1' gutterBottom>
+              Lung Function
+            </Typography>
 
-              <Typography variant='h6' component='h3' gutterBottom>
-                Do you have any flu, fever now?
-              </Typography>
-              <FastField
-                name='LUNG1'
-                label='LUNG1'
-                component={CustomRadioGroup}
-                options={formOptions.LUNG1}
-                row
-              />
-
-              {values.LUNG1 === 'Yes' && (
+            {renderFormSection(
+              'Do you have any flu, fever now?',
+              <>
                 <FastField
-                  name='LUNGShortAns1'
-                  label='Please specify details'
-                  component={CustomTextField}
-                  multiline
-                  rows={2}
+                  name='LUNG1'
+                  component={CustomRadioGroup}
+                  options={formOptions.yesNoOptions}
+                  row
                 />
-              )}
+                {values.LUNG1 === 'Yes' && (
+                  <FastField
+                    name='LUNGShortAns1'
+                    label='Please specify details'
+                    component={CustomTextField}
+                    multiline
+                    rows={2}
+                    fullWidth
+                  />
+                )}
+              </>,
+            )}
 
-              <Typography variant='h6' component='h3' gutterBottom sx={{ mt: 2 }}>
-                Has the patient undergone education for smoking cessation?
-              </Typography>
+            {renderFormSection(
+              'Has the patient undergone education for smoking cessation?',
               <FastField
                 name='LUNG1a'
-                label='LUNG1a'
                 component={CustomRadioGroup}
-                options={formOptions.LUNG1a}
+                options={formOptions.yesNoOptions}
                 row
-              />
+              />,
+            )}
 
-              <Typography variant='h6' component='h3' gutterBottom>
-                Lung function test completed?
-              </Typography>
-              <FastField
-                name='LUNG2'
-                label='LUNG2'
-                component={CustomRadioGroup}
-                options={formOptions.LUNG2}
-                row
-              />
-
-              {values.LUNG2 === 'No' && (
-                <>
-                  <Typography variant='subtitle1' component='h4' gutterBottom>
-                    If no, why?
-                  </Typography>
+            {renderFormSection(
+              'Lung function test completed?',
+              <>
+                <FastField
+                  name='LUNG2'
+                  component={CustomRadioGroup}
+                  options={formOptions.yesNoOptions}
+                  row
+                />
+                {values.LUNG2 === 'No' && (
                   <FastField
                     name='LUNGShortAns2'
                     label='Please specify why'
                     component={CustomTextField}
                     multiline
                     rows={2}
+                    fullWidth
                   />
-                </>
-              )}
+                )}
+              </>,
+            )}
 
-              <Typography variant='h6' component='h3' gutterBottom>
-                Pre-bronchodilator
-              </Typography>
+            {renderFormSection(
+              'Pre-bronchodilator',
+              <>
+                {renderFormSection(
+                  'FVC (L)',
+                  <FastField name='LUNG3' component={CustomNumberField} />,
+                )}
+                {renderFormSection(
+                  'FEV1 (L)',
+                  <FastField name='LUNG4' component={CustomNumberField} />,
+                )}
+                {renderFormSection(
+                  'FVC (%pred)',
+                  <FastField name='LUNG5' component={CustomNumberField} />,
+                )}
+                {renderFormSection(
+                  'FEV1 (%pred)',
+                  <FastField name='LUNG6' component={CustomNumberField} />,
+                )}
+                {renderFormSection(
+                  'FEV1:FVC (%)',
+                  <FastField name='LUNG7' component={CustomNumberField} />,
+                )}
+              </>,
+            )}
 
-              <Typography variant='h6' component='h3' gutterBottom>
-                FVC (L)
-              </Typography>
-              <FastField name='LUNG3' label='LUNG3' component={CustomTextField} type='number' />
-
-              <Typography variant='h6' component='h3' gutterBottom>
-                FEV1 (L)
-              </Typography>
-              <FastField name='LUNG4' label='LUNG4' component={CustomTextField} type='number' />
-
-              <Typography variant='h6' component='h3' gutterBottom>
-                FVC (%pred)
-              </Typography>
-              <FastField name='LUNG5' label='LUNG5' component={CustomTextField} type='number' />
-
-              <Typography variant='h6' component='h3' gutterBottom>
-                FEV1 (%pred)
-              </Typography>
-              <FastField name='LUNG6' label='LUNG6' component={CustomTextField} type='number' />
-
-              <Typography variant='h6' component='h3' gutterBottom>
-                FEV1:FVC (%)
-              </Typography>
-              <FastField name='LUNG7' label='LUNG7' component={CustomTextField} type='number' />
-
-              <Typography variant='h6' component='h3' gutterBottom sx={{ mt: 2 }}>
-                What defect does the patient have?
-              </Typography>
-              <Typography className='blue'>{currentLungType || 'nil'}</Typography>
-            </div>
+            {renderFormSection(
+              'What defect does the patient have?',
+              <Typography className='blue'>{currentLungType || 'nil'}</Typography>,
+            )}
 
             <Box mt={2} mb={2}>
               {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
@@ -271,35 +297,29 @@ const LungFnForm = () => {
   )
 
   const renderSidePanel = () => (
-    <div className='summary--question-div'>
+    <Box className='summary--question-div'>
       <Typography variant='h6' component='h2' gutterBottom>
-        Social
+        Social History
       </Typography>
 
-      <Typography variant='body2' color='text.secondary'>
-        Does patient currently smoke:
-      </Typography>
-      <Typography className='blue'>{socialData?.SOCIAL10 || 'nil'}</Typography>
-
-      <Typography variant='body2' color='text.secondary'>
-        How many pack-years:
-      </Typography>
-      <Typography className='blue'>{socialData?.SOCIALShortAns10 || 'nil'}</Typography>
-
-      <Typography variant='body2' color='text.secondary'>
-        Has patient smoked before:
-      </Typography>
-      <Typography className='blue'>{socialData?.SOCIAL11 || 'nil'}</Typography>
-
-      <Typography variant='body2' color='text.secondary'>
-        For how long and when did they stop:
-      </Typography>
-      <Typography className='blue'>{socialData?.SOCIALShortAns11 || 'nil'}</Typography>
-    </div>
+      {[
+        { label: 'Does patient currently smoke:', value: socialData?.SOCIAL10 },
+        { label: 'How many pack-years:', value: socialData?.SOCIALShortAns10 },
+        { label: 'Has patient smoked before:', value: socialData?.SOCIAL11 },
+        { label: 'For how long and when did they stop:', value: socialData?.SOCIALShortAns11 },
+      ].map((item, index) => (
+        <Box key={index} sx={{ mb: 2 }}>
+          <Typography variant='body2' color='text.secondary'>
+            {item.label}
+          </Typography>
+          <Typography className='blue'>{item.value || 'nil'}</Typography>
+        </Box>
+      ))}
+    </Box>
   )
 
   return (
-    <Paper elevation={2} p={0} m={0}>
+    <Paper elevation={2} sx={{ p: 0, m: 0 }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={9}>
           {renderForm()}
