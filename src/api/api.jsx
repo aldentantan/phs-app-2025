@@ -1314,48 +1314,48 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
 
   return [
     { text: parseFromLangKey('other_title'), style: 'subheader' },
-    { text: parseFromLangKey('other_lung'), style: 'normal' },
+    //{ text: parseFromLangKey('other_lung'), style: 'normal' },
 
-    {
-      columns: [
-        {
-          style: 'tableExample',
-          margin: [0, 5, 0, 5],
-          table: {
-            widths: ['*', '*'],
-            body: [
-              [
-                {
-                  text: parseFromLangKey('other_lung_tbl_l_header'),
-                  style: 'tableHeader',
-                  bold: true,
-                  colSpan: 2, // <-- span across 2 columns
-                },
-                {},
-              ],
-              ['FVC (L)', `${lung.LUNG3}`],
-              ['FEV1 (L)', `${lung.LUNG4}`],
-              ['FVC (%pred)', `${lung.LUNG5}`],
-              ['FEV1 (%pred)', `${lung.LUNG6}`],
-              ['FEV1/FVC (%)', `${lung.LUNG7}`],
-            ],
-          },
-          layout: {
-            hLineWidth: () => 0.5,
-            vLineWidth: () => 0.5,
-            hLineColor: () => 'black',
-            vLineColor: () => 'black',
-          },
-        },
-        {
-          width: '*', // takes remaining space
-          text: '', // or you can add other content here or leave blank
-        },
-      ],
-    },
+    // {
+    //   columns: [
+    //     {
+    //       style: 'tableExample',
+    //       margin: [0, 5, 0, 5],
+    //       table: {
+    //         widths: ['*', '*'],
+    //         body: [
+    //           [
+    //             {
+    //               text: parseFromLangKey('other_lung_tbl_l_header'),
+    //               style: 'tableHeader',
+    //               bold: true,
+    //               colSpan: 2, // <-- span across 2 columns
+    //             },
+    //             {},
+    //           ],
+    //           ['FVC (L)', `${lung.LUNG3}`],
+    //           ['FEV1 (L)', `${lung.LUNG4}`],
+    //           ['FVC (%pred)', `${lung.LUNG5}`],
+    //           ['FEV1 (%pred)', `${lung.LUNG6}`],
+    //           ['FEV1/FVC (%)', `${lung.LUNG7}`],
+    //         ],
+    //       },
+    //       layout: {
+    //         hLineWidth: () => 0.5,
+    //         vLineWidth: () => 0.5,
+    //         hLineColor: () => 'black',
+    //         vLineColor: () => 'black',
+    //       },
+    //     },
+    //     {
+    //       width: '*', // takes remaining space
+    //       text: '', // or you can add other content here or leave blank
+    //     },
+    //   ],
+    // },
 
-    { text: `${other_lung_smoking_text}\n`, style: 'normal' },
-    { text: '', margin: [0, 5] },
+    //{ text: `${other_lung_smoking_text}\n`, style: 'normal' },
+    //{ text: '', margin: [0, 5] },
 
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
     {
@@ -1482,11 +1482,11 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+   // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
-    ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
-    ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
-    ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+   // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+   // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+   // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
