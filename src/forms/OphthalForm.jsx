@@ -1,25 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
 import {
+  Checkbox,
   FormControl,
   FormControlLabel,
   Radio,
   RadioGroup,
   TextField,
-  Checkbox,
 } from '@mui/material'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
 import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Divider from '@mui/material/Divider'
+import Grid from '@mui/material/Grid'
+import Paper from '@mui/material/Paper'
+import { ErrorMessage, Field, Form, Formik } from 'formik'
+import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 
-import allForms from '../forms/forms.json'
 import PopupText from 'src/utils/popupText'
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
+import allForms from '../forms/forms.json'
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
@@ -356,8 +356,8 @@ const OphthalForm = () => {
               <h2>Patient History</h2>
               {hxHCSR ? (
                 <>
-                  <p>Does participant complain of any vision problems: {hxHCSR.hxHcsrQ6}</p>
-                  <p>participant specified: {hxHCSR.hxHcsrShortAnsQ6}</p>
+                  <p>Does participant complain of any vision problems: {hxHCSR.hxHcsrQ3}</p>
+                  <p>participant specified: {hxHCSR.hxHcsrShortAnsQ3}</p>
                 </>
               ) : (
                 <p className='red'>nil hxHCSR data</p>

@@ -25,8 +25,8 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
+        <Box sx={{ p: 3 }}>
+          <Typography component="div">{children}</Typography>
         </Box>
       )}
     </div>
@@ -65,7 +65,13 @@ export default function GeriCognitiveTabs() {
   return (
     <GeriCognitiveWrapper>
       <AppBar position='static' color='default'>
-        <Tabs value={value} onChange={handleChange} aria-label='simple tabs example'>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label='geriatric cognitive assessment tabs'
+          variant="scrollable"
+          scrollButtons="auto"
+        >
           <Tab label='PHQ' {...a11yProps(0)} />
           <Tab label='AMT' {...a11yProps(1)} />
           <Tab label='G-RACE' {...a11yProps(2)} />
@@ -73,20 +79,25 @@ export default function GeriCognitiveTabs() {
           {/*<Tab label='Interaction' {...a11yProps(3)} />*/}
         </Tabs>
       </AppBar>
+
       <TabPanel value={value} index={0}>
         <GeriPhqForm changeTab={handleChange} nextTab={1} />
       </TabPanel>
+
       <TabPanel value={value} index={1}>
         <GeriAmtForm changeTab={handleChange} nextTab={2} />
       </TabPanel>
+
       <TabPanel value={value} index={2}>
         <GeriGraceForm changeTab={handleChange} nextTab={3} />
       </TabPanel>
+
       <TabPanel value={value} index={3}>
         <GeriWhForm changeTab={handleChange} nextTab={4} />
       </TabPanel>
+
       <TabPanel value={value} index={4}>
-        <GeriInterForm />
+        <GeriInterForm changeTab={handleChange} />
       </TabPanel>
     </GeriCognitiveWrapper>
   )

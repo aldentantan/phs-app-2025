@@ -1,15 +1,25 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { 
+  Divider, 
+  Paper, 
+  CircularProgress, 
+  Box, 
+  Button,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormHelperText,
+  Typography
+} from '@mui/material'
+import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import '../forms.css'
-
 
 const validationSchema = Yup.object({
   geriAmtQ1: Yup.string().oneOf(['Yes (Answered correctly)', 'No (Answered incorrectly)']).required('Required'),
@@ -24,6 +34,30 @@ const validationSchema = Yup.object({
   geriAmtQ10: Yup.string().oneOf(['Yes (Answered correctly)', 'No (Answered incorrectly)']).required('Required'),
 })
 
+// Custom Radio Field Component
+const RadioField = ({ field, form, options, label, ...props }) => {
+  const { name } = field
+  const hasError = form.touched[name] && form.errors[name]
+  
+  return (
+    <FormControl component="fieldset" error={hasError} margin="normal" fullWidth>
+      <FormLabel component="legend">{label}</FormLabel>
+      <RadioGroup {...field} {...props}>
+        {options.map((option) => (
+          <FormControlLabel
+            key={option.value}
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
+          />
+        ))}
+      </RadioGroup>
+      {hasError && (
+        <FormHelperText>{form.errors[name]}</FormHelperText>
+      )}
+    </FormControl>
+  )
+}
 
 function getScore(values) {
   let score = 0
@@ -100,124 +134,128 @@ const GeriAmtForm = (props) => {
           }
         }}
       >
-        {({ values }) => (
+        {({ values, isSubmitting }) => (
           <Form className='fieldPadding'>
             <div className='form--div'>
-              <h1> ABBREVIATED MENTAL TEST (for dementia)</h1>
+              <h1>ABBREVIATED MENTAL TEST (for dementia)</h1>
               <h2>
-                Please select ‘Yes’ if participant answered correctly or ‘No’ if participant answered incorrectly.
+                Please select &apos;Yes&apos; if participant answered correctly or &apos;No&apos; if participant answered incorrectly.
               </h2>
+              
               <h3>1) What is the year? 请问今是什么年份？</h3>
-              Was Q1 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ1'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ1' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ1' component='div' className='error' />
-              </div>
-              <br />
+              <Typography variant="body2" gutterBottom>Was Q1 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ1" 
+                component={RadioField} 
+                label="Question 1 - Year" 
+                options={options} 
+              />
+              
               <h3>2) About what time is it? (within 1 hour) 请问现在大约是几点钟 （一在一个小时之内）？</h3>
-              Was Q2 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ2'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ2' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ2' component='div' className='error' />
-              </div>
-              <br />
-              <h3>Ask volunteer to memorise memory phase: “ 37 Bukit Timah Road ”<br />请您记住以下这个地址， 我将在数分钟后要您重复一遍：37 号， 武吉支马路</h3>
+              <Typography variant="body2" gutterBottom>Was Q2 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ2" 
+                component={RadioField} 
+                label="Question 2 - Time" 
+                options={options} 
+              />
+              
+              <h3>Ask volunteer to memorise memory phase: &quot; 37 Bukit Timah Road &quot;<br />请您记住以下这个地址， 我将在数分钟后要您重复一遍：37 号， 武吉支马路</h3>
+              
               <h3>3) What is your age? 请问您今年几岁？</h3>
-              Was Q3 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ3'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ3' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ3' component='div' className='error' />
-              </div>
-              <br />
+              <Typography variant="body2" gutterBottom>Was Q3 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ3" 
+                component={RadioField} 
+                label="Question 3 - Age" 
+                options={options} 
+              />
+              
               <h3>4) What is your date of birth? 请问您的出生日期或生日？ • 几月 • 几号</h3>
-              Was Q4 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ4'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ4' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ4' component='div' className='error' />
-              </div>
+              <Typography variant="body2" gutterBottom>Was Q4 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ4" 
+                component={RadioField} 
+                label="Question 4 - Date of birth" 
+                options={options} 
+              />
+              
               <h3>5) What is your home address?<br />请问您的（住家）地址是在什么地方？<br />(1) 门牌; (2)几楼或哪一层; (3)大牌; (4)路名</h3>
-              Was Q5 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ5'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ5' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ5' component='div' className='error' />
-              </div>
-              <br />
+              <Typography variant="body2" gutterBottom>Was Q5 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ5" 
+                component={RadioField} 
+                label="Question 5 - Home address" 
+                options={options} 
+              />
+              
               <h3>6) Where are we now? (The name of building or the nature of the building e.g. hospital, day centre etc)<br />请问我们现在正在什么地方？（例：建筑名称或用途）</h3>
-              Was Q6 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ6'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ6' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ6' component='div' className='error' />
-              </div>
-              <h3>7) Who is our country’s Prime Minister?<br />请问新加坡现任总理是哪位？</h3>
-              Was Q7 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ7'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ7' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ7' component='div' className='error' />
-              </div>
+              <Typography variant="body2" gutterBottom>Was Q6 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ6" 
+                component={RadioField} 
+                label="Question 6 - Current location" 
+                options={options} 
+              />
+              
+              <h3>7) Who is our country&apos;s Prime Minister?<br />请问新加坡现任总理是哪位？</h3>
+              <Typography variant="body2" gutterBottom>Was Q7 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ7" 
+                component={RadioField} 
+                label="Question 7 - Prime Minister" 
+                options={options} 
+              />
+              
               <h3>8) What is his/her job? (show picture)<br />请问图片里的人士很有可能是从事哪种行业？</h3>
-              Was Q8 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ8'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ8' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ8' component='div' className='error' />
-              </div>
+              <Typography variant="body2" gutterBottom>Was Q8 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ8" 
+                component={RadioField} 
+                label="Question 8 - Job identification" 
+                options={options} 
+              />
+              
               <h3>9) Count backwards from 20 to 1. 请您从二十开始，倒数到一。</h3>
-              Was Q9 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ9'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ9' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ9' component='div' className='error' />
-              </div>
+              <Typography variant="body2" gutterBottom>Was Q9 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ9" 
+                component={RadioField} 
+                label="Question 9 - Count backwards" 
+                options={options} 
+              />
+              
               <h3>10) Recall memory phase 请您把刚才我要您记住的地址重复一遍。</h3>
-              Was Q10 answered correctly?
-              <div role='group' aria-labelledby='geriAmtQ10'>
-                {options.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='geriAmtQ10' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='geriAmtQ10' component='div' className='error' />
-              </div>
+              <Typography variant="body2" gutterBottom>Was Q10 answered correctly?</Typography>
+              <Field 
+                name="geriAmtQ10" 
+                component={RadioField} 
+                label="Question 10 - Recall memory phrase" 
+                options={options} 
+              />
+              
               <h4>
                 AMT Total Score: {getScore(values)} /10
               </h4>
-              <br />
             </div>
-            <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              {loading || isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={isSubmitting}
+                >
+                  Submit
+                </Button>
+              )}
+            </Box>
+
+            <br />
             <Divider />
           </Form>
         )}

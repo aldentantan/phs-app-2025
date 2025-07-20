@@ -1,21 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
 import {
+  Button,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   FormGroup,
   FormLabel,
+  Grid,
+  Paper,
   Radio,
   RadioGroup,
   TextField,
   Typography,
-  CircularProgress,
-  Paper,
-  Grid,
-  Button,
 } from '@mui/material'
 import { useFormik } from 'formik'
-import * as Yup from 'yup'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
@@ -354,17 +354,17 @@ const OralHealthForm = () => {
                 <p className='red'>nil social data!</p>
               )}
 
-              {pmhx && pmhx.PMHX7 ? (
+              {pmhx && pmhx.PMHX5 ? (
                 <>
                   <p className='underlined'>Patient has the following conditions: </p>
                   <ul>
-                    {pmhx.PMHX7.map((person) => (
+                    {pmhx.PMHX5.map((person) => (
                       <li key={person}>{person}</li>
                     ))}
                   </ul>
                 </>
               ) : (
-                <p className='red'>nil pmhx7 data!</p>
+                <p className='red'>nil PMHX5 data!</p>
               )}
             </div>
           )}

@@ -159,7 +159,7 @@ const RegForm = () => {
             form.setFieldValue(field.name, null)
           }
         }}
-        onBlur={(e) => {
+        onInput={(e) => {
           const dateValue = e.target.value
           if (dateValue) {
             const date = new Date(dateValue)
