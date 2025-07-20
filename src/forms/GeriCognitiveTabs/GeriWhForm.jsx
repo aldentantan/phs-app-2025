@@ -1,8 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { 
+  Divider, 
+  Paper, 
+  CircularProgress, 
+  Box, 
+  Button, 
+  TextField,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormHelperText
+} from '@mui/material'
+import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
@@ -10,12 +21,35 @@ import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import '../forms.css'
 
-
 const validationSchema = Yup.object({
   WH1: Yup.string().oneOf(['Yes', 'No']).required('Required'),
   WH2shortAns: Yup.string().notRequired(),
 })
 
+// Custom Radio Field Component
+const RadioField = ({ field, form, options, label, ...props }) => {
+  const { name } = field
+  const hasError = form.touched[name] && form.errors[name]
+  
+  return (
+    <FormControl component="fieldset" error={hasError} margin="normal">
+      <FormLabel component="legend">{label}</FormLabel>
+      <RadioGroup {...field} {...props}>
+        {options.map((option) => (
+          <FormControlLabel
+            key={option.value}
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
+          />
+        ))}
+      </RadioGroup>
+      {hasError && (
+        <FormHelperText>{form.errors[name]}</FormHelperText>
+      )}
+    </FormControl>
+  )
+}
 
 const formName = 'geriWhForm'
 
@@ -68,25 +102,51 @@ const GeriWhForm = (props) => {
           }
         }}
       >
-        {() => (
+        {({ errors, touched, isSubmitting }) => (
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h1>Whispering Hearts</h1>
+              
               <h3>Patient has signed up for referral with Whispering Hearts.</h3>
-              <div role='group' aria-labelledby='WH1'>
-                {radioOptions.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='WH1' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='WH1' component='div' className='error' />
-              </div>
+              <Field 
+                name="WH1" 
+                component={RadioField} 
+                label="Signed up for referral?" 
+                options={radioOptions} 
+              />
+              
               <h3>Address of referral</h3>
-              <Field as='textarea' name='WH2shortAns' className='form-control' />
-              <ErrorMessage name='WH2shortAns' component='div' className='error' />
-              <br />
+              <Field
+                as={TextField}
+                name="WH2shortAns"
+                label="Address of referral"
+                fullWidth
+                variant="outlined"
+                margin="normal"
+                multiline
+                rows={3}
+                error={touched.WH2shortAns && !!errors.WH2shortAns}
+                helperText={touched.WH2shortAns && errors.WH2shortAns}
+              />
             </div>
-            <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              {loading || isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  disabled={isSubmitting}
+                >
+                  Submit
+                </Button>
+              )}
+            </Box>
+
+            <br />
             <Divider />
           </Form>
         )}

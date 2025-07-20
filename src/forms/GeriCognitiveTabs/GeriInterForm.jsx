@@ -1,18 +1,26 @@
-
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import Grid from '@mui/material/Grid'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { 
+  Divider, 
+  Paper, 
+  Grid, 
+  CircularProgress, 
+  Box, 
+  Button,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormHelperText
+} from '@mui/material'
+import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import allForms from '../forms.json'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB.js'
 import '../fieldPadding.css'
-
 
 const responses = [
   '1 - Hardly ever',
@@ -32,6 +40,30 @@ const validationSchema = Yup.object({
   InterQ3: Yup.string().oneOf(responses).required('Required'),
 })
 
+// Custom Radio Field Component
+const RadioField = ({ field, form, options, label, ...props }) => {
+  const { name } = field
+  const hasError = form.touched[name] && form.errors[name]
+  
+  return (
+    <FormControl component="fieldset" error={hasError} margin="normal" fullWidth>
+      <FormLabel component="legend">{label}</FormLabel>
+      <RadioGroup {...field} {...props}>
+        {options.map((option) => (
+          <FormControlLabel
+            key={option.value}
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
+          />
+        ))}
+      </RadioGroup>
+      {hasError && (
+        <FormHelperText>{form.errors[name]}</FormHelperText>
+      )}
+    </FormControl>
+  )
+}
 
 function getScore(values) {
   const points = {
@@ -101,41 +133,55 @@ const GeriInterForm = () => {
                 }
               }}
             >
-              {({ values }) => (
+              {({ values, isSubmitting }) => (
                 <Form className='fieldPadding'>
                   <div className='form--div'>
                     <h1>INTERACTION</h1>
+                    
                     <h3>How often do you feel that you lack companionship?</h3>
-                    <div role='group' aria-labelledby='InterQ1'>
-                      {responsesValue.map((opt) => (
-                        <label key={opt.value} style={{ marginRight: 16 }}>
-                          <Field type='radio' name='InterQ1' value={opt.value} /> {opt.label}
-                        </label>
-                      ))}
-                      <ErrorMessage name='InterQ1' component='div' className='error' />
-                    </div>
+                    <Field 
+                      name="InterQ1" 
+                      component={RadioField} 
+                      label="Lack companionship" 
+                      options={responsesValue} 
+                    />
+                    
                     <h3>How often do you feel left out?</h3>
-                    <div role='group' aria-labelledby='InterQ2'>
-                      {responsesValue.map((opt) => (
-                        <label key={opt.value} style={{ marginRight: 16 }}>
-                          <Field type='radio' name='InterQ2' value={opt.value} /> {opt.label}
-                        </label>
-                      ))}
-                      <ErrorMessage name='InterQ2' component='div' className='error' />
-                    </div>
-                    <h3>How often do you feel isolated from others? </h3>
-                    <div role='group' aria-labelledby='InterQ3'>
-                      {responsesValue.map((opt) => (
-                        <label key={opt.value} style={{ marginRight: 16 }}>
-                          <Field type='radio' name='InterQ3' value={opt.value} /> {opt.label}
-                        </label>
-                      ))}
-                      <ErrorMessage name='InterQ3' component='div' className='error' />
-                    </div>
+                    <Field 
+                      name="InterQ2" 
+                      component={RadioField} 
+                      label="Feel left out" 
+                      options={responsesValue} 
+                    />
+                    
+                    <h3>How often do you feel isolated from others?</h3>
+                    <Field 
+                      name="InterQ3" 
+                      component={RadioField} 
+                      label="Feel isolated" 
+                      options={responsesValue} 
+                    />
+                    
                     <h3>Score:</h3>
                     <p className='blue'>{getScore(values)} / 9</p>
                   </div>
-                  <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                    {loading || isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        disabled={isSubmitting}
+                      >
+                        Submit
+                      </Button>
+                    )}
+                  </Box>
+
                   <br />
                   <Divider />
                 </Form>
