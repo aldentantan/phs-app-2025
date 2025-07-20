@@ -22,6 +22,7 @@ const pointsMap = {
 const GetScore = () => {
   const { values } = useFormikContext()
   const [score, setScore] = useState(0)
+  let condition = ''
 
   useEffect(() => {
     const qns = ['PHQ1', 'PHQ2', 'PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9']
@@ -29,9 +30,15 @@ const GetScore = () => {
     setScore(total)
   }, [values])
 
+  if (score >= 20) condition = 'Severe Depression'
+  else if (score >= 15) condition = 'Moderately Severe Depression'
+  else if (score >= 10) condition = 'Moderate Depression'
+  else if (score >= 5) condition = 'Mild Depression'
+
   return (
     <Typography variant='subtitle1' sx={{ color: score >= 10 ? 'red' : 'blue' }}>
-      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}
+      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}<br />
+      {score >= 5 ? `Patient is at risk of ${condition}` : ''}
     </Typography>
   )
 }
