@@ -1,8 +1,8 @@
 {
     "salutation" : "",
-    "title" : "公共健康服务 2024 (PHS 2024) 健康检查报告",
+    "title" : "公共健康服务 2024 (PHS 2025) 健康检查报告",
     "dear": "{0} {1} 先生/女士:",
-    "intro": "感谢您参加今年 8月 17/18日 在 The Frontier CC and Jurong Medical Centre 举行的健康检查。以下是您的健康检查报告。",
+    "intro": "感谢您参加今年 8月 16/17日 在 The Frontier CC and Jurong Medical Centre 举行的健康检查。以下是您的健康检查报告。",
 
     "bp_title": "血压",
     "bp_reading": "您的平均血压指数是",

@@ -5,11 +5,14 @@ import { autoTable } from 'jspdf-autotable'
 import logo from 'src/icons/Icon'
 import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
-import { parseFromLangKey, setLang } from './langutil'
+import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import axios from 'axios'
+
+import {mandarinNormal} from "./lang/mandarin-normal"
+import {mandarinBold} from "./lang/mandarin-bold"
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -1095,7 +1098,7 @@ export const regexPasswordPattern =
 // console.log('done')
 // deletes volunteer accounts
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
-pdfMake.vfs = pdfFonts.vfs
+
 export function generate_pdf_updated(
   reg,
   patients,
@@ -1122,6 +1125,7 @@ export function generate_pdf_updated(
   mental,
   social,
 ) {
+  setLangUpdated(reg.registrationQ14)
   let content = []
 
   content.push(...patientSection(reg, patients))
@@ -1156,29 +1160,35 @@ export function generate_pdf_updated(
     content: content,
     styles: {
       header: {
+       // font: 'NotoSansSC',
         fontSize: 16,
         bold: true,
         margin: [0, 10, 0, 5],
       },
       subheader: {
+      //  font: 'NotoSansSC',
         fontSize: 13,
         bold: true,
         margin: [0, 3, 0, 3],
       },
       normal: {
+    //    font: 'NotoSansSC',
         fontSize: 10,
         margin: [0, 0, 0, 4],
       },
       italicSmall: {
+   //     font: 'NotoSansSC',
         italics: true,
         fontSize: 10,
       },
     },
     defaultStyle: {
+   //   font: 'NotoSansSC',
       fontSize: 11,
     },
     pageMargins: [40, 60, 40, 60],
   }
+  
   pdfMake.createPdf(docDefinition).download(fileName)
 }
 
