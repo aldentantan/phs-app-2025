@@ -18,7 +18,7 @@ export const getEligibilityRows = (forms = {}) => {
     eligibility: isEligible ? 'YES' : 'NO'
   })
 
-  const isVaccinationEligible = reg?.registrationQ4 >= 65 && reg?.registrationQ7 === 'Singapore Citizen 新加坡公民'
+  const isVaccinationEligible = reg?.registrationQ4 >= 65 || ['CHAS Green', 'CHAS Orange', 'CHAS Blue'].includes(reg?.registrationQ12)
   const isHealthierSGEligible = reg?.registrationQ11 !== 'Yes'
   const isLungFunctionEligible = hxsocial?.SOCIAL10 === 'Yes, (please specify how many pack-years)' || hxsocial?.SOCIAL11 === 'Yes, (please specify)'
   const isWomenCancerEducationEligible = reg?.registrationQ5 === 'Female'
@@ -27,6 +27,7 @@ export const getEligibilityRows = (forms = {}) => {
     (reg?.registrationQ5 === 'Male' && reg?.registrationQ4 >= 55)
 
   const isMentalHealthEligible = (phq?.PHQ10 >= 10 && reg?.registrationQ4 < 60) || phq?.PHQ11 === 'Yes'
+  const isMammobusEligible = reg.registrationQ19 === 'Yes'
   const isAudiometryEligible = reg?.registrationQ4 >= 60 && pmhx?.PMHX13 === 'No'
   const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
 
@@ -53,15 +54,16 @@ export const getEligibilityRows = (forms = {}) => {
     createData('Lung Function Testing', isLungFunctionEligible),
     createData("Women's Cancer Education", isWomenCancerEducationEligible),
     createData('Osteoporosis', isOsteoporosisEligible),
-    createData('Mental Health', isMentalHealthEligible),
-    createData('Vaccination', isVaccinationEligible),
     createData('Geriatric Screening', isGeriatricScreeningEligible),
-    createData('Audiometry', isAudiometryEligible),
-    { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
-    createData("Doctor's Station", isDoctorStationEligible),
-    createData("Dietitian's Consult", isDietitianEligible),
     createData('Oral Health', isDentalEligible),
+    createData("Dietitian's Consult", isDietitianEligible),
     createData('Social Services', isSocialServicesEligible),
+    createData('Mental Health', isMentalHealthEligible),
+    createData('Mammobus', isMammobusEligible),
+    { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
+    createData('Audiometry', isAudiometryEligible),
+    createData("Doctor's Station", isDoctorStationEligible),
+    createData('Vaccination', isVaccinationEligible),
   ]
 }
 

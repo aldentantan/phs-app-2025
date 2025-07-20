@@ -90,79 +90,39 @@ const Eligibility = () => {
       console.log('visited:', visitedCount, 'eligible:', eligibleCount)
       console.log('visited stations:', visitedStationNames)
       console.log('eligible stations:', eligibleStationNames)
+    }
 
-      //melanie pdf function
-      function createData(name, isEligible) {
-        const eligibility = isEligible ? 'YES' : 'NO'
-        return { name, eligibility }
-      }
+    if (patientId) loadAndCompute()
+  }, [patientId])
 
-      const isVaccinationEligible =
-        reg?.registrationQ4 >= 65 && reg.registrationQ7 === 'Singapore Citizen 新加坡公民'
-      const isHealthierSGEligible = reg.registrationQ11 !== 'Yes'
-      const isLungFunctionEligible =
-        hxsocial.SOCIAL10 === 'Yes, (please specify how many pack-years)' ||
-        hxsocial.SOCIAL11 === 'Yes, (please specify)'
-      const isWomenCancerEducationEligible = reg.registrationQ5 === 'Female'
-      const isOsteoporosisEligible =
-        (reg.registrationQ5 === 'Female' && reg.registrationQ4 >= 45) ||
-        (reg.registrationQ5 === 'Male' && reg.registrationQ4 >= 55)
 
-      const isMentalHealthEligible =
-        (phq.PHQ10 >= 10 && reg.registrationQ4 < 60) || phq.PHQ11 === 'Yes'
-      const isAudiometryEligible = reg.registrationQ4 >= 60 && pmhx.PMHX13 === 'No'
-      const isGeriatricScreeningEligible = reg.registrationQ4 >= 60
-      const isDoctorStationEligible =
-        triage.triageQ9 === 'Yes' ||
-        hcsr.hxHcsrQ7 === 'Yes' ||
-        hcsr.hxHcsrQ6 === 'Yes' ||
-        pmhx.PMHX7 === 'Yes' ||
-        phq.PHQ10 >= 10 ||
-        phq.PHQ9 !== '0 - Not at all'
-      const isDietitianEligible = hxsocial.SOCIAL15 === 'Yes'
-      const isSocialServicesEligible =
-        hxsocial.SOCIAL6 === 'Yes' ||
-        hxsocial.SOCIAL7 === 'Yes, (please specify)' ||
-        (hxsocial.SOCIAL8 === 'Yes' && hxsocial.SOCIAL9 === 'No')
-      const isDentalEligible = hxoral.ORAL5 === 'Yes'
-
-      const rowsData = [
-        createData('Healthier SG Booth', isHealthierSGEligible),
-        createData('Lung Function Testing', isLungFunctionEligible),
-        createData("Women's Cancer Education", isWomenCancerEducationEligible),
-        createData('Osteoporosis', isOsteoporosisEligible),
-        createData('Mental Health', isMentalHealthEligible),
-        createData('Vaccination', isVaccinationEligible),
-        createData('Geriatric Screening', isGeriatricScreeningEligible),
-        createData('Audiometry', isAudiometryEligible),
-        { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
-        createData("Doctor's Station", isDoctorStationEligible),
-        createData("Dietitian's Consult", isDietitianEligible),
-        createData('Oral Health', isDentalEligible),
-        createData('Social Services', isSocialServicesEligible),
-      ]
-
-      function patientSection() {
-        const salutation = reg.registrationQ1 || 'Dear'
-
+  // melanie pdf
+  useEffect(() => {
+    if (!rows || rows.length === 0 || !forms) return
+  
+    generatePDFRef.current = () => {
+      const initials = forms.reg.registrationQ2 || 'Participant'
+      const patientSection = () => {
+        const salutation = forms.reg.registrationQ1 || ''
+        
         const mainLogo = {
           image: logo,
           width: 220,
         }
 
         const thanksNote = [
-          { text: `${parseFromLangKey('dear', salutation, patient.initials)}`, style: 'normal' },
+          { text: `${parseFromLangKey('dear', salutation, initials)}`, style: 'normal' },
           { text: '', margin: [0, 5] },
         ]
-
+  
         return [
           mainLogo,
           //...title,
           ...thanksNote,
         ]
       }
-
-      function eligibilitySection() {
+  
+      const eligibilitySection = () => {
         return [
           {
             style: 'tableExample',
@@ -173,7 +133,7 @@ const Eligibility = () => {
                   { text: 'Modality', style: 'tableHeader', bold: true },
                   { text: 'Eligibility', style: 'tableHeader', bold: true },
                 ],
-                ...rowsData.map((row) => [
+                ...rows.map((row) => [
                   { text: row.name },
                   {
                     text: row.eligibility,
@@ -192,47 +152,46 @@ const Eligibility = () => {
           },
         ]
       }
+  
+      let content = []
 
-      generatePDFRef.current = () => {
-        let content = []
-        const docDefinition = {
-          content: content,
-          styles: {
-            header: {
-              fontSize: 16,
-              bold: true,
-              margin: [0, 10, 0, 5],
-            },
-            subheader: {
-              fontSize: 11,
-              bold: true,
-            },
-            normal: {
-              fontSize: 10,
-            },
-            italicSmall: {
-              italics: true,
-              fontSize: 8,
-            },
+      const docDefinition = {
+        content: content,
+        styles: {
+          header: {
+            fontSize: 16,
+            bold: true,
+            margin: [0, 10, 0, 5],
           },
-          defaultStyle: {
+          subheader: {
+            fontSize: 11,
+            bold: true,
+          },
+          normal: {
             fontSize: 10,
           },
-          pageMargins: [40, 60, 40, 60],
-        }
-        content.push(...patientSection())
-        content.push(...eligibilitySection())
-        let fileName = 'Report.pdf'
-        if (patient.initials) {
-          fileName = patient.initials.split(' ').join('_') + '_Eligibility_Report.pdf'
-        }
-
-        pdfMake.createPdf(docDefinition).download(fileName)
+          italicSmall: {
+            italics: true,
+            fontSize: 8,
+          },
+        },
+        defaultStyle: {
+          fontSize: 10,
+        },
+        pageMargins: [40, 60, 40, 60],
       }
+      content.push(...patientSection())
+      content.push(...eligibilitySection())
+  
+      let fileName = 'Report.pdf'
+      if (initials) {
+        fileName = initials.split(' ').join('_') + '_Eligibility_Report.pdf'
+      }
+  
+      pdfMake.createPdf(docDefinition).download(fileName)
     }
-
-    if (patientId) loadAndCompute()
-  }, [patientId])
+  }, [rows, forms])
+  
 
   return (
     <>
