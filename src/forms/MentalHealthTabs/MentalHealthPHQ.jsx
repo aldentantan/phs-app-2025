@@ -39,12 +39,23 @@ const validationSchema = Yup.object({
   PHQ7: Yup.string().oneOf(dayRange).required('Required'),
   PHQ8: Yup.string().oneOf(dayRange).required('Required'),
   PHQ9: Yup.string().oneOf(dayRange).required('Required'),
-  PHQextra9: Yup.string().oneOf(yesNo).optional(),
+  PHQExtra9: Yup.string().oneOf(yesNo).optional(),
   PHQ11: Yup.string().oneOf(yesNo).required('Required'),
   PHQShortAns11: Yup.string().optional(),
 })
 
 const formName = 'geriPhqForm'
+
+const disabledRadioStyles = {
+  '& .MuiSvgIcon-root': {
+    // Targets the radio icon SVG
+    color: 'rgba(0, 0, 0, 0.38)', // Grey when unchecked
+  },
+  '& .Mui-checked .MuiSvgIcon-root': {
+    // Targets the checked state
+    color: 'rgba(0, 0, 0, 0.38)', // Grey when checked
+  },
+}
 
 const GetScore = ({ formik }) => {
   const pointsMap = {
@@ -127,41 +138,40 @@ const MentalPhqForm = (props) => {
           <h2 style={{ color: 'red' }}>
             **This form is duplicate of the HX PHQ form (read-only)**
           </h2>
-          <br />
           <h2>
             Over the last 2 weeks, how often have you been bothered by any of the following
             problems?
           </h2>
           <h3>1. Little interest or pleasure in doing things</h3>
-          <RadioGroup name='PHQ1' value={formik.values.PHQ1} disabled>
+          <RadioGroup name='PHQ1' value={formik.values.PHQ1} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>2. Feeling down, depressed or hopeless</h3>
-          <RadioGroup name='PHQ2' value={formik.values.PHQ2} disabled>
+          <RadioGroup name='PHQ2' value={formik.values.PHQ2} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>3. Trouble falling asleep or staying asleep, or sleeping too much</h3>
-          <RadioGroup name='PHQ3' value={formik.values.PHQ3} disabled>
+          <RadioGroup name='PHQ3' value={formik.values.PHQ3} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>4. Feeling tired or having little energy</h3>
-          <RadioGroup name='PHQ4' value={formik.values.PHQ4} disabled>
+          <RadioGroup name='PHQ4' value={formik.values.PHQ4} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>5. Poor appetite or overeating</h3>
-          <RadioGroup name='PHQ5' value={formik.values.PHQ5} disabled>
+          <RadioGroup name='PHQ5' value={formik.values.PHQ5} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
@@ -171,14 +181,14 @@ const MentalPhqForm = (props) => {
             6. Feeling bad about yourself, or that you are a failure or have let yourself or your
             family down
           </h3>
-          <RadioGroup name='PHQ6' value={formik.values.PHQ6} disabled>
+          <RadioGroup name='PHQ6' value={formik.values.PHQ6} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>7. Trouble concentrating on things, such as reading the newspaper or television</h3>
-          <RadioGroup name='PHQ7' value={formik.values.PHQ7} disabled>
+          <RadioGroup name='PHQ7' value={formik.values.PHQ7} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
@@ -188,14 +198,14 @@ const MentalPhqForm = (props) => {
             8. Moving or speaking so slowly that other people have noticed? Or the opposite, being
             so fidgety or restless that you have been moving around a lot more than usual
           </h3>
-          <RadioGroup name='PHQ8' value={formik.values.PHQ8} disabled>
+          <RadioGroup name='PHQ8' value={formik.values.PHQ8} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
           </RadioGroup>
 
           <h3>9. Thoughts that you would be better off dead or hurting yourself in some way</h3>
-          <RadioGroup name='PHQ9' value={formik.values.PHQ9} disabled>
+          <RadioGroup name='PHQ9' value={formik.values.PHQ9} disabled sx={disabledRadioStyles}>
             {dayRangeFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
@@ -211,7 +221,12 @@ const MentalPhqForm = (props) => {
             ]}
           >
             <h3>*Do you want to take your life now?*</h3>
-            <RadioGroup name='PHQExtra9' value={formik.values.PHQExtra9} disabled>
+            <RadioGroup
+              name='PHQExtra9'
+              value={formik.values.PHQExtra9}
+              disabled
+              sx={disabledRadioStyles}
+            >
               {yesNoFormOptions.map(({ label, value }) => (
                 <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
               ))}
@@ -226,7 +241,7 @@ const MentalPhqForm = (props) => {
           <h3>Score:</h3>
           <GetScore formik={formik} />
           <h3>Do you feel like the patient will benefit from counselling? Specify why.</h3>
-          <RadioGroup name='PHQ11' value={formik.values.PHQ11} disabled>
+          <RadioGroup name='PHQ11' value={formik.values.PHQ11} disabled sx={disabledRadioStyles}>
             {yesNoFormOptions.map(({ label, value }) => (
               <FormControlLabel key={value} value={value} control={<Radio />} label={label} />
             ))}
@@ -241,7 +256,7 @@ const MentalPhqForm = (props) => {
             fullWidth
             value={formik.values.PHQShortAns11}
             disabled
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, ...disabledRadioStyles }}
           />
 
           <br />

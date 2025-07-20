@@ -30,7 +30,7 @@ import HpvForm from './forms/HpvForm'
 import VaccineForm from './forms/VaccineForm'
 import WceTabs from './forms/WceTabs/WceMain'
 import AudiometryForm from './forms/AudiometryForm'
-import GeriVisionForm from './forms/GeriVisionForm'
+import OphthalForm from './forms/OphthalForm'
 import GeriMobilityTabs from './forms/GeriMobilityTabs/GeriMobility'
 import GeriCognitiveTabs from './forms/GeriCognitiveTabs/GeriCognitive'
 
@@ -53,7 +53,7 @@ const routes = [
       { path: 'vax', element: <VaccineForm /> },
       { path: 'hsg', element: <HsgForm /> },
       { path: 'audio', element: <AudiometryForm /> },
-      { path: 'gerivision', element: <GeriVisionForm /> },
+      { path: 'ophthal', element: <OphthalForm /> },
       { path: 'gericog', element: <GeriCognitiveTabs /> },
       { path: 'triage', element: <TriageForm /> },
       { path: 'osteoporosis', element: <OsteoForm /> },

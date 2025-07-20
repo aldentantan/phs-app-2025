@@ -4,7 +4,17 @@ import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import React from 'react'
 
-import { Button, Checkbox, CircularProgress, Divider, FormControlLabel, Grid, Paper, TextField, Typography } from '@mui/material'
+import {
+  Button,
+  Checkbox,
+  CircularProgress,
+  Divider,
+  FormControlLabel,
+  Grid,
+  Paper,
+  TextField,
+  Typography,
+} from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
@@ -29,12 +39,6 @@ const validationSchema = Yup.object().shape({
     otherwise: (schema) => schema.notRequired(),
   }),
   doctorSConsultQ13: Yup.boolean(),
-  doctorSConsultQ8: Yup.boolean(),
-  doctorSConsultQ9: Yup.string().when('doctorSConsultQ8', {
-    is: true,
-    then: (schema) => schema.required('Reason is required when referral is selected'),
-    otherwise: (schema) => schema.notRequired(),
-  }),
   doctorSConsultQ10: Yup.boolean(),
   doctorSConsultQ11: Yup.boolean(),
 })
@@ -47,8 +51,6 @@ const initialValues = {
   doctorSConsultQ5: '',
   doctorSConsultQ6: false,
   doctorSConsultQ7: '',
-  doctorSConsultQ8: false,
-  doctorSConsultQ9: '',
   doctorSConsultQ10: false,
   doctorSConsultQ11: false,
   doctorSConsultQ13: false,
@@ -182,8 +184,7 @@ const DoctorsConsultForm = () => {
                 doctorSConsultQ5: saveData.doctorSConsultQ5 || '',
                 doctorSConsultQ6: saveData.doctorSConsultQ6 || false,
                 doctorSConsultQ7: saveData.doctorSConsultQ7 || '',
-                doctorSConsultQ8: saveData.doctorSConsultQ8 || false,
-                doctorSConsultQ9: saveData.doctorSConsultQ9 || '',
+
                 doctorSConsultQ10: saveData.doctorSConsultQ10 || false,
                 doctorSConsultQ11: saveData.doctorSConsultQ11 || false,
                 doctorSConsultQ13: saveData.doctorSConsultQ13 || false,
@@ -247,7 +248,8 @@ const DoctorsConsultForm = () => {
                       <>
                         <Typography variant='h6' component='h3' gutterBottom>
                           Reason for referral
-                        </Typography><br />
+                        </Typography>
+                        <br />
                         <Field
                           as={TextField}
                           name='doctorSConsultQ5'
@@ -268,7 +270,8 @@ const DoctorsConsultForm = () => {
                       <>
                         <Typography variant='h6' component='h3' gutterBottom>
                           Reason for referral
-                        </Typography><br />
+                        </Typography>
+                        <br />
                         <Field
                           as={TextField}
                           name='doctorSConsultQ7'
@@ -285,26 +288,6 @@ const DoctorsConsultForm = () => {
                     <h3>Refer to Mental Health? (and indicated on Form A)</h3>
                     <Field component={FormikCheckbox} name='doctorSConsultQ13' label='Yes' />
 
-                    <h3>Refer to Dental?</h3>
-                    <Field component={FormikCheckbox} name='doctorSConsultQ8' label='Yes' />
-                    {values.doctorSConsultQ8 && (
-                      <>
-                        <Typography variant='h6' component='h3' gutterBottom>
-                          Reason for referral
-                        </Typography><br />
-                        <Field
-                          as={TextField}
-                          name='doctorSConsultQ9'
-                          label="Doctor's Station Q9"
-                          fullWidth
-                          multiline
-                          rows={2}
-                          variant='outlined'
-                          error={touched.doctorSConsultQ9 && Boolean(errors.doctorSConsultQ9)}
-                          helperText={touched.doctorSConsultQ9 && errors.doctorSConsultQ9}
-                        />
-                      </>
-                    )}
                     <h3>Does patient require urgent follow up</h3>
                     <Field component={FormikCheckbox} name='doctorSConsultQ10' label='Yes' />
                     <h3>

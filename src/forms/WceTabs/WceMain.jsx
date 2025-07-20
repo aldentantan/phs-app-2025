@@ -1,16 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { styled } from '@mui/system'
-
-
-import {
-  AppBar,
-  Tabs,
-  Tab,
-  Typography,
-  Box
-} from '@mui/material'
-
+import { AppBar, Tabs, Tab, Typography, Box, Paper } from '@mui/material'
 import { ScrollTopContext } from '../../api/utils.js'
 import WceForm from './WceForm.jsx'
 import GynaeForm from './GynaeForm.jsx'
@@ -28,7 +19,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box p={3}>
-          <Typography>{children}</Typography>
+          <Typography component='div'>{children}</Typography>
         </Box>
       )}
     </div>
@@ -48,12 +39,10 @@ function a11yProps(index) {
   }
 }
 
-const WceWrapper = styled('div')(
-  ({ theme }) => `
-  flex-grow: 1;
-  background-color: ${theme.palette.background.paper};
-`,
-)
+const WceWrapper = styled('div')(({ theme }) => ({
+  flexGrow: 1,
+  backgroundColor: theme.palette.background.paper,
+}))
 
 export default function WceTabs() {
   const [value, setValue] = React.useState(0)
@@ -67,17 +56,19 @@ export default function WceTabs() {
   return (
     <WceWrapper>
       <AppBar position='static' color='default'>
-        <Tabs value={value} onChange={handleChange} aria-label='simple tabs example'>
+        <Tabs value={value} onChange={handleChange} aria-label='WCE tabs' variant='fullWidth'>
           <Tab label='WCE' {...a11yProps(0)} />
           <Tab label='Gynae' {...a11yProps(1)} />
         </Tabs>
       </AppBar>
-      <TabPanel value={value} index={0}>
-        <WceForm changeTab={handleChange} nextTab={1} />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <GynaeForm changeTab={handleChange} nextTab={2} />
-      </TabPanel>
+      <Paper elevation={2}>
+        <TabPanel value={value} index={0}>
+          <WceForm />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <GynaeForm />
+        </TabPanel>
+      </Paper>
     </WceWrapper>
   )
 }

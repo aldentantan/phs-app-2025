@@ -24,36 +24,36 @@ import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
 const validationSchema = Yup.object().shape({
-  geriVisionQ1: Yup.string()
+  OphthalQ1: Yup.string()
     .oneOf(['Yes (Specify in textbox )', 'No'], 'Please select an option')
     .required('Required'),
-  geriVisionQ2: Yup.string().when('geriVisionQ1', {
+  OphthalQ2: Yup.string().when('OphthalQ1', {
     is: 'Yes (Specify in textbox )',
     then: (schema) => schema.required('Please specify the eye condition or surgery'),
     otherwise: (schema) => schema,
   }),
-  geriVisionQ3: Yup.string().required('Required'),
-  geriVisionQ4: Yup.string().required('Required'),
-  geriVisionQ5: Yup.string(),
-  geriVisionQ6: Yup.string(),
-  geriVisionQ7: Yup.string().oneOf(['CF2M', 'CF1M', 'HM', 'LP', 'NLP', 'NIL']),
-  geriVisionQ8: Yup.array()
+  OphthalQ3: Yup.string().required('Required'),
+  OphthalQ4: Yup.string().required('Required'),
+  OphthalQ5: Yup.string(),
+  OphthalQ6: Yup.string(),
+  OphthalQ7: Yup.string().oneOf(['CF2M', 'CF1M', 'HM', 'LP', 'NLP', 'NIL']),
+  OphthalQ8: Yup.array()
     .of(Yup.string().oneOf(['Refractive', 'Non-refractive', 'None']))
     .required('Required'),
-  geriVisionQ9: Yup.array().of(Yup.string().oneOf(["Referred to Doctor's Consult"])),
-  geriVisionQ10: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
-  geriVisionQ11: Yup.string().when('geriVisionQ10', {
+  OphthalQ9: Yup.array().of(Yup.string().oneOf(["Referred to Doctor's Consult"])),
+  OphthalQ10: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
+  OphthalQ11: Yup.string().when('OphthalQ10', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  geriVisionQ12: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
-  geriVisionQ13: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
+  OphthalQ12: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
+  OphthalQ13: Yup.string().oneOf(['Yes', 'No'], 'Please select an option').required('Required'),
 })
 
-const formName = 'geriVisionForm'
+const formName = 'OphthalForm'
 
-const GeriVisionForm = () => {
+const OphthalForm = () => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
@@ -101,19 +101,19 @@ const GeriVisionForm = () => {
           <Paper elevation={2} p={0} m={0}>
             <Formik
               initialValues={{
-                geriVisionQ1: saveData.geriVisionQ1 || '',
-                geriVisionQ2: saveData.geriVisionQ2 || '',
-                geriVisionQ3: saveData.geriVisionQ3 || '',
-                geriVisionQ4: saveData.geriVisionQ4 || '',
-                geriVisionQ5: saveData.geriVisionQ5 || '',
-                geriVisionQ6: saveData.geriVisionQ6 || '',
-                geriVisionQ7: saveData.geriVisionQ7 || '',
-                geriVisionQ8: saveData.geriVisionQ8 || [],
-                geriVisionQ9: saveData.geriVisionQ9 || [],
-                geriVisionQ10: saveData.geriVisionQ10 || '',
-                geriVisionQ11: saveData.geriVisionQ11 || '',
-                geriVisionQ12: saveData.geriVisionQ12 || '',
-                geriVisionQ13: saveData.geriVisionQ13 || '',
+                OphthalQ1: saveData.OphthalQ1 || '',
+                OphthalQ2: saveData.OphthalQ2 || '',
+                OphthalQ3: saveData.OphthalQ3 || '',
+                OphthalQ4: saveData.OphthalQ4 || '',
+                OphthalQ5: saveData.OphthalQ5 || '',
+                OphthalQ6: saveData.OphthalQ6 || '',
+                OphthalQ7: saveData.OphthalQ7 || '',
+                OphthalQ8: saveData.OphthalQ8 || [],
+                OphthalQ9: saveData.OphthalQ9 || [],
+                OphthalQ10: saveData.OphthalQ10 || '',
+                OphthalQ11: saveData.OphthalQ11 || '',
+                OphthalQ12: saveData.OphthalQ12 || '',
+                OphthalQ13: saveData.OphthalQ13 || '',
               }}
               validationSchema={validationSchema}
               onSubmit={handleSubmit}
@@ -127,9 +127,9 @@ const GeriVisionForm = () => {
                     <h3>1. Previous eye condition or surgery</h3>
                     <FormControl component='fieldset'>
                       <RadioGroup
-                        name='geriVisionQ1'
-                        value={values.geriVisionQ1}
-                        onChange={(e) => setFieldValue('geriVisionQ1', e.target.value)}
+                        name='OphthalQ1'
+                        value={values.OphthalQ1}
+                        onChange={(e) => setFieldValue('OphthalQ1', e.target.value)}
                       >
                         <FormControlLabel
                           value='Yes (Specify in textbox )'
@@ -138,26 +138,26 @@ const GeriVisionForm = () => {
                         />
                         <FormControlLabel value='No' control={<Radio />} label='No' />
                       </RadioGroup>
-                      <ErrorMessage name='geriVisionQ1' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ1' component='div' className='error' />
                     </FormControl>
-                    <PopupText qnNo='geriVisionQ1' triggerValue='Yes (Specify in textbox )'>
+                    <PopupText qnNo='OphthalQ1' triggerValue='Yes (Specify in textbox )'>
                       <h4>Explanation</h4>
                       <Field
                         as={TextField}
-                        name='geriVisionQ2'
-                        label='Geri - Vision Q2'
+                        name='OphthalQ2'
+                        label='Ophthal Q2'
                         fullWidth
                         multiline
                         rows={4}
                         variant='outlined'
                       />
-                      <ErrorMessage name='geriVisionQ2' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ2' component='div' className='error' />
                     </PopupText>
                     <h3>2. Visual acuity (w/o pinhole occluder) - Right Eye 6/__</h3>
                     <Field
                       as={TextField}
-                      name='geriVisionQ3'
-                      label='Geri - Vision Q3'
+                      name='OphthalQ3'
+                      label='Ophthal Q3'
                       type='number'
                       fullWidth
                       inputProps={{
@@ -165,12 +165,12 @@ const GeriVisionForm = () => {
                         pattern: '[0-9]*',
                       }}
                     />
-                    <ErrorMessage name='geriVisionQ3' component='div' className='error' />
+                    <ErrorMessage name='OphthalQ3' component='div' className='error' />
                     <h3>3. Visual acuity (w/o pinhole occluder) - Left Eye 6/__</h3>
                     <Field
                       as={TextField}
-                      name='geriVisionQ4'
-                      label='Geri - Vision Q4'
+                      name='OphthalQ4'
+                      label='Ophthal Q4'
                       type='number'
                       fullWidth
                       inputProps={{
@@ -178,15 +178,15 @@ const GeriVisionForm = () => {
                         pattern: '[0-9]*',
                       }}
                     />
-                    <ErrorMessage name='geriVisionQ4' component='div' className='error' />
+                    <ErrorMessage name='OphthalQ4' component='div' className='error' />
                     <h3>
                       4. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Right Eye
                       6/__
                     </h3>
                     <Field
                       as={TextField}
-                      name='geriVisionQ5'
-                      label='Geri - Vision Q5'
+                      name='OphthalQ5'
+                      label='Ophthal Q5'
                       type='number'
                       fullWidth
                       inputProps={{
@@ -194,15 +194,15 @@ const GeriVisionForm = () => {
                         pattern: '[0-9]*',
                       }}
                     />
-                    <ErrorMessage name='geriVisionQ5' component='div' className='error' />
+                    <ErrorMessage name='OphthalQ5' component='div' className='error' />
                     <h3>
                       5. Visual acuity (with pinhole) *only if VA w/o pinhole is ≥ 6/12 - Left Eye
                       6/__
                     </h3>
                     <Field
                       as={TextField}
-                      name='geriVisionQ6'
-                      label='Geri - Vision Q6'
+                      name='OphthalQ6'
+                      label='Ophthal Q6'
                       type='number'
                       fullWidth
                       inputProps={{
@@ -210,40 +210,40 @@ const GeriVisionForm = () => {
                         pattern: '[0-9]*',
                       }}
                     />
-                    <ErrorMessage name='geriVisionQ6' component='div' className='error' />
+                    <ErrorMessage name='OphthalQ6' component='div' className='error' />
                     <h3>
                       6. Is participant currently on any eye review/ consulting any eye specialist?
                     </h3>
                     <FormControl component='fieldset'>
                       <RadioGroup
-                        name='geriVisionQ10'
-                        value={values.geriVisionQ10}
-                        onChange={(e) => setFieldValue('geriVisionQ10', e.target.value)}
+                        name='OphthalQ10'
+                        value={values.OphthalQ10}
+                        onChange={(e) => setFieldValue('OphthalQ10', e.target.value)}
                       >
                         <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
                         <FormControlLabel value='No' control={<Radio />} label='No' />
                       </RadioGroup>
-                      <ErrorMessage name='geriVisionQ10' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ10' component='div' className='error' />
                     </FormControl>
-                    <PopupText qnNo='geriVisionQ10' triggerValue='Yes'>
+                    <PopupText qnNo='OphthalQ10' triggerValue='Yes'>
                       <h4>Please specify:</h4>
                       <Field
                         as={TextField}
-                        name='geriVisionQ11'
-                        label='Geri - Vision Q11'
+                        name='OphthalQ11'
+                        label='Ophthal Q11'
                         fullWidth
                         multiline
                         rows={4}
                         variant='outlined'
                       />
-                      <ErrorMessage name='geriVisionQ11' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ11' component='div' className='error' />
                     </PopupText>
                     <h3>7. Type of vision error?</h3>
                     <FormControl component='fieldset'>
                       <RadioGroup
-                        name='geriVisionQ8'
-                        value={values.geriVisionQ8[0] || ''}
-                        onChange={(e) => setFieldValue('geriVisionQ8', [e.target.value])}
+                        name='OphthalQ8'
+                        value={values.OphthalQ8[0] || ''}
+                        onChange={(e) => setFieldValue('OphthalQ8', [e.target.value])}
                       >
                         {['Refractive', 'Non-refractive', 'None'].map((option) => (
                           <FormControlLabel
@@ -254,7 +254,7 @@ const GeriVisionForm = () => {
                           />
                         ))}
                       </RadioGroup>
-                      <ErrorMessage name='geriVisionQ8' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ8' component='div' className='error' />
                     </FormControl>
                     <h4>
                       Please <u>refer to Doctor&apos;s Consult</u> if pinhole visual acuity is{' '}
@@ -263,13 +263,13 @@ const GeriVisionForm = () => {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          name='geriVisionQ9'
-                          checked={values.geriVisionQ9.includes("Referred to Doctor's Consult")}
+                          name='OphthalQ9'
+                          checked={values.OphthalQ9.includes("Referred to Doctor's Consult")}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setFieldValue('geriVisionQ9', ["Referred to Doctor's Consult"])
+                              setFieldValue('OphthalQ9', ["Referred to Doctor's Consult"])
                             } else {
-                              setFieldValue('geriVisionQ9', [])
+                              setFieldValue('OphthalQ9', [])
                             }
                           }}
                         />
@@ -302,26 +302,26 @@ const GeriVisionForm = () => {
                     <h3>1. Does the participant wish to apply for the Senior Mobility Fund?</h3>
                     <FormControl component='fieldset'>
                       <RadioGroup
-                        name='geriVisionQ12'
-                        value={values.geriVisionQ12}
-                        onChange={(e) => setFieldValue('geriVisionQ12', e.target.value)}
+                        name='OphthalQ12'
+                        value={values.OphthalQ12}
+                        onChange={(e) => setFieldValue('OphthalQ12', e.target.value)}
                       >
                         <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
                         <FormControlLabel value='No' control={<Radio />} label='No' />
                       </RadioGroup>
-                      <ErrorMessage name='geriVisionQ12' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ12' component='div' className='error' />
                     </FormControl>
                     <h3>2. Referred to Social Services?</h3>
                     <FormControl component='fieldset'>
                       <RadioGroup
-                        name='geriVisionQ13'
-                        value={values.geriVisionQ13}
-                        onChange={(e) => setFieldValue('geriVisionQ13', e.target.value)}
+                        name='OphthalQ13'
+                        value={values.OphthalQ13}
+                        onChange={(e) => setFieldValue('OphthalQ13', e.target.value)}
                       >
                         <FormControlLabel value='Yes' control={<Radio />} label='Yes' />
                         <FormControlLabel value='No' control={<Radio />} label='No' />
                       </RadioGroup>
-                      <ErrorMessage name='geriVisionQ13' component='div' className='error' />
+                      <ErrorMessage name='OphthalQ13' component='div' className='error' />
                     </FormControl>
                   </div>
 
@@ -370,6 +370,6 @@ const GeriVisionForm = () => {
   )
 }
 
-GeriVisionForm.contextType = FormContext
+OphthalForm.contextType = FormContext
 
-export default GeriVisionForm
+export default OphthalForm
