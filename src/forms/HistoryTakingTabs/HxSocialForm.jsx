@@ -187,8 +187,8 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
-          <Typography variant='h4' fontWeight='bold'>
-            FINANCIAL STATUS
+          <Typography variant='h4'>
+            <strong>FINANCIAL STATUS</strong>
           </Typography>
           <Typography variant='h6'>CHAS Status</Typography>
           <Typography color='primary'>{regForm ? regForm.registrationQ12 : '-'}</Typography>

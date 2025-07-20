@@ -133,8 +133,8 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
-          <Typography variant='h6' gutterBottom>
-            GYNECOLOGY
+          <Typography variant='h4'>
+            <strong>GYNECOLOGY</strong>
           </Typography>
           <Typography fontWeight='bold' color='error'>
             This form should only be submitted for female participants

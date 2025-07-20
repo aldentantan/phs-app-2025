@@ -70,6 +70,9 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
+          <Typography variant='h4'>
+            <strong>FAMILY HISTORY</strong>
+          </Typography>
           <Typography variant='h6'>
             Does the patient have any relevant family history they would like the doctor to know
             about?
