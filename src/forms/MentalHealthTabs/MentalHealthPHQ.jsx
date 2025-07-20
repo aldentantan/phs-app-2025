@@ -46,7 +46,7 @@ const validationSchema = Yup.object({
 
 const formName = 'geriPhqForm'
 
-const GetScore = ({ formik }) => {
+export function computePHQScore(values) {
   const pointsMap = {
     '0 - Not at all': 0,
     '1 - Several days': 1,
@@ -55,10 +55,11 @@ const GetScore = ({ formik }) => {
   }
 
   const questions = ['PHQ1', 'PHQ2', 'PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9']
-  const score = questions.reduce(
-    (sum, q) => sum + (pointsMap[formik.values[q]] || 0),
-    0
-  )
+  return questions.reduce((sum, q) => sum + (pointsMap[values[q]] || 0), 0)
+}
+
+const GetScore = ({ formik }) => {
+  const score = computePHQScore(formik.values)
 
   return (
     <Fragment>
@@ -107,6 +108,7 @@ const MentalPhqForm = (props) => {
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       setLoading(true)
+      values.PHQ10 = `${computePHQScore(values)}`
       const response = await submitForm(values, patientId, formName)
       setLoading(false)
       if (response.result) {
