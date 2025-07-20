@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {
-  Paper,
-  Divider,
-  Typography,
-  CircularProgress,
-  Button,
-} from '@mui/material'
+import { Paper, Divider, Typography, CircularProgress, Button } from '@mui/material'
 import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
@@ -37,7 +31,7 @@ const formOptions = {
     { label: 'Kidney Disease', value: 'Kidney Disease' },
     { label: 'Diabetes', value: 'Diabetes' },
     { label: 'Hypertension', value: 'Hypertension' },
-  ]
+  ],
 }
 
 export default function HxFamilyForm({ changeTab, nextTab }) {
@@ -67,62 +61,65 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
     }
   }
 
+  const renderForm = () => (
+    <Formik
+      initialValues={savedData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={handleSubmit}
+    >
+      {({ isSubmitting }) => (
+        <Form className='fieldPadding'>
+          <Typography variant='h6'>
+            Does the patient have any relevant family history they would like the doctor to know
+            about?
+          </Typography>
+          <FastField
+            name='FAMILY1'
+            label='FAMILY1'
+            component={CustomRadioGroup}
+            options={formOptions.FAMILY1}
+            row
+          />
+          <PopupText qnNo='FAMILY1' triggerValue='Yes'>
+            <Typography fontWeight='bold'>Please specify:</Typography>
+            <FastField
+              name='FAMILYShortAns1'
+              label='FAMILYShortAns1'
+              component={CustomTextField}
+              fullWidth
+              multiline
+              sx={{ mb: 3, mt: 1 }}
+            />
+          </PopupText>
+
+          <Typography variant='h6'>Any positive family history for these conditions?</Typography>
+          <FastField
+            name='FAMILY2'
+            label='FAMILY2'
+            component={CustomCheckboxGroup}
+            options={formOptions.FAMILY2}
+          />
+
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+            {loading || isSubmitting ? (
+              <CircularProgress />
+            ) : (
+              <Button type='submit' variant='contained' color='primary'>
+                Submit
+              </Button>
+            )}
+          </div>
+          <br />
+          <Divider />
+        </Form>
+      )}
+    </Formik>
+  )
+
   return (
     <Paper elevation={2}>
-      <Formik
-        initialValues={savedData}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form className='fieldPadding'>
-
-            <Typography variant='h6'>
-              Does the patient have any relevant family history they would like the doctor to know
-              about?
-            </Typography>
-            <FastField
-              name='FAMILY1'
-              label='FAMILY1'
-              component={CustomRadioGroup}
-              options={formOptions.FAMILY1}
-              row
-            />
-            <PopupText qnNo='FAMILY1' triggerValue='Yes'>
-              <Typography fontWeight='bold'>Please specify:</Typography>
-              <FastField
-                name='FAMILYShortAns1'
-                label='FAMILYShortAns1'
-                component={CustomTextField}
-                fullWidth
-                multiline
-                sx={{ mb: 3, mt: 1 }}
-              />
-            </PopupText>
-
-            <Typography variant='h6'>Any positive family history for these conditions?</Typography>
-            <FastField
-              name='FAMILY2'
-              label='FAMILY2'
-              component={CustomCheckboxGroup}
-              options={formOptions.FAMILY2}
-            />
-
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? (
-                <CircularProgress />
-              ) : (
-                <Button type='submit' variant='contained' color='primary'>
-                  Submit
-                </Button>
-              )}
-            </div>
-            <br />
-            <Divider />
-          </Form>
-        )}
-      </Formik>
+      {renderForm()}
     </Paper>
   )
 }

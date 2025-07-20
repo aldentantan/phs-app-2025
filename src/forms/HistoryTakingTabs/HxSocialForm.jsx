@@ -178,300 +178,306 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     }
   }
 
+  const renderForm = () => (
+    <Formik
+      initialValues={savedData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={handleSubmit}
+    >
+      {({ isSubmitting }) => (
+        <Form className='fieldPadding'>
+          <Typography variant='h4' fontWeight='bold'>
+            FINANCIAL STATUS
+          </Typography>
+          <Typography variant='h6'>CHAS Status</Typography>
+          <Typography color='primary'>{regForm ? regForm.registrationQ12 : '-'}</Typography>
+
+          <Typography variant='h6'>Pioneer Generation Status 建国一代配套</Typography>
+          <Typography color='primary' sx={{ mb: 3 }}>
+            {regForm ? regForm.registrationQ13 : '-'}
+          </Typography>
+
+          <Typography variant='subtitle1' fontWeight='bold'>
+            Are you currently on any other Government Financial Assistance, other than CHAS and PG
+            (e.g. Public Assistance Scheme)?
+          </Typography>
+          <FastField
+            name='SOCIAL3'
+            label='SOCIAL3'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL3}
+            sx={{ mb: 3 }}
+            row
+          />
+          <PopupText qnNo='SOCIAL3' triggerValue='Yes'>
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Please specify:
+            </Typography>
+            <FastField
+              name='SOCIALShortAns3'
+              label='SOCIALShortAns3'
+              component={CustomTextField}
+              fullWidth
+              sx={{ mb: 3 }}
+            />
+          </PopupText>
+
+          <Typography fontWeight='bold'>
+            What is the average earnings of participant&apos;s household per month?
+          </Typography>
+          <FastField
+            name='SOCIAL4'
+            label='SOCIAL4'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL4}
+          />
+
+          <Typography fontWeight='bold'>
+            Number of household members (including yourself)?
+          </Typography>
+          <FastField
+            name='SOCIAL5'
+            label='SOCIAL5'
+            component={CustomNumberField}
+            sx={{ width: '50%', mb: 3, mt: 1 }}
+          />
+
+          <Typography fontWeight='bold'>
+            If you are currently not on CHAS but qualify, do you want to apply for CHAS card?
+          </Typography>
+          <FastField
+            name='SOCIAL6'
+            label='SOCIAL6'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL6}
+            sx={{ mb: 3 }}
+            row
+          />
+          <PopupText qnNo='SOCIAL6' triggerValue='Yes'>
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Please specify:
+            </Typography>
+            <FastField
+              name='SOCIALShortAns6'
+              label='SOCIALShortAns6'
+              component={CustomTextField}
+              sx={{ mb: 3 }}
+            />
+          </PopupText>
+
+          <Typography fontWeight='bold'>
+            Do you need advice on financial schemes that are available in Singapore or require
+            further financial assistance?
+          </Typography>
+          <FastField
+            name='SOCIAL7'
+            label='SOCIAL7'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL7}
+            row
+          />
+          <PopupText qnNo='SOCIAL7' triggerValue='Yes'>
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Please specify:
+            </Typography>
+            <FastField
+              name='SOCIALShortAns7'
+              label='SOCIALShortAns7'
+              component={CustomTextField}
+              fullWidth
+              multiline
+              sx={{ mb: 3 }}
+            />
+          </PopupText>
+
+          <Typography variant='h4' fontWeight='bold' gutterBottom>
+            2. SOCIAL ISSUES
+          </Typography>
+          <Typography fontWeight='bold'>Are you a caregiver for a family member?</Typography>
+          <FastField
+            name='SOCIAL8'
+            label='SOCIAL8'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL8}
+            sx={{ mb: 3 }}
+            row
+          />
+          <PopupText qnNo='SOCIAL8' triggerValue='Yes'>
+            <Typography fontWeight='bold'>
+              Do you feel equipped to provide care to your loved one?
+            </Typography>
+            <FastField
+              name='SOCIAL9'
+              label='SOCIAL9'
+              component={CustomRadioGroup}
+              options={formOptions.SOCIAL9}
+              sx={{ mb: 3 }}
+              row
+            />
+          </PopupText>
+
+          <Typography variant='h4' fontWeight='bold' gutterBottom>
+            3. LIFESTYLE
+          </Typography>
+          <Typography fontWeight='bold'>Do you currently smoke?</Typography>
+          <FastField
+            name='SOCIAL10'
+            label='SOCIAL10'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL10}
+            row
+          />
+
+          <PopupText qnNo='SOCIAL10' triggerValue='Yes'>
+            <Typography fontWeight='bold'>Please specify the no. of years smoked:</Typography>
+            <FastField
+              name='SOCIAL10Years'
+              label='SOCIAL10Years'
+              component={CustomNumberField}
+              sx={{ mb: 3, width: '50%' }}
+            />
+            <Typography fontWeight='bold'>
+              How many packs per day? (1 pack = 20 cigarettes)
+            </Typography>
+            <FastField
+              name='SOCIAL10Packs'
+              label='SOCIAL10Packs'
+              component={CustomNumberField}
+              sx={{ mb: 3, width: '50%' }}
+            />
+
+            <Typography fontWeight='bold'>Total pack-years:</Typography>
+            <PackYearsDisplay />
+          </PopupText>
+
+          <Typography fontWeight='bold'>
+            Have you smoked before? For how long and when did you stop?
+          </Typography>
+
+          <FastField
+            name='SOCIAL11'
+            label='SOCIAL11'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL11}
+            sx={{ mb: 3 }}
+            row
+          />
+          <PopupText qnNo='SOCIAL11' triggerValue='Yes'>
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Please specify:
+            </Typography>
+            <FastField
+              name='SOCIALShortAns11'
+              label='SOCIALShortAns11'
+              component={CustomTextField}
+              sx={{ mb: 3, mt: 1 }}
+            />
+          </PopupText>
+
+          <Typography fontWeight='bold'>Do you consume alcoholic drinks?</Typography>
+          <Typography>
+            Appropriate amount of alcohol:
+            <ul>
+              <li> Males: &lt;2 standard drinks per day</li>
+              <li> Females: &lt;1 standard drink per day</li>
+            </ul>
+          </Typography>
+          <FastField name='SOCIAL12' label='SOCIAL12' component={CustomTextField} />
+
+          <Typography fontWeight='bold'>
+            Do you consciously try to eat more fruits, vegetables, whole grain and cereals?
+          </Typography>
+          <FastField
+            name='SOCIAL13'
+            label='SOCIAL13'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL13}
+            row
+          />
+
+          <Typography sx={{ fontWeight: 'bold' }}>Fruits?</Typography>
+          <FastField
+            name='SOCIAL13A'
+            label='SOCIAL13A'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL13A}
+            sx={{ mb: 3 }}
+            row
+          />
+
+          <Typography sx={{ fontWeight: 'bold' }}>Vegetables?</Typography>
+          <FastField
+            name='SOCIAL13B'
+            label='SOCIAL13B'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL13B}
+            sx={{ mb: 3 }}
+            row
+          />
+
+          <Typography sx={{ fontWeight: 'bold' }}>Whole grains or cereals?</Typography>
+          <FastField
+            name='SOCIAL13C'
+            label='SOCIAL13C'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL13C}
+            sx={{ mb: 3 }}
+            row
+          />
+
+          <Typography fontWeight='bold'>
+            Do you exercise or participate in physical activity?
+          </Typography>
+          <FastField
+            name='SOCIAL14'
+            label='SOCIAL14'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL14}
+            sx={{ mb: 3 }}
+          />
+
+          <Typography fontWeight='bold'>
+            Do you feel the patient would benefit from a Dietitian consult?
+          </Typography>
+          <FastField
+            name='SOCIAL15'
+            label='SOCIAL15'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL15}
+            sx={{ mb: 3 }}
+            row
+          />
+
+          <Typography fontWeight='bold'>
+            Have you visited any GP or polyclinic in the last 1 year?
+          </Typography>
+          <Field
+            name='SOCIAL16'
+            label='SOCIAL16'
+            component={CustomRadioGroup}
+            options={formOptions.SOCIAL16}
+            row
+          />
+
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+            {loading || isSubmitting ? (
+              <CircularProgress />
+            ) : (
+              <Button type='submit' variant='contained' color='primary'>
+                Submit
+              </Button>
+            )}
+          </div>
+          <Divider />
+        </Form>
+      )}
+    </Formik>
+  )
+
   return (
     <Paper elevation={2}>
-      <Formik
-        initialValues={savedData}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form className='fieldPadding'>
-            <Typography variant='h4' fontWeight='bold'>FINANCIAL STATUS</Typography>
-            <Typography variant='h6'>CHAS Status</Typography>
-            <Typography color='primary'>{regForm ? regForm.registrationQ12 : '-'}</Typography>
-
-            <Typography variant='h6'>Pioneer Generation Status 建国一代配套</Typography>
-            <Typography color='primary' sx={{ mb: 3 }}>
-              {regForm ? regForm.registrationQ13 : '-'}
-            </Typography>
-
-            <Typography variant='subtitle1' fontWeight='bold'>
-              Are you currently on any other Government Financial Assistance, other than CHAS and PG
-              (e.g. Public Assistance Scheme)?
-            </Typography>
-            <FastField
-              name='SOCIAL3'
-              label='SOCIAL3'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL3}
-              sx={{ mb: 3 }}
-              row
-            />
-            <PopupText qnNo='SOCIAL3' triggerValue='Yes'>
-              <Typography variant='subtitle1' fontWeight='bold'>
-                Please specify:
-              </Typography>
-              <FastField
-                name='SOCIALShortAns3'
-                label='SOCIALShortAns3'
-                component={CustomTextField}
-                fullWidth
-                sx={{ mb: 3 }}
-              />
-            </PopupText>
-
-            <Typography fontWeight='bold'>
-              What is the average earnings of participant&apos;s household per month?
-            </Typography>
-            <FastField
-              name='SOCIAL4'
-              label='SOCIAL4'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL4}
-            />
-
-            <Typography fontWeight='bold'>
-              Number of household members (including yourself)?
-            </Typography>
-            <FastField
-              name='SOCIAL5'
-              label='SOCIAL5'
-              component={CustomNumberField}
-              sx={{ width: '50%', mb: 3, mt: 1 }}
-            />
-
-            <Typography fontWeight='bold'>
-              If you are currently not on CHAS but qualify, do you want to apply for CHAS card?
-            </Typography>
-            <FastField
-              name='SOCIAL6'
-              label='SOCIAL6'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL6}
-              sx={{ mb: 3 }}
-              row
-            />
-            <PopupText qnNo='SOCIAL6' triggerValue='Yes'>
-              <Typography variant='subtitle1' fontWeight='bold'>
-                Please specify:
-              </Typography>
-              <FastField
-                name='SOCIALShortAns6'
-                label='SOCIALShortAns6'
-                component={CustomTextField}
-                sx={{ mb: 3 }}
-              />
-            </PopupText>
-
-            <Typography fontWeight='bold'>
-              Do you need advice on financial schemes that are available in Singapore or require
-              further financial assistance?
-            </Typography>
-            <FastField
-              name='SOCIAL7'
-              label='SOCIAL7'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL7}
-              row
-            />
-            <PopupText qnNo='SOCIAL7' triggerValue='Yes'>
-              <Typography variant='subtitle1' fontWeight='bold'>
-                Please specify:
-              </Typography>
-              <FastField
-                name='SOCIALShortAns7'
-                label='SOCIALShortAns7'
-                component={CustomTextField}
-                fullWidth
-                multiline
-                sx={{ mb: 3 }}
-              />
-            </PopupText>
-
-            <Typography variant='h4' fontWeight='bold' gutterBottom>
-              2. SOCIAL ISSUES
-            </Typography>
-            <Typography fontWeight='bold'>Are you a caregiver for a family member?</Typography>
-            <FastField
-              name='SOCIAL8'
-              label='SOCIAL8'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL8}
-              sx={{ mb: 3 }}
-              row
-            />
-            <PopupText qnNo='SOCIAL8' triggerValue='Yes'>
-              <Typography fontWeight='bold'>
-                Do you feel equipped to provide care to your loved one?
-              </Typography>
-              <FastField
-                name='SOCIAL9'
-                label='SOCIAL9'
-                component={CustomRadioGroup}
-                options={formOptions.SOCIAL9}
-                sx={{ mb: 3 }}
-                row
-              />
-            </PopupText>
-
-            <Typography variant='h4' fontWeight='bold' gutterBottom>
-              3. LIFESTYLE
-            </Typography>
-            <Typography fontWeight='bold'>Do you currently smoke?</Typography>
-            <FastField
-              name='SOCIAL10'
-              label='SOCIAL10'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL10}
-              row
-            />
-
-            <PopupText qnNo='SOCIAL10' triggerValue='Yes'>
-              <Typography fontWeight='bold'>Please specify the no. of years smoked:</Typography>
-              <FastField
-                name='SOCIAL10Years'
-                label='SOCIAL10Years'
-                component={CustomNumberField}
-                sx={{ mb: 3, width: '50%' }}
-              />
-              <Typography fontWeight='bold'>
-                How many packs per day? (1 pack = 20 cigarettes)
-              </Typography>
-              <FastField
-                name='SOCIAL10Packs'
-                label='SOCIAL10Packs'
-                component={CustomNumberField}
-                sx={{ mb: 3, width: '50%' }}
-              />
-
-              <Typography fontWeight='bold'>Total pack-years:</Typography>
-              <PackYearsDisplay />
-            </PopupText>
-
-            <Typography fontWeight='bold'>
-              Have you smoked before? For how long and when did you stop?
-            </Typography>
-
-            <FastField
-              name='SOCIAL11'
-              label='SOCIAL11'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL11}
-              sx={{ mb: 3 }}
-              row
-            />
-            <PopupText qnNo='SOCIAL11' triggerValue='Yes'>
-              <Typography variant='subtitle1' fontWeight='bold'>
-                Please specify:
-              </Typography>
-              <FastField
-                name='SOCIALShortAns11'
-                label='SOCIALShortAns11'
-                component={CustomTextField}
-                sx={{ mb: 3, mt: 1 }}
-              />
-            </PopupText>
-
-            <Typography fontWeight='bold'>Do you consume alcoholic drinks?</Typography>
-            <Typography>
-              Appropriate amount of alcohol:
-              <ul>
-                <li> Males: &lt;2 standard drinks per day</li>
-                <li> Females: &lt;1 standard drink per day</li>
-              </ul>
-            </Typography>
-            <FastField name='SOCIAL12' label='SOCIAL12' component={CustomTextField} />
-
-            <Typography fontWeight='bold'>
-              Do you consciously try to eat more fruits, vegetables, whole grain and cereals?
-            </Typography>
-            <FastField
-              name='SOCIAL13'
-              label='SOCIAL13'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL13}
-              row
-            />
-
-            <Typography sx={{ fontWeight: 'bold' }}>Fruits?</Typography>
-            <FastField
-              name='SOCIAL13A'
-              label='SOCIAL13A'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL13A}
-              sx={{ mb: 3 }}
-              row
-            />
-
-            <Typography sx={{ fontWeight: 'bold' }}>Vegetables?</Typography>
-            <FastField
-              name='SOCIAL13B'
-              label='SOCIAL13B'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL13B}
-              sx={{ mb: 3 }}
-              row
-            />
-
-            <Typography sx={{ fontWeight: 'bold' }}>Whole grains or cereals?</Typography>
-            <FastField
-              name='SOCIAL13C'
-              label='SOCIAL13C'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL13C}
-              sx={{ mb: 3 }}
-              row
-            />
-
-            <Typography fontWeight='bold'>
-              Do you exercise or participate in physical activity?
-            </Typography>
-            <FastField
-              name='SOCIAL14'
-              label='SOCIAL14'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL14}
-              sx={{ mb: 3 }}
-            />
-
-            <Typography fontWeight='bold'>
-              Do you feel the patient would benefit from a Dietitian consult?
-            </Typography>
-            <FastField
-              name='SOCIAL15'
-              label='SOCIAL15'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL15}
-              sx={{ mb: 3 }}
-              row
-            />
-
-            <Typography fontWeight='bold'>
-              Have you visited any GP or polyclinic in the last 1 year?
-            </Typography>
-            <Field
-              name='SOCIAL16'
-              label='SOCIAL16'
-              component={CustomRadioGroup}
-              options={formOptions.SOCIAL16}
-              row
-            />
-
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? (
-                <CircularProgress />
-              ) : (
-                <Button type='submit' variant='contained' color='primary'>
-                  Submit
-                </Button>
-              )}
-            </div>
-            <Divider />
-          </Form>
-        )}
-      </Formik>
+      {renderForm()}
     </Paper>
   )
 }
