@@ -1,30 +1,30 @@
-import React, { useState, useContext, useEffect, useRef } from 'react'
-import { Helmet } from 'react-helmet-async'
-import CircularProgress from '@mui/material/CircularProgress'
 import {
   Box,
-  TableContainer,
+  Button,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  Button,
 } from '@mui/material'
+import CircularProgress from '@mui/material/CircularProgress'
+import { useContext, useEffect, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 pdfMake.vfs = pdfFonts.vfs
 
 import logo from 'src/icons/Icon'
-import { parseFromLangKey, setLang } from '../api/langutil'
+import { parseFromLangKey } from '../api/langutil'
 
-import { getSavedData, getSavedPatientData, updateStationCounts } from '../services/mongoDB'
 import { FormContext } from '../api/utils.js'
 import allForms from '../forms/forms.json'
+import { getSavedData, getSavedPatientData, updateStationCounts } from '../services/mongoDB'
 import {
-  getEligibilityRows,
   computeVisitedStationsCount,
+  getEligibilityRows,
   getVisitedStationNames,
 } from '../services/stationCounts'
 
@@ -94,6 +94,7 @@ const Eligibility = () => {
 
     if (patientId) loadAndCompute()
   }, [patientId])
+
 
   // melanie pdf
   useEffect(() => {

@@ -2,7 +2,6 @@ import { Field, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
-import React from 'react'
 
 import { Button, Checkbox, CircularProgress, Divider, FormControlLabel, Grid, Paper, TextField, Typography } from '@mui/material'
 
@@ -485,7 +484,7 @@ const DoctorsConsultForm = () => {
                         </p>
                         {hcsr ? (
                           <p>
-                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ6}</strong>
+                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ3}</strong>
                           </p>
                         ) : (
                           <p className='red'>nil hcsr data!</p>
@@ -509,7 +508,7 @@ const DoctorsConsultForm = () => {
                         </p>
                         {hcsr ? (
                           <p>
-                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ7}</strong>
+                            Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ4}</strong>
                           </p>
                         ) : (
                           <p className='red'>nil hcsr data!</p>
@@ -567,21 +566,14 @@ const DoctorsConsultForm = () => {
                     <ul>
                       <li>
                         <p>
-                          Health Concerns: <strong>{hcsr.hxHcsrQ3}</strong>
+                          Health Concerns: <strong>{hcsr.hxHcsrQ7}</strong>
                           <br></br>
-                          <strong>{hcsr.hxHcsrShortAnsQ3}</strong>
+                          <strong>{hcsr.hxHcsrShortAnsQ7}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Red Flags: <strong>{hcsr.hxHcsrQ4}</strong>
-                        </p>
-                      </li>
-                      <li>
-                        <p>
-                          Problems passing urine: <strong>{hcsr.hxHcsrQ5}</strong>
-                          <br></br>
-                          <strong>{hcsr.hxHcsrShortAnsQ5}</strong>
+                          Red Flags: <strong>{hcsr.hxhcsrQ8}</strong>
                         </p>
                       </li>
                     </ul>
@@ -606,26 +598,26 @@ const DoctorsConsultForm = () => {
                       </li>
                       <li>
                         <p>
-                          Drug allergies: <strong>{pmhx.PMHX5}</strong>
+                          Drug allergies: <strong>{pmhx.PMHX3}</strong>
                           <br></br>
-                          <strong>{pmhx.PMHXShortAns5}</strong>
+                          <strong>{pmhx.PMHXShortAns3}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Alternative medicine: <strong>{pmhx.PMHX6}</strong>
+                          Alternative medicine: <strong>{pmhx.PMHX4}</strong>
                           <br></br>
-                          <strong>{pmhx.PMHXShortAns6}</strong>
+                          <strong>{pmhx.PMHXShortAns4}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Regular screening: <strong>{pmhx.PMHX8}</strong>
+                          Regular screening: <strong>{pmhx.PMHX6}</strong>
                         </p>
                       </li>
                       <li>
                         <p>
-                          Reason for referral: <strong>{pmhx.PMHXShortAns12}</strong>
+                          Reason for referral: <strong>{pmhx.PMHXShortAns7}</strong>
                         </p>
                       </li>
                     </ul>
