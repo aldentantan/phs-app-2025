@@ -1,15 +1,19 @@
 import React from 'react'
 import { TextField } from '@mui/material'
 
-const CustomTextField = ({ field, form, ...props }) => (
-  <TextField
-    {...field}
-    {...props}
-    fullWidth
-    margin='normal'
-    error={form.touched[field.name] && Boolean(form.errors[field.name])}
-    helperText={form.touched[field.name] && form.errors[field.name]}
-  />
-)
+const CustomTextField = ({ field, form, ...props }) => {
+  const showError = form.errors[field.name] && (form.touched[field.name] || form.submitCount > 0)
+
+  return (
+    <TextField
+      {...field}
+      {...props}
+      fullWidth
+      margin='normal'
+      error={showError}
+      helperText={showError ? form.errors[field.name] : ''}
+    />
+  )
+}
 
 export default CustomTextField
