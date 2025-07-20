@@ -1,8 +1,20 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { 
+  Divider, 
+  Paper, 
+  CircularProgress, 
+  Box, 
+  Button, 
+  TextField,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  FormHelperText,
+  Alert
+} from '@mui/material'
+import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
@@ -17,14 +29,12 @@ const dayRange = [
   '3 - Nearly everyday',
 ]
 
-
 const dayRangeFormOptions = [
   { label: '0 - Not at all', value: '0 - Not at all' },
   { label: '1 - Several days', value: '1 - Several days' },
   { label: '2 - More than half the days', value: '2 - More than half the days' },
   { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
 ]
-
 
 const validationSchema = Yup.object({
   PHQ1: Yup.string().oneOf(dayRange).required('Required'),
@@ -42,8 +52,32 @@ const validationSchema = Yup.object({
   PHQShortAns11: Yup.string().notRequired(),
 })
 
-const formName = 'geriPhqForm'
+// Custom Radio Field Component
+const RadioField = ({ field, form, options, label, ...props }) => {
+  const { name } = field
+  const hasError = form.touched[name] && form.errors[name]
+  
+  return (
+    <FormControl component="fieldset" error={hasError} margin="normal" fullWidth>
+      <FormLabel component="legend">{label}</FormLabel>
+      <RadioGroup {...field} {...props}>
+        {options.map((option) => (
+          <FormControlLabel
+            key={option.value}
+            value={option.value}
+            control={<Radio />}
+            label={option.label}
+          />
+        ))}
+      </RadioGroup>
+      {hasError && (
+        <FormHelperText>{form.errors[name]}</FormHelperText>
+      )}
+    </FormControl>
+  )
+}
 
+const formName = 'geriPhqForm'
 
 function getScore(values) {
   const points = {
@@ -101,6 +135,11 @@ const GeriPhqForm = (props) => {
     fetchData()
   }, [patientId])
 
+  const yesNoOptions = [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ]
+
   return (
     <Paper elevation={2} p={0} m={0}>
       <Formik
@@ -127,7 +166,7 @@ const GeriPhqForm = (props) => {
           }
         }}
       >
-        {({ values }) => {
+        {({ values, errors, touched, isSubmitting }) => {
           const score = getScore(values)
           return (
             <Form className='fieldPadding'>
@@ -135,132 +174,147 @@ const GeriPhqForm = (props) => {
                 <h2>
                   Over the last 2 weeks, how often have you been bothered by any of the following problems?
                 </h2>
+                
                 <h3>1. Little interest or pleasure in doing things</h3>
-                <div role='group' aria-labelledby='PHQ1'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ1' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ1' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ1" 
+                  component={RadioField} 
+                  label="Question 1" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>2. Feeling down, depressed or hopeless</h3>
-                <div role='group' aria-labelledby='PHQ2'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ2' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ2' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ2" 
+                  component={RadioField} 
+                  label="Question 2" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>3. Trouble falling asleep or staying asleep, or sleeping too much</h3>
-                <div role='group' aria-labelledby='PHQ3'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ3' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ3' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ3" 
+                  component={RadioField} 
+                  label="Question 3" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>4. Feeling tired or having little energy</h3>
-                <div role='group' aria-labelledby='PHQ4'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ4' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ4' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ4" 
+                  component={RadioField} 
+                  label="Question 4" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>5. Poor appetite or overeating</h3>
-                <div role='group' aria-labelledby='PHQ5'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ5' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ5' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ5" 
+                  component={RadioField} 
+                  label="Question 5" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down</h3>
-                <div role='group' aria-labelledby='PHQ6'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ6' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ6' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ6" 
+                  component={RadioField} 
+                  label="Question 6" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>7. Trouble concentrating on things, such as reading the newspaper or television</h3>
-                <div role='group' aria-labelledby='PHQ7'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ7' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ7' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ7" 
+                  component={RadioField} 
+                  label="Question 7" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual</h3>
-                <div role='group' aria-labelledby='PHQ8'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ8' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ8' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ8" 
+                  component={RadioField} 
+                  label="Question 8" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <h3>9. Thoughts that you would be better off dead or hurting yourself in some way</h3>
-                <div role='group' aria-labelledby='PHQ9'>
-                  {dayRangeFormOptions.map((opt) => (
-                    <label key={opt.value} style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQ9' value={opt.value} /> {opt.label}
-                    </label>
-                  ))}
-                  <ErrorMessage name='PHQ9' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ9" 
+                  component={RadioField} 
+                  label="Question 9" 
+                  options={dayRangeFormOptions} 
+                />
+                
                 <PopupText qnNo='PHQ9' triggerValue={['1 - Several days', '2 - More than half the days', '3 - Nearly everyday']}>
                   <h3>*Do you want to take your life now?*</h3>
-                  <div role='group' aria-labelledby='PHQextra9'>
-                    <label style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQextra9' value='Yes' /> Yes
-                    </label>
-                    <label style={{ marginRight: 16 }}>
-                      <Field type='radio' name='PHQextra9' value='No' /> No
-                    </label>
-                    <ErrorMessage name='PHQextra9' component='div' className='error' />
-                  </div>
+                  <Field 
+                    name="PHQextra9" 
+                    component={RadioField} 
+                    label="Suicidal ideation" 
+                    options={yesNoOptions} 
+                  />
                 </PopupText>
+                
                 <PopupText qnNo='PHQextra9' triggerValue='Yes'>
-                  <font color='red'>
-                    <b>*Patient requires urgent attention, please escalate*</b>
-                  </font>{' '}
+                  <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
+                    <strong>*Patient requires urgent attention, please escalate*</strong>
+                  </Alert>
                 </PopupText>
+                
                 <h3>Score:</h3>
                 {score >= 10 ? (
                   <Fragment>
                     <p className='blue'>{score} / 27</p>
-                    <font color='red'>
-                      <b>Patient fails PHQ, score is 10 and above </b>
-                    </font>
-                    <br />
+                    <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
+                      <strong>Patient fails PHQ, score is 10 and above</strong>
+                    </Alert>
                   </Fragment>
                 ) : (
                   <p className='blue'>{score} / 27</p>
                 )}
+                
                 <h3>Do you feel like the patient will benefit from counselling? Specify why.</h3>
-                <div role='group' aria-labelledby='PHQ11'>
-                  <label style={{ marginRight: 16 }}>
-                    <Field type='radio' name='PHQ11' value='Yes' /> Yes
-                  </label>
-                  <label style={{ marginRight: 16 }}>
-                    <Field type='radio' name='PHQ11' value='No' /> No
-                  </label>
-                  <ErrorMessage name='PHQ11' component='div' className='error' />
-                </div>
+                <Field 
+                  name="PHQ11" 
+                  component={RadioField} 
+                  label="Benefit from counselling?" 
+                  options={yesNoOptions} 
+                />
+                
                 <h4>Please specify.</h4>
-                <Field as='textarea' name='PHQShortAns11' className='form-control' />
-                <ErrorMessage name='PHQShortAns11' component='div' className='error' />
-                <br />
+                <Field
+                  as={TextField}
+                  name="PHQShortAns11"
+                  label="Please specify why patient would benefit from counselling"
+                  fullWidth
+                  variant="outlined"
+                  margin="normal"
+                  multiline
+                  rows={4}
+                  error={touched.PHQShortAns11 && !!errors.PHQShortAns11}
+                  helperText={touched.PHQShortAns11 && errors.PHQShortAns11}
+                />
               </div>
-              <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
+
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                {loading || isSubmitting ? (
+                  <CircularProgress />
+                ) : (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </Button>
+                )}
+              </Box>
+
+              <br />
               <Divider />
             </Form>
           )
