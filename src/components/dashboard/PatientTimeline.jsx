@@ -88,7 +88,7 @@ function generateStatusObject(record) {
         record.hxOralForm !== undefined &&
         record.geriPhqForm !== undefined &&
         record.hxFamilyForm !== undefined &&
-        record.hxWellbeingForm !== undefined,
+        record.hxM4M5ReviewForm !== undefined,
       triage: record.triageForm !== undefined, // triage
       hsg: record.hsgForm !== undefined,
       lungfn: record.lungFnForm !== undefined,
