@@ -203,7 +203,7 @@ const DoctorsConsultForm = () => {
                     <Field
                       as={TextField}
                       name='doctorSConsultQ1'
-                      label="Doctor's Name"
+                      label='doctorSConsultQ1'
                       fullWidth
                       multiline
                       rows={2}
@@ -217,7 +217,7 @@ const DoctorsConsultForm = () => {
                     <Field
                       as={TextField}
                       name='doctorSConsultQ2'
-                      label="Doctor's Clinical Findings"
+                      label='doctorSConsultQ2'
                       fullWidth
                       multiline
                       rows={4}
@@ -231,7 +231,7 @@ const DoctorsConsultForm = () => {
                     <Field
                       as={TextField}
                       name='doctorSConsultQ3'
-                      label="Doctor's Memo"
+                      label='doctorSConsultQ3'
                       fullWidth
                       multiline
                       rows={6}
