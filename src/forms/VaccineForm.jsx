@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import {
   Paper, Divider, Typography, CircularProgress,
   FormControl, FormLabel, RadioGroup, FormControlLabel,
-  Radio, Button, Grid
+  Radio, Button, Grid, Box, Alert
 } from '@mui/material'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, Field } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
@@ -15,8 +15,8 @@ import { useNavigate } from 'react-router'
 
 const formName = 'vaccineForm'
 
-const RadioGroupField = ({ name, label, values }) => (
-  <FormControl fullWidth sx={{ mb: 3 }}>
+const RadioGroupField = ({ name, label, values, error, touched, submitCount }) => (
+  <FormControl fullWidth sx={{ mb: 3 }} error={(touched || submitCount > 0) && !!error}>
     <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
     <Field name={name}>
       {({ field }) => (
@@ -27,7 +27,11 @@ const RadioGroupField = ({ name, label, values }) => (
         </RadioGroup>
       )}
     </Field>
-    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
+    {(touched || submitCount > 0) && error && (
+      <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '4px' }}>
+        {error}
+      </div>
+    )}
   </FormControl>
 )
 
@@ -65,9 +69,13 @@ export default function VaccineForm() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setLoading(true)
+    setSubmitting(true)
+    
     const response = await submitForm(values, patientId, formName)
+    
     setLoading(false)
     setSubmitting(false)
+    
     if (response.result) {
       setTimeout(() => {
         alert('Successfully submitted form')
@@ -91,14 +99,30 @@ export default function VaccineForm() {
               enableReinitialize
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting }) => (
+              {({ isSubmitting, errors, touched, submitCount }) => (
                 <Form className="fieldPadding">
                   <Typography variant="h6" gutterBottom>Vaccination</Typography>
                   <Typography variant="subtitle1" gutterBottom>
                     You have signed up for your complimentary influenza vaccination.
                   </Typography>
 
-                  <RadioGroupField name="VAX1" label="VAX1" values={["Yes", "No"]} />
+                  <RadioGroupField 
+                    name="VAX1" 
+                    label="VAX1" 
+                    values={["Yes", "No"]} 
+                    error={errors.VAX1}
+                    touched={touched.VAX1}
+                    submitCount={submitCount}
+                  />
+
+                  {/* Display form errors */}
+                  {Object.keys(errors).length > 0 && submitCount > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Alert severity="error">
+                        Please correct the errors above before submitting.
+                      </Alert>
+                    </Box>
+                  )}
 
                   <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
                     {loading || isSubmitting ? <CircularProgress /> : (
