@@ -7,7 +7,6 @@ import { getSavedData } from '../../services/mongoDB'
 import PopupText from 'src/utils/popupText.jsx'
 import '../fieldPadding.css'
 
-// ✅ Your custom components imported
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 

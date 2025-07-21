@@ -1,10 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import {
-  Paper, Divider, Typography, CircularProgress,
-  FormControl, FormLabel, RadioGroup, FormControlLabel,
-  Radio, Button, Grid
+  Paper,
+  Divider,
+  Typography,
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Button,
+  Grid,
 } from '@mui/material'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Formik, Form, Field, FastField, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
@@ -13,11 +21,17 @@ import allForms from './forms.json'
 import './fieldPadding.css'
 import { useNavigate } from 'react-router'
 
+import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+
 const formName = 'vaccineForm'
 
 const RadioGroupField = ({ name, label, values }) => (
   <FormControl fullWidth sx={{ mb: 3 }}>
-    <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
+    <FormLabel>
+      <Typography variant='subtitle1' fontWeight='bold'>
+        {label}
+      </Typography>
+    </FormLabel>
     <Field name={name}>
       {({ field }) => (
         <RadioGroup {...field} row>
@@ -27,12 +41,12 @@ const RadioGroupField = ({ name, label, values }) => (
         </RadioGroup>
       )}
     </Field>
-    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
+    <ErrorMessage name={name} component='div' style={{ color: 'red' }} />
   </FormControl>
 )
 
 const initialValues = {
-  VAX1: ''
+  VAX1: '',
 }
 
 export default function VaccineForm() {
@@ -44,9 +58,7 @@ export default function VaccineForm() {
   const navigate = useNavigate()
 
   const validationSchema = Yup.object({
-    VAX1: Yup.string()
-      .oneOf(['Yes', 'No'], 'Please select Yes or No')
-      .required('Required')
+    VAX1: Yup.string().oneOf(['Yes', 'No'], 'Please select Yes or No').required('Required'),
   })
 
   useEffect(() => {
@@ -81,10 +93,10 @@ export default function VaccineForm() {
   }
 
   return (
-    <Paper elevation={2} p={0} m={0}>
+    <Paper elevation={2}>
       <Grid display='flex' flexDirection='row'>
         <Grid xs={9}>
-          <Paper elevation={2} p={0} m={0}>
+          <Paper elevation={2}>
             <Formik
               initialValues={saveData}
               validationSchema={validationSchema}
@@ -92,17 +104,27 @@ export default function VaccineForm() {
               onSubmit={handleSubmit}
             >
               {({ isSubmitting }) => (
-                <Form className="fieldPadding">
-                  <Typography variant="h6" gutterBottom>Vaccination</Typography>
-                  <Typography variant="subtitle1" gutterBottom>
+                <Form className='fieldPadding'>
+                  <Typography variant='h4' gutterBottom>
+                    Vaccination
+                  </Typography>
+                  <Typography variant='subtitle1' gutterBottom>
                     You have signed up for your complimentary influenza vaccination.
                   </Typography>
 
-                  <RadioGroupField name="VAX1" label="VAX1" values={["Yes", "No"]} />
+                  <FastField
+                    name='VAX1'
+                    label='VAX1'
+                    component={CustomRadioGroup}
+                    options={['Yes', 'No'].map((val) => ({ label: val, value: val }))}
+                    row
+                  />
 
                   <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-                    {loading || isSubmitting ? <CircularProgress /> : (
-                      <Button type="submit" variant="contained" color="primary">
+                    {loading || isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button type='submit' variant='contained' color='primary'>
                         Submit
                       </Button>
                     )}
@@ -114,6 +136,8 @@ export default function VaccineForm() {
             </Formik>
           </Paper>
         </Grid>
+
+        {/* ✅ Side Panel */}
         <Grid
           p={1}
           width='30%'
@@ -125,14 +149,22 @@ export default function VaccineForm() {
             <CircularProgress />
           ) : (
             <div className='summary--question-div'>
-              <Typography variant="h6" gutterBottom>Patient Info</Typography>
+              <Typography variant='h6' gutterBottom>
+                Patient Info
+              </Typography>
               {regi ? (
                 <>
-                  <Typography variant="body1" className='blue'>Age: {regi.registrationQ4}</Typography>
-                  <Typography variant="body1" className='blue'>Citizenship: {regi.registrationQ7}</Typography>
+                  <Typography variant='body1' className='blue'>
+                    Age: {regi.registrationQ4}
+                  </Typography>
+                  <Typography variant='body1' className='blue'>
+                    Citizenship: {regi.registrationQ7}
+                  </Typography>
                 </>
               ) : (
-                <Typography variant="body1" className='red'>NO REGI DATA</Typography>
+                <Typography variant='body1' className='red'>
+                  NO REGI DATA
+                </Typography>
               )}
             </div>
           )}

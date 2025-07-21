@@ -57,7 +57,7 @@ export default function WceTabs() {
   return (
     <WceWrapper>
       <AppBar position='static' color='default'>
-        <Tabs value={value} onChange={handleChange} aria-label='WCE tabs' variant='fullWidth'>
+        <Tabs value={value} onChange={handleChange} aria-label='WCE tabs'>
           <Tab label='WCE' {...a11yProps(0)} />
           <Tab label='Gynae' {...a11yProps(1)} />
         </Tabs>
