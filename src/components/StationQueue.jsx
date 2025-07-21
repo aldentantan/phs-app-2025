@@ -5,7 +5,7 @@ import {
   getSavedData,
   getProfile,
 } from '../services/mongoDB'
-import { Box, Button, Typography, TextField, CircularProgress } from '@mui/material'
+import { Box, Button, Typography, TextField, CircularProgress, Tooltip } from '@mui/material'
 import allForms from '../forms/forms.json'
 
 const StationQueue = () => {
@@ -87,6 +87,13 @@ const StationQueue = () => {
     isLoading(true)
 
     const patientIdText = stationPatientAddId[stationName]
+
+    if (!patientIdText || patientIdText.trim() === '') {
+      alert('Patient ID must be a number.')
+      isLoading(false)
+      return
+    }
+
     const patientIds = patientIdText
       .trim()
       .split(' ')
@@ -124,6 +131,13 @@ const StationQueue = () => {
     isLoading(true)
 
     const patientIdText = stationPatientRemoveId[stationName]
+
+    if (!patientIdText || patientIdText.trim() === '') {
+      alert('Patient ID must be a number.')
+      isLoading(false)
+      return
+    }
+
     const patientIds = patientIdText
       .trim()
       .split(' ')
@@ -245,9 +259,15 @@ const StationQueue = () => {
                 width: '400px',
               }}
             >
-              <Typography color='textPrimary' gutterBottom variant='h4'>
-                {stationName}
-              </Typography>
+              <Tooltip title={stationName}>
+                <Typography color='textPrimary' gutterBottom variant='h4' noWrap
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}>
+                  {stationName}
+                </Typography>
+              </Tooltip>
 
               <TextField
                 id={stationName}
