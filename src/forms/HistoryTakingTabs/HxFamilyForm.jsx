@@ -8,7 +8,7 @@ import { submitForm } from '../../api/api.jsx'
 import CustomCheckboxGroup from '../../components/form-components/CustomCheckboxGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
-import PopupText from '../../utils/PopupText'
+import PopupText from '../../utils/popupText'
 
 const formName = 'hxFamilyForm'
 

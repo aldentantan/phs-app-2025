@@ -6,7 +6,7 @@ import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import { submitForm } from '../../api/api.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
-import PopupText from '../../utils/PopupText'
+import PopupText from '../../utils/popupText'
 
 const formName = 'hxOralForm'
 
