@@ -10,6 +10,7 @@ import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import axios from 'axios'
+import { getSavedData } from '../services/mongoDB'
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -1569,17 +1570,91 @@ export function recommendationSection() {
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
 // }
 
-export const generateDoctorPdf = (entry) => {
+export const generateDoctorPdf = async (entry) => {
+  const savedDoctorConsultData = await getSavedData(entry.patientId, 'doctorConsultForm')
+  console.log('savedDoctorConsultData: ', savedDoctorConsultData)
   const content = [
     { text: 'Doctor Consultation Summary', style: 'header' },
-    { text: `Patient ID: ${entry.patientId}` },
-    { text: `Doctor: ${entry.doctorName}` },
+    { text: `Patient ID: ${entry.patientId} | Doctor: ${entry.doctorName}` },
     { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
     { text: '' },
   ]
 
   for (const [key, value] of Object.entries(entry.data || {})) {
     content.push({ text: `${key}: ${value}` })
+  }
+
+  // Add doctor consult form data
+  if (savedDoctorConsultData) {
+    content.push({ text: 'Clinical Findings:', style: 'subheader', decoration: 'underline' })
+    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ2 || 'No response'}\n` })
+    content.push({ text: '\n' })
+    content.push({ text: `Doctor's Memo:`, style: 'subheader', decoration: 'underline' })
+    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ3 || 'No response'}` })
+    content.push({ text: '\n'})
+
+    // Dietitian Referral
+    content.push({
+      text: `Refer to Dietitian: ${
+        savedDoctorConsultData.doctorSConsultQ4 === true
+          ? 'Yes'
+          : savedDoctorConsultData.doctorSConsultQ4 === false
+          ? 'No'
+          : 'No response'
+      }`, style: 'subheader', decoration: 'underline',
+    })
+    if (savedDoctorConsultData.doctorSConsultQ4) {
+      content.push({ text: `Reason for Dietitian Referral: ${savedDoctorConsultData.doctorSConsultQ5 || 'No response'}` })
+    }
+
+    // Social Support Referral
+    content.push({
+      text: `Refer to Social Support: ${
+        savedDoctorConsultData.doctorSConsultQ6 === true
+          ? 'Yes'
+          : savedDoctorConsultData.doctorSConsultQ6 === false
+          ? 'No'
+          : 'No response'
+      }`, style: 'subheader', decoration: 'underline',
+    })
+    if (savedDoctorConsultData.doctorSConsultQ6) {
+      content.push({ text: `Reason for Social Support Referral: ${savedDoctorConsultData.doctorSConsultQ7 || 'No response'}` })
+    }
+
+    // Dental Referral
+    content.push({
+      text: `Refer to Dental: ${
+        savedDoctorConsultData.doctorSConsultQ8 === true
+          ? 'Yes'
+          : savedDoctorConsultData.doctorSConsultQ8 === false
+          ? 'No'
+          : 'No response'
+      }`, style: 'subheader', decoration: 'underline',
+    })
+    if (savedDoctorConsultData.doctorSConsultQ8) {
+      content.push({ text: `Reason for Dental Referral: ${savedDoctorConsultData.doctorSConsultQ9 || 'No response'}` })
+    }
+
+    // Mental Health Referral
+    content.push({
+      text: `Refer to Mental Health: ${
+        savedDoctorConsultData.doctorSConsultQ13 === true
+          ? 'Yes'
+          : savedDoctorConsultData.doctorSConsultQ13 === false
+          ? 'No'
+          : 'No response'
+      }`, style: 'subheader', decoration: 'underline',
+    })
+
+    content.push({
+      text: `Does patient require urgent follow-up: ${
+        savedDoctorConsultData.doctorSConsultQ10 === true
+          ? 'Yes'
+          : savedDoctorConsultData.doctorSConsultQ10 === false
+          ? 'No'
+          : 'No response'
+      }`, style: 'subheader', decoration: 'underline',
+    })
   }
 
   const docDefinition = {
