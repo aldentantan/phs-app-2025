@@ -2,7 +2,7 @@ import React from 'react'
 import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services/mongoDB'
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
-import logo from 'src/icons/Icon'
+import updatedLogo from 'src/icons/UpdatedIcon';
 import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
 import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
@@ -538,7 +538,7 @@ export function patient(doc, reg, patients, k) {
   const salutation =
     typeof reg.registrationQ1 == 'undefined' ? parseFromLangKey('salutation') : reg.registrationQ1
 
-  doc.addImage(logo, 'PNG', 10, 10, 77.8, 26.7)
+  doc.addImage(updatedLogo, 'PNG', 10, 10, 77.8, 26.7)
   k = k + 3
 
   doc.setFont(undefined, 'bold')
@@ -1196,8 +1196,8 @@ function patientSection(reg, patients) {
   const salutation = reg.registrationQ1 || 'Dear'
 
   const mainLogo = {
-    image: logo,
-    width: 220,
+    image: updatedLogo,
+    width: 150,
   }
 
   const title = [{ text: parseFromLangKey('title'), style: 'header' }]
