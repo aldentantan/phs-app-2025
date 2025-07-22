@@ -8,7 +8,7 @@ import { Divider, Paper, Grid, CircularProgress, Button, Typography, Box } from 
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckboxGroup from '../components/form-components/CustomCheckboxGroup'
-import PopupText from '../utils/PopupText'
+import PopupText from '../utils/popupText'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
