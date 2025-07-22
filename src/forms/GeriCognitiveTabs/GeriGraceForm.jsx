@@ -83,12 +83,6 @@ const GeriGraceForm = (props) => {
               <div className='form--div'>
                 <h1>G-RACE</h1>
 
-                {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                  <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                    Please fill in all required fields correctly.
-                  </Typography>
-                )}
-
                 <h3>MMSE score (_/_):</h3>
                 <FastField
                   name='GRACE1'
@@ -135,6 +129,11 @@ const GeriGraceForm = (props) => {
                   multiline
                   rows={3}
                 />
+                {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                  <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                    Please fill in all required fields correctly.
+                  </Typography>
+                )}
               </div>
 
               <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
