@@ -90,4 +90,8 @@ export const validationSchema = Yup.object({
   registrationQ20: Yup.string()
     .oneOf(['Yes', 'No'], 'Invalid LTFU consent')
     .required('LTFU consent is required'),
+
+  registrationQ21: Yup.string().required('Please indicate if the patient can speak either English or Chinese')
 })
+
+

@@ -1,12 +1,13 @@
-import { Button, CircularProgress, Divider, Paper, TextField, Typography } from '@mui/material'
-import { Field, Form, Formik } from 'formik'
+import { Button, CircularProgress, Divider, Paper, Typography } from '@mui/material'
+import { FastField, Field, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
-import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import { getSavedData } from '../../services/mongoDB'
 import PopupText from '../../utils/popupText.jsx'
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import CustomTextField from '../../components/form-components/CustomTextField'
 
 const formName = 'hxHcsrForm'
 
@@ -83,9 +84,8 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
     }
   }
 
-  return (
-    <Paper elevation={2}>
-      <Formik
+  const renderForm = () => (
+<Formik
         initialValues={savedData}
         validationSchema={validationSchema}
         enableReinitialize
@@ -109,13 +109,12 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             <Typography variant='h6'>
               Booth number and History-taker&apos;s surname followed by initials
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ1'
-              as={TextField}
               label='hxHcsrQ1'
+              component={CustomTextField}
               fullWidth
               multiline
-              margin='normal'
             />
 
             <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
@@ -133,13 +132,12 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               <br />
               &quot;最近有没有哪里不舒服&quot;
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ2'
-              as={TextField}
               label='hxHcsrQ2'
+              component={CustomTextField}
               fullWidth
               multiline
-              margin='normal'
             />
 
             <Typography variant='subtitle1' fontWeight='bold' color='error'>
@@ -153,7 +151,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               Do you have any vision problems? Please specify if yes. Exclude complaints like
               unspecific itchy eyes etc.
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ3'
               label='hxHcsrQ3'
               component={CustomRadioGroup}
@@ -164,10 +162,10 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             <Typography variant='subtitle1' fontWeight='bold'>
               Please specify:
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrShortAnsQ3'
-              as={TextField}
               label='hxHcsrShortAnsQ3'
+              component={CustomTextField}
               fullWidth
               multiline
               sx={{ mb: 3, mt: 1 }}
@@ -176,7 +174,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             <Typography variant='subtitle1' fontWeight='bold'>
               Do you have any hearing problems? Please specify if yes.
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ4'
               label='hxHcsrQ4'
               component={CustomRadioGroup}
@@ -187,10 +185,10 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             <Typography variant='subtitle1' fontWeight='bold'>
               Please specify:
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrShortAnsQ4'
-              as={TextField}
               label='hxHcsrShortAnsQ4'
+              component={CustomTextField}
               fullWidth
               multiline
               sx={{ mb: 3, mt: 1 }}
@@ -200,7 +198,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               If you are 60 and above, do you currently use hearing aids/have been detected to
               require hearing aids?
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ5'
               label='hxHcsrQ5'
               component={CustomRadioGroup}
@@ -213,7 +211,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               Please tick to highlight if you feel SYSTEMS REVIEW require closer scrutiny by doctors
               later or if participant strongly insists.
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ6'
               label='hxHcsrQ6'
               component={CustomRadioGroup}
@@ -225,7 +223,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               Please indicate if you feel that HEALTH CONCERNS require closer scrutiny by doctors
               later or if participant strongly insists.
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrQ7'
               label='hxHcsrQ7'
               component={CustomRadioGroup}
@@ -236,10 +234,10 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             <Typography variant='subtitle1' fontWeight='bold'>
               Please specify:
             </Typography>
-            <Field
+            <FastField
               name='hxHcsrShortAnsQ7'
-              as={TextField}
               label='hxHcsrShortAnsQ7'
+              component={CustomTextField}
               fullWidth
               multiline
               sx={{ mb: 3, mt: 1 }}
@@ -271,10 +269,10 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               </span>
               &nbsp;please rule out red flags <b>(Please write NIL if otherwise)</b>
             </Typography>
-            <Field
+            <FastField
               name='hxhcsrQ8'
-              as={TextField}
               label='hxhcsrQ8'
+              component={CustomTextField}
               fullWidth
               multiline
               sx={{ mb: 3, mt: 1 }}
@@ -295,6 +293,11 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
           </Form>
         )}
       </Formik>
+  )
+
+  return (
+    <Paper elevation={2}>
+      {renderForm()}
     </Paper>
   )
 }

@@ -88,7 +88,7 @@ function generateStatusObject(record) {
         record.hxOralForm !== undefined &&
         record.geriPhqForm !== undefined &&
         record.hxFamilyForm !== undefined &&
-        record.hxWellbeingForm !== undefined,
+        record.hxM4M5ReviewForm !== undefined,
       triage: record.triageForm !== undefined, // triage
       hsg: record.hsgForm !== undefined,
       lungfn: record.lungFnForm !== undefined,
@@ -221,23 +221,6 @@ const BasicTimeline = (props) => {
           </TimelineContent>
         </TimelineItem>
 
-        {/* History Taking as fixed item */}
-        <TimelineItem>
-          <TimelineSeparator>
-            <TimelineDot color={formDone?.hxtaking ? 'primary' : 'grey'} />
-            <TimelineConnector />
-          </TimelineSeparator>
-          <TimelineContent>
-            <a
-              href='/app/hxtaking'
-              onClick={(event) => navigateTo(event, navigate, 'hxtaking', scrollTop)}
-            >
-              History Taking
-              {!formDone?.hxtaking ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
-            </a>
-          </TimelineContent>
-        </TimelineItem>
-
         {/* Triage as fixed item */}
         <TimelineItem>
           <TimelineSeparator>
@@ -251,6 +234,23 @@ const BasicTimeline = (props) => {
             >
               Triage
               {!formDone?.triage ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
+            </a>
+          </TimelineContent>
+        </TimelineItem>
+
+        {/* History Taking as fixed item */}
+        <TimelineItem>
+          <TimelineSeparator>
+            <TimelineDot color={formDone?.hxtaking ? 'primary' : 'grey'} />
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <a
+              href='/app/hxtaking'
+              onClick={(event) => navigateTo(event, navigate, 'hxtaking', scrollTop)}
+            >
+              History Taking
+              {!formDone?.hxtaking ? ' [Incomplete]' : admin ? ' [Edit]' : ' [Completed]'}
             </a>
           </TimelineContent>
         </TimelineItem>
