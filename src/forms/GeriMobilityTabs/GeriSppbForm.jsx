@@ -87,7 +87,7 @@ const initialEmptyValues = {
   geriSppbQ12: '',
 }
 
-const GeriSppbForm = ({ changeTab, nextTab }) => {
+const GeriSppbForm = () => {
   const { patientId } = useContext(FormContext)
   const [initialValues, setInitialValues] = useState(initialEmptyValues)
   const [loading, setLoading] = useState(false)

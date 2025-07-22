@@ -1,22 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { useFormik, Formik, FastField } from 'formik'
+import { Formik, FastField } from 'formik'
 import * as Yup from 'yup'
 
-import {
-  Divider,
-  Paper,
-  CircularProgress,
-  FormControl,
-  FormLabel,
-  Box,
-  FormControlLabel,
-  Checkbox,
-  RadioGroup,
-  Radio,
-  TextField,
-  Button,
-  Typography,
-} from '@mui/material'
+import { Divider, Paper, CircularProgress, Button, Typography } from '@mui/material'
 
 import { submitForm, calculateSppbScore } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
@@ -68,21 +54,6 @@ const validationSchema = Yup.object({
   geriPtConsultQ5: Yup.string(),
   geriPtConsultQ8: Yup.string(),
 })
-
-const isRequiredField = (schema, fieldName) => {
-  try {
-    const tests = schema.fields[fieldName]?.tests || []
-    return tests.some((test) => test.OPTIONS?.name === 'required')
-  } catch {
-    return false
-  }
-}
-
-const formatLabel = (name, schema) => {
-  const match = name.match(/geriPtConsultQ(\d+)/i)
-  const label = match ? `Geri - PT Consult Q${match[1]}` : name
-  return `${label}${isRequiredField(schema, name) ? ' *' : ''}`
-}
 
 function GetSppbScore(q2, q6, q8) {
   let score = 0
@@ -151,26 +122,6 @@ const GeriPtConsultForm = (props) => {
   const [geriTug, setGeriTug] = useState({})
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
 
-  const formik = useFormik({
-    initialValues,
-    enableReinitialize: true,
-    validationSchema,
-    onSubmit: async (values) => {
-      isLoading(true)
-      const response = await submitForm(values, patientId, formName)
-      setTimeout(() => {
-        isLoading(false)
-        if (response.result) {
-          const event = null // not interested in this value
-          alert('Successfully submitted form')
-          changeTab(event, nextTab)
-        } else {
-          alert(`Unsuccessful. ${response.error}`)
-        }
-      }, 80)
-    },
-  })
-
   useEffect(() => {
     const fetchData = async () => {
       const savedData = getSavedData(patientId, formName)
@@ -223,12 +174,12 @@ const GeriPtConsultForm = (props) => {
         }, 80)
       }}
     >
-      {({ isSubmitting }) => (
+      {({ handleSubmit, errors, submitCount }) => (
         <Paper elevation={2} p={0} m={0}>
           <Grid display='flex' flexDirection='row'>
             <Grid xs={9}>
               <Paper elevation={2} p={0} m={0}>
-                <form onSubmit={formik.handleSubmit} className='fieldPadding'>
+                <form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>PT Consult</h1>
                     <h3>Memo (for participant):</h3>
@@ -280,6 +231,13 @@ const GeriPtConsultForm = (props) => {
                   </div>
 
                   <br />
+
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
+                  )}
+
                   <div>
                     {loading ? (
                       <CircularProgress />
@@ -289,12 +247,6 @@ const GeriPtConsultForm = (props) => {
                       </Button>
                     )}
                   </div>
-
-                  {formik.submitCount > 0 && Object.keys(formik.errors).length > 0 && (
-                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                      Please fill in all required fields correctly.
-                    </Typography>
-                  )}
 
                   <br />
                   <Divider />

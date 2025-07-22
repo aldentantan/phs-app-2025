@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FastField, Formik, Form, useFormik, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { Divider, Paper, CircularProgress, Button, Grid, Typography } from '@mui/material'
+import { Paper, CircularProgress, Button, Grid, Typography } from '@mui/material'
 
 import allForms from '../forms.json'
 import { formatBmi, submitForm } from '../../api/api.jsx'
@@ -200,21 +200,6 @@ const validationSchema = Yup.object({
   geriOtQuestionnaireQ33: Yup.string(),
 })
 
-const isRequiredField = (schema, fieldName) => {
-  try {
-    const tests = schema.fields[fieldName]?.tests || []
-    return tests.some((test) => test.OPTIONS?.name === 'required')
-  } catch {
-    return false
-  }
-}
-
-const formatLabel = (name, schema) => {
-  const match = name.match(/geriOtQuestionnaireQ(\d+)/i)
-  const label = match ? `Geri - OT Questionnaire Q${match[1]}` : name
-  return `${label}${isRequiredField(schema, name) ? ' *' : ''}`
-}
-
 const generateInitialValues = () => {
   const values = {}
   for (let i = 1; i <= 33; i++) {
@@ -301,7 +286,7 @@ const GeriOtQuestionnaireForm = (props) => {
         <b>Yes :</b>
         <FastField
           name='geriOtQuestionnaireQ29'
-          label={formatLabel('geriOtQuestionnaireQ29', validationSchema)}
+          label='geriOtQuestionnaireQ29'
           component={CustomNumberField}
         />
         <b>No (calculated):</b> {score[1]}
@@ -309,7 +294,7 @@ const GeriOtQuestionnaireForm = (props) => {
         <b>No :</b>
         <FastField
           name='geriOtQuestionnaireQ30'
-          label={formatLabel('geriOtQuestionnaireQ30', validationSchema)}
+          label='geriOtQuestionnaireQ30'
           component={CustomNumberField}
         />
         <b>NA (calculated):</b> {score[2]}
@@ -317,32 +302,12 @@ const GeriOtQuestionnaireForm = (props) => {
         <b>NA :</b>
         <FastField
           name='geriOtQuestionnaireQ31'
-          label={formatLabel('geriOtQuestionnaireQ31', validationSchema)}
+          label='geriOtQuestionnaireQ31'
           component={CustomNumberField}
         />
       </div>
     )
   }
-
-  const formik = useFormik({
-    initialValues,
-    enableReinitialize: true,
-    validationSchema,
-    onSubmit: async (values) => {
-      isLoading(true)
-      const response = await submitForm(values, patientId, formName)
-      setTimeout(() => {
-        isLoading(false)
-        if (response.result) {
-          const event = null // not interested in this value
-          alert('Successfully submitted form')
-          changeTab(event, nextTab)
-        } else {
-          alert(`Unsuccessful. ${response.error}`)
-        }
-      }, 80)
-    },
-  })
 
   return (
     <Formik
@@ -364,12 +329,12 @@ const GeriOtQuestionnaireForm = (props) => {
         }, 80)
       }}
     >
-      {({ isSubmitting }) => (
+      {({ handleSubmit, errors, submitCount }) => (
         <Paper elevation={2} sx={{ p: 2 }}>
-          <Grid container spacing={2}>
+          <Grid container>
             <Grid item xs={9}>
-              <Paper elevation={2} sx={{ p: 2 }}>
-                <Form className='fieldPadding'>
+              <Paper>
+                <Form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>HOME FALLS AND ACCIDENTS SCREENING TOOL (HOME FAST)</h1>
                     <h4 className='red'>
@@ -392,6 +357,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ1'
+                      label='geriOtQuestionnaireQ1'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ1}
                       row
@@ -403,6 +369,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ2'
+                      label='geriOtQuestionnaireQ2'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ2}
                       row
@@ -410,6 +377,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <h4>Please specify:</h4>
                     <FastField
                       name='geriOtQuestionnaireQ33'
+                      label='geriOtQuestionnaireQ33'
                       component={CustomTextField}
                       multiline
                       rows={3}
@@ -422,17 +390,18 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ3'
+                      label='geriOtQuestionnaireQ3'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ3}
                       row
                     />
-                    {/* ... continue similarly for all questions ... */}
                     <h3>4. Are your loose mats securely fixed to the floor?</h3>
                     <p>
                       <b>Definition:</b> If backings of mats are safely taped/nailed to the ground
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ4'
+                      label='geriOtQuestionnaireQ4'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ4}
                       row
@@ -444,6 +413,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ5'
+                      label='geriOtQuestionnaireQ5'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ5}
                       row
@@ -455,6 +425,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ6'
+                      label='geriOtQuestionnaireQ6'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ6}
                       row
@@ -465,6 +436,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ7'
+                      label='geriOtQuestionnaireQ7'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ7}
                       row
@@ -476,6 +448,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ8'
+                      label='geriOtQuestionnaireQ8'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ8}
                       row
@@ -490,6 +463,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ9'
+                      label='geriOtQuestionnaireQ9'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ9}
                       row
@@ -497,6 +471,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <h3>Notes (Q1 - 9, Living room/ Home entrance):</h3>
                     <FastField
                       name='geriOtQuestionnaireQ10'
+                      label='geriOtQuestionnaireQ10'
                       component={CustomTextField}
                       multiline
                       rows={3}
@@ -511,6 +486,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ11'
+                      label='geriOtQuestionnaireQ11'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ11}
                       row
@@ -522,6 +498,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ12'
+                      label='geriOtQuestionnaireQ12'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ12}
                       row
@@ -536,6 +513,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ13'
+                      label='geriOtQuestionnaireQ13'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ13}
                       row
@@ -548,6 +526,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ14'
+                      label='geriOtQuestionnaireQ14'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ14}
                       row
@@ -559,6 +538,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ15'
+                      label='geriOtQuestionnaireQ15'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ15}
                       row
@@ -569,6 +549,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ16'
+                      label='geriOtQuestionnaireQ16'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ16}
                       row
@@ -576,6 +557,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <h3>Notes (Q10 - 15, Toilet):</h3>
                     <FastField
                       name='geriOtQuestionnaireQ17'
+                      label='geriOtQuestionnaireQ17'
                       component={CustomTextField}
                       multiline
                       rows={3}
@@ -593,6 +575,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ18'
+                      label='geriOtQuestionnaireQ18'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ18}
                       row
@@ -606,6 +589,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ19'
+                      label='geriOtQuestionnaireQ19'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ19}
                       row
@@ -620,6 +604,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ20'
+                      label='geriOtQuestionnaireQ20'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ20}
                       row
@@ -635,6 +620,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ21'
+                      label='geriOtQuestionnaireQ21'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ21}
                       row
@@ -655,6 +641,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ22'
+                      label='geriOtQuestionnaireQ22'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ22}
                       row
@@ -669,6 +656,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ23'
+                      label='geriOtQuestionnaireQ23'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ23}
                       row
@@ -681,6 +669,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ24'
+                      label='geriOtQuestionnaireQ24'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ24}
                       row
@@ -695,6 +684,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ25'
+                      label='geriOtQuestionnaireQ25'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ25}
                       row
@@ -708,6 +698,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <br />
                     <FastField
                       name='geriOtQuestionnaireQ26'
+                      label='geriOtQuestionnaireQ26'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ26}
                       row
@@ -722,6 +713,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     </p>
                     <FastField
                       name='geriOtQuestionnaireQ27'
+                      label='geriOtQuestionnaireQ27'
                       component={CustomRadioGroup}
                       options={formOptions.geriOtQuestionnaireQ27}
                       row
@@ -729,6 +721,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <h3>Notes (Q16 - 25, Kitchen and Living Environment):</h3>
                     <FastField
                       name='geriOtQuestionnaireQ28'
+                      label='geriOtQuestionnaireQ28'
                       component={CustomTextField}
                       multiline
                       rows={3}
@@ -742,10 +735,16 @@ const GeriOtQuestionnaireForm = (props) => {
                     </h3>
                     <FastField
                       name='geriOtQuestionnaireQ32'
+                      label='geriOtQuestionnaireQ32'
                       component={CustomTextField}
                       fullWidth
                     />
                     <br />
+                    {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                      <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                        Please fill in all required fields correctly.
+                      </Typography>
+                    )}
                     <div>
                       {loading ? (
                         <CircularProgress />
@@ -755,11 +754,6 @@ const GeriOtQuestionnaireForm = (props) => {
                         </Button>
                       )}
                     </div>
-                    {formik.submitCount > 0 && Object.keys(formik.errors).length > 0 && (
-                      <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                        Please fill in all required fields correctly.
-                      </Typography>
-                    )}
                   </div>
                 </Form>
               </Paper>
