@@ -108,35 +108,29 @@ const GeriPhysicalActivityLevelForm = ({ changeTab, nextTab }) => {
   }, [])
 
   return (
-    <Paper elevation={2} p={0} m={0}>
-      <Formik
-        initialValues={initialValues}
-        enableReinitialize
-        validationSchema={validationSchema}
-        onSubmit={async (values, actions) => {
-          setLoading(true)
-          const response = await submitForm(values, patientId, formName)
-          setLoading(false)
-          if (response.result) {
-            alert('Successfully submitted form')
-            changeTab(null, nextTab)
-          } else {
-            alert(`Unsuccessful. ${response.error}`)
-          }
-          actions.setSubmitting(false)
-        }}
-      >
-        {(formikProps) => (
+    <Formik
+      initialValues={initialValues}
+      enableReinitialize
+      validationSchema={validationSchema}
+      onSubmit={async (values, actions) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+        setLoading(false)
+        if (response.result) {
+          alert('Successfully submitted form')
+          changeTab(null, nextTab)
+        } else {
+          alert(`Unsuccessful. ${response.error}`)
+        }
+        actions.setSubmitting(false)
+      }}
+    >
+      {(handleSubmit, errors, submitCount) => (
+        <Paper elevation={2} p={0} m={0}>
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h1>PHYSICAL ACTIVITY SECTION</h1>
               <h2>PHYSICAL ACTIVITY LEVELS</h2>
-
-              {formikProps.submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0 && (
-                <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                  Please fill in all required fields correctly.
-                </Typography>
-              )}
 
               <h3>1. How often do you exercise in a week?</h3>
               <p>
@@ -272,6 +266,12 @@ const GeriPhysicalActivityLevelForm = ({ changeTab, nextTab }) => {
               />
             </div>
 
+            {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                Please fill in all required fields correctly.
+              </Typography>
+            )}
+
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
               {loading ? (
                 <CircularProgress />
@@ -285,9 +285,9 @@ const GeriPhysicalActivityLevelForm = ({ changeTab, nextTab }) => {
             <br />
             <Divider />
           </Form>
-        )}
-      </Formik>
-    </Paper>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

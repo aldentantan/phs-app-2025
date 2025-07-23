@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
-import { Paper, CircularProgress, Button, Divider } from '@mui/material'
+import { Paper, CircularProgress, Button, Divider, Typography } from '@mui/material'
 import { useNavigate } from 'react-router'
 
 import { submitForm } from '../../api/api.jsx'
@@ -13,65 +13,66 @@ import '../forms.css'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 
-// Yup validation schema (updated with .when as you requested)
+import PopupText from 'src/utils/popupText'
+
 const validationSchema = Yup.object({
-  GYNAE1: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAE2: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE1: Yup.string().required(),
+  GYNAE2: Yup.string(),
   GYNAEShortAns2: Yup.string().when('GYNAE2', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE3: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE3: Yup.string().required(),
   GYNAEShortAns3: Yup.string().when('GYNAE3', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE4: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE4: Yup.string().required(),
   GYNAEShortAns4: Yup.string().when('GYNAE4', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE5: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE5: Yup.string().required(),
   GYNAEShortAns5: Yup.string().when('GYNAE5', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE6: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE6: Yup.string().required(),
   GYNAEShortAns6: Yup.string().when('GYNAE6', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE7: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE7: Yup.string().required(),
   GYNAEShortAns7: Yup.string().when('GYNAE7', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE8: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE8: Yup.string().required(),
   GYNAEShortAns8: Yup.string().when('GYNAE8', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE9: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  GYNAE10: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE9: Yup.string(),
+  GYNAE10: Yup.string().required(),
   GYNAEShortAns10: Yup.string().when('GYNAE10', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE11: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE11: Yup.string().required(),
   GYNAEShortAns11: Yup.string().when('GYNAE11', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
     otherwise: (schema) => schema,
   }),
-  GYNAE13: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  GYNAE13: Yup.string().required(),
   GYNAEShortAns13: Yup.string().when('GYNAE13', {
     is: 'Yes',
     then: (schema) => schema.required('Please specify'),
@@ -79,7 +80,6 @@ const validationSchema = Yup.object({
   }),
 })
 
-// Initial values
 const initialValues = {
   GYNAE1: '',
   GYNAE2: '',
@@ -126,33 +126,29 @@ const GynaeForm = () => {
     fetchData()
   }, [patientId])
 
-  const handleSubmit = async (values) => {
-    isLoading(true)
-    const response = await submitForm(values, patientId, 'gynaeForm')
-    if (response.result) {
-      isLoading(false)
-      setTimeout(() => {
-        alert('Successfully submitted form')
-        navigate('/app/dashboard', { replace: true })
-      }, 80)
-    } else {
-      isLoading(false)
-      setTimeout(() => {
-        alert(`Unsuccessful. ${response.error}`)
-      }, 80)
-    }
-  }
-
   return (
-    <Paper elevation={2} p={0} m={0}>
-      <Formik
-        initialValues={saveData}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        {({ values }) => (
-          <Form className='form--div fieldPadding'>
+    <Formik
+      initialValues={saveData}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting }) => {
+        isLoading(true)
+        const response = await submitForm(values, patientId, 'gynaeForm')
+        setTimeout(() => {
+          isLoading(false)
+          setSubmitting(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            navigate('/app/dashboard', { replace: true })
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+      enableReinitialize
+    >
+      {({ handleSubmit, errors, submitCount }) => (
+        <Paper elevation={2} p={0} m={0}>
+          <form onSubmit={handleSubmit} className='form--div fieldPadding'>
             <h1>Gynecology</h1>
             <h3 className='red'>Only ask if participant is female:</h3>
 
@@ -164,24 +160,22 @@ const GynaeForm = () => {
               row
             />
 
-            {values.GYNAE1 === 'Yes' && (
-              <>
-                <FastField
-                  name='GYNAE2'
-                  label='Do you have any postmenopausal bleeding? (bleeding after menopause)'
-                  component={CustomRadioGroup}
-                  options={formOptions.yesNo}
-                  row
-                />
-                <FastField
-                  name='GYNAEShortAns2'
-                  label='Please specify:'
-                  component={CustomTextField}
-                  multiline
-                  rows={3}
-                />
-              </>
-            )}
+            <PopupText qnNo='GYNAE1' triggerValue='Yes'>
+              <FastField
+                name='GYNAE2'
+                label='Do you have any postmenopausal bleeding? (bleeding after menopause)'
+                component={CustomRadioGroup}
+                options={formOptions.yesNo}
+                row
+              />
+              <FastField
+                name='GYNAEShortAns2'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
+              />
+            </PopupText>
 
             <FastField
               name='GYNAE3'
@@ -190,7 +184,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE3 === 'Yes' && (
+            <PopupText qnNo='GYNAE3' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns3'
                 label='Please specify:'
@@ -198,7 +192,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE4'
@@ -207,7 +201,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE4 === 'Yes' && (
+            <PopupText qnNo='GYNAE4' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns4'
                 label='Please specify:'
@@ -215,7 +209,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE5'
@@ -224,7 +218,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE5 === 'Yes' && (
+            <PopupText qnNo='GYNAE5' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns5'
                 label='Please specify:'
@@ -232,7 +226,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE6'
@@ -241,7 +235,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE6 === 'Yes' && (
+            <PopupText qnNo='GYNAE6' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns6'
                 label='Please specify:'
@@ -249,7 +243,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE7'
@@ -258,7 +252,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE7 === 'Yes' && (
+            <PopupText qnNo='GYNAE7' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns7'
                 label='Please specify:'
@@ -266,7 +260,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE8'
@@ -275,24 +269,22 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE8 === 'Yes' && (
-              <>
-                <FastField
-                  name='GYNAEShortAns8'
-                  label='Please specify:'
-                  component={CustomTextField}
-                  multiline
-                  rows={3}
-                />
-                <FastField
-                  name='GYNAE9'
-                  label='If so, are you keen to investigate for the cause of subfertility and to pursue fertility treatment?'
-                  component={CustomRadioGroup}
-                  options={formOptions.yesNo}
-                  row
-                />
-              </>
-            )}
+            <PopupText qnNo='GYNAE8' triggerValue='Yes'>
+              <FastField
+                name='GYNAEShortAns8'
+                label='Please specify:'
+                component={CustomTextField}
+                multiline
+                rows={3}
+              />
+              <FastField
+                name='GYNAE9'
+                label='If so, are you keen to investigate for the cause of subfertility and to pursue fertility treatment?'
+                component={CustomRadioGroup}
+                options={formOptions.yesNo}
+                row
+              />
+            </PopupText>
 
             <FastField
               name='GYNAE10'
@@ -301,7 +293,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE10 === 'Yes' && (
+            <PopupText qnNo='GYNAE10' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns10'
                 label='Please specify:'
@@ -309,7 +301,7 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <FastField
               name='GYNAE11'
@@ -318,7 +310,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE11 === 'Yes' && (
+            <PopupText qnNo='GYNAE11' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns11'
                 label='Please specify:'
@@ -326,13 +318,12 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
-            )}
+            </PopupText>
 
             <h3>
               Based on Advanced Gynae Screening, please kindly refer her to the following
               gynecological service for further evaluation:
             </h3>
-            {/* You can keep your GetReferral component here if needed */}
 
             <FastField
               name='GYNAE13'
@@ -341,7 +332,7 @@ const GynaeForm = () => {
               options={formOptions.yesNo}
               row
             />
-            {values.GYNAE13 === 'Yes' && (
+            <PopupText qnNo='GYNAE13' triggerValue='Yes'>
               <FastField
                 name='GYNAEShortAns13'
                 label='Please specify:'
@@ -349,9 +340,15 @@ const GynaeForm = () => {
                 multiline
                 rows={3}
               />
+            </PopupText>
+
+            {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                Please fill in all required fields correctly.
+              </Typography>
             )}
 
-            <div style={{ paddingLeft: 16, paddingBottom: 16 }}>
+            <div>
               {loading ? (
                 <CircularProgress />
               ) : (
@@ -361,10 +358,10 @@ const GynaeForm = () => {
               )}
             </div>
             <Divider />
-          </Form>
-        )}
-      </Formik>
-    </Paper>
+          </form>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

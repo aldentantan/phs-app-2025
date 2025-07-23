@@ -53,25 +53,25 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
   }, [patientId])
 
   return (
-    <Paper elevation={2} p={0} m={0}>
-      <Formik
-        enableReinitialize
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={async (values, { setSubmitting }) => {
-          setLoading(true)
-          const response = await submitForm(values, patientId, formName)
-          setLoading(false)
-          setSubmitting(false)
-          if (response.result) {
-            alert('Successfully submitted form')
-            changeTab(null, nextTab)
-          } else {
-            alert(`Unsuccessful. ${response.error}`)
-          }
-        }}
-      >
-        {(formikProps) => (
+    <Formik
+      enableReinitialize
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting }) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+        setLoading(false)
+        setSubmitting(false)
+        if (response.result) {
+          alert('Successfully submitted form')
+          changeTab(null, nextTab)
+        } else {
+          alert(`Unsuccessful. ${response.error}`)
+        }
+      }}
+    >
+      {(formikProps, handleSubmit, errors, submitCount) => (
+        <Paper>
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h1>ABBREVIATED MENTAL TEST (for dementia)</h1>
@@ -79,12 +79,6 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                 Please select 'Yes' if participant answered correctly or 'No' if answered
                 incorrectly.
               </h2>
-
-              {formikProps.submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0 && (
-                <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                  Please fill in all required fields correctly.
-                </Typography>
-              )}
 
               {[...Array(10)].map((_, i) => {
                 const qNum = i + 1
@@ -98,7 +92,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                     </Typography>
                     <Field
                       name={`geriAmtQ${qNum}`}
-                      /*label={`Question ${qNum}`}*/
+                      label={`geriAmtQ${qNum}`}
                       component={CustomRadioGroup}
                       options={options}
                       row
@@ -106,32 +100,30 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                   </div>
                 )
               })}
-
               <h4>AMT Total Score: {getScore(formikProps.values)} /10</h4>
             </div>
 
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-              {loading || formikProps.isSubmitting ? (
+            {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                Please fill in all required fields correctly.
+              </Typography>
+            )}
+
+            <br />
+
+            <div>
+              {loading ? (
                 <CircularProgress />
               ) : (
-                <Button
-                  type='submit'
-                  variant='contained'
-                  color='primary'
-                  size='large'
-                  disabled={formikProps.isSubmitting}
-                >
+                <Button type='submit' variant='contained' color='primary'>
                   Submit
                 </Button>
               )}
-            </Box>
-
-            <br />
-            <Divider />
+            </div>
           </Form>
-        )}
-      </Formik>
-    </Paper>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

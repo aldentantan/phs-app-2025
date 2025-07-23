@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Paper, Divider, Typography, CircularProgress, Button } from '@mui/material'
+import { Paper, Typography, CircularProgress, Button } from '@mui/material'
 import { Formik, Form, FastField, ErrorMessage, useFormikContext } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
@@ -110,7 +110,7 @@ export default function GeriPhqForm({ changeTab, nextTab }) {
         enableReinitialize
         onSubmit={() => {}}
       >
-        {(formikProps) => (
+        {(handleSubmit, errors, submitCount) => (
           <Form className='fieldPadding'>
             <Typography variant='h6' color='error' fontWeight='bold'>
               **This form is duplicate of the HX PHQ form (read-only)**
@@ -120,7 +120,7 @@ export default function GeriPhqForm({ changeTab, nextTab }) {
               problems?
             </Typography>
 
-            {formikProps.submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0 && (
+            {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
               <Typography color='error' variant='body2' sx={{ mb: 1 }}>
                 Please fill in all required fields correctly.
               </Typography>
@@ -189,7 +189,6 @@ export default function GeriPhqForm({ changeTab, nextTab }) {
               <Typography variant='body2' color='text.secondary'>
                 This form is read-only. Please edit the HX PHQ form instead.
               </Typography>
-              <Divider sx={{ mt: 2 }} />
             </DisabledWrapper>
           </Form>
         )}

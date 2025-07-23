@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Paper, Divider, Typography, CircularProgress, TextField } from '@mui/material'
+import { Paper, Divider, Typography, CircularProgress } from '@mui/material'
 import { Formik, Form, FastField, ErrorMessage, useFormikContext } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
@@ -102,14 +102,14 @@ export default function MentalHealthPHQ() {
   }
 
   return (
-    <Paper elevation={2}>
-      <Formik
-        initialValues={savedData}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={() => {}}
-      >
-        {() => (
+    <Formik
+      initialValues={savedData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={() => {}}
+    >
+      {() => (
+        <Paper elevation={2}>
           <Form className='fieldPadding'>
             <Typography variant='h6' color='error' fontWeight='bold'>
               **This form is duplicate of the HX PHQ form (read-only)**
@@ -183,7 +183,7 @@ export default function MentalHealthPHQ() {
                 options={dayRange.map((val) => ({ label: val, value: val }))}
                 row
               />
-
+              <br />
               <PopupText
                 qnNo='PHQ9'
                 triggerValue={[
@@ -219,13 +219,7 @@ export default function MentalHealthPHQ() {
                 row
               />
               <Typography variant='subtitle2'>Please specify.</Typography>
-              <FastField
-                name='PHQShortAns11'
-                component={CustomTextField}
-                fullWidth
-                multiline
-                sx={{ mb: 3, mt: 1 }}
-              />
+              <FastField name='PHQShortAns11' component={CustomTextField} fullWidth multiline />
               <ErrorMessage name='PHQShortAns11' component='div' style={{ color: 'red' }} />
 
               <Typography variant='body2' color='text.secondary'>
@@ -234,8 +228,8 @@ export default function MentalHealthPHQ() {
               <Divider sx={{ mt: 2 }} />
             </DisabledWrapper>
           </Form>
-        )}
-      </Formik>
-    </Paper>
+        </Paper>
+      )}
+    </Formik>
   )
 }

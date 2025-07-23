@@ -25,28 +25,15 @@ import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 
 const formName = 'vaccineForm'
 
-const RadioGroupField = ({ name, label, values }) => (
-  <FormControl fullWidth sx={{ mb: 3 }}>
-    <FormLabel>
-      <Typography variant='subtitle1' fontWeight='bold'>
-        {label}
-      </Typography>
-    </FormLabel>
-    <Field name={name}>
-      {({ field }) => (
-        <RadioGroup {...field} row>
-          {values.map((val) => (
-            <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
-          ))}
-        </RadioGroup>
-      )}
-    </Field>
-    <ErrorMessage name={name} component='div' style={{ color: 'red' }} />
-  </FormControl>
-)
-
 const initialValues = {
   VAX1: '',
+}
+
+const formOptions = {
+  VAX1: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
 }
 
 export default function VaccineForm() {
@@ -75,35 +62,32 @@ export default function VaccineForm() {
     fetchData()
   }, [patientId])
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    setLoading(true)
-    const response = await submitForm(values, patientId, formName)
-    setLoading(false)
-    setSubmitting(false)
-    if (response.result) {
-      setTimeout(() => {
-        alert('Successfully submitted form')
-        navigate('/app/dashboard', { replace: true })
-      }, 80)
-    } else {
-      setTimeout(() => {
-        alert(`Unsuccessful. ${response.error}`)
-      }, 80)
-    }
-  }
-
   return (
-    <Paper elevation={2}>
-      <Grid display='flex' flexDirection='row'>
-        <Grid xs={9}>
-          <Paper elevation={2}>
-            <Formik
-              initialValues={saveData}
-              validationSchema={validationSchema}
-              enableReinitialize
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting }) => (
+    <Formik
+      initialValues={saveData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={async (values, { setSubmitting }) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+
+        setTimeout(() => {
+          setLoading(false)
+          setSubmitting(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            navigate('/app/dashboard', { replace: true })
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+    >
+      {({ errors, submitCount, isSubmitting }) => (
+        <Paper elevation={2}>
+          <Grid display='flex' flexDirection='row'>
+            <Grid xs={9}>
+              <Paper elevation={2}>
                 <Form className='fieldPadding'>
                   <Typography variant='h4' gutterBottom>
                     Vaccination
@@ -116,11 +100,17 @@ export default function VaccineForm() {
                     name='VAX1'
                     label='VAX1'
                     component={CustomRadioGroup}
-                    options={['Yes', 'No'].map((val) => ({ label: val, value: val }))}
+                    options={formOptions.VAX1}
                     row
                   />
 
-                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
+                  )}
+
+                  <div>
                     {loading || isSubmitting ? (
                       <CircularProgress />
                     ) : (
@@ -132,45 +122,44 @@ export default function VaccineForm() {
                   <br />
                   <Divider />
                 </Form>
-              )}
-            </Formik>
-          </Paper>
-        </Grid>
+              </Paper>
+            </Grid>
 
-        {/* ✅ Side Panel */}
-        <Grid
-          p={1}
-          width='30%'
-          display='flex'
-          flexDirection='column'
-          alignItems={loadingSidePanel ? 'center' : 'left'}
-        >
-          {loadingSidePanel ? (
-            <CircularProgress />
-          ) : (
-            <div className='summary--question-div'>
-              <Typography variant='h6' gutterBottom>
-                Patient Info
-              </Typography>
-              {regi ? (
-                <>
-                  <Typography variant='body1' className='blue'>
-                    Age: {regi.registrationQ4}
-                  </Typography>
-                  <Typography variant='body1' className='blue'>
-                    Citizenship: {regi.registrationQ7}
-                  </Typography>
-                </>
+            <Grid
+              p={1}
+              width='30%'
+              display='flex'
+              flexDirection='column'
+              alignItems={loadingSidePanel ? 'center' : 'left'}
+            >
+              {loadingSidePanel ? (
+                <CircularProgress />
               ) : (
-                <Typography variant='body1' className='red'>
-                  NO REGI DATA
-                </Typography>
+                <div className='summary--question-div'>
+                  <Typography variant='h6' gutterBottom>
+                    Patient Info
+                  </Typography>
+                  {regi ? (
+                    <>
+                      <Typography variant='body1' className='blue'>
+                        Age: {regi.registrationQ4}
+                      </Typography>
+                      <Typography variant='body1' className='blue'>
+                        Citizenship: {regi.registrationQ7}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant='body1' className='red'>
+                      NO REGI DATA
+                    </Typography>
+                  )}
+                </div>
               )}
-            </div>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

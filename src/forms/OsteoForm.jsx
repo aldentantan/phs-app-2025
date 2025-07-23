@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
 
-import { Divider, Paper, Grid, CircularProgress, Button } from '@mui/material'
+import { Divider, Paper, Grid, CircularProgress, Button, Typography } from '@mui/material'
 
 import allForms from './forms.json'
 import { submitForm } from '../api/api.jsx'
@@ -75,36 +75,31 @@ const OsteoForm = () => {
     ],
   }
 
-  const handleSubmit = async (values) => {
-    setLoading(true)
-    const response = await submitForm(values, patientId, formName)
-    if (response.result) {
-      setLoading(false)
-      setTimeout(() => {
-        alert('Successfully submitted form')
-        navigate('/app/dashboard', { replace: true })
-      }, 80)
-    } else {
-      setLoading(false)
-      setTimeout(() => {
-        alert(`Unsuccessful. ${response.error}`)
-      }, 80)
-    }
-  }
-
   return (
-    <Paper elevation={2}>
-      <Grid display='flex' flexDirection='row'>
-        <Grid xs={9}>
-          <Paper elevation={2}>
-            <Formik
-              initialValues={{ ...initialValues, ...saveData }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              enableReinitialize={true}
-            >
-              {({ errors, submitCount, isValid }) => (
-                <Form className='fieldPadding'>
+    <Formik
+      initialValues={{ ...initialValues, ...saveData }}
+      validationSchema={validationSchema}
+      onSubmit={async (values) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+        setTimeout(() => {
+          setLoading(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            navigate('/app/dashboard', { replace: true })
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+      enableReinitialize={true}
+    >
+      {({ handleSubmit, errors, submitCount, isValid }) => (
+        <Paper elevation={2}>
+          <Grid display='flex' flexDirection='row'>
+            <Grid xs={9}>
+              <Paper elevation={2}>
+                <form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>Osteoporosis</h1>
                     <h3>Based on OSTA, patient&apos;s osteoporosis risk is:</h3>
@@ -132,16 +127,10 @@ const OsteoForm = () => {
                     />
                   </div>
 
-                  {/* Error Display */}
-                  {Object.keys(errors).length > 0 && submitCount > 0 && (
-                    <div style={{ color: 'red', margin: '10px 0' }}>
-                      <h4>Please fix the following errors:</h4>
-                      <ul>
-                        {Object.entries(errors).map(([field, error]) => (
-                          <li key={field}>{error}</li>
-                        ))}
-                      </ul>
-                    </div>
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
                   )}
 
                   <div>
@@ -158,74 +147,72 @@ const OsteoForm = () => {
                       </Button>
                     )}
                   </div>
-                  <Divider />
-                </Form>
-              )}
-            </Formik>
-          </Paper>
-        </Grid>
+                </form>
+              </Paper>
+            </Grid>
 
-        {/* Side Panel */}
-        <Grid
-          p={1}
-          width='30%'
-          display='flex'
-          flexDirection='column'
-          alignItems={loadingSidePanel ? 'center' : 'left'}
-        >
-          {loadingSidePanel ? (
-            <CircularProgress />
-          ) : (
-            <div className='summary--question-div'>
-              <h2>Patient Info</h2>
-              {regi && (
-                <>
-                  {regi.registrationQ3 instanceof Date ? (
-                    <p>
-                      Birthday: <strong>{regi.registrationQ3.toDateString()}</strong>
-                    </p>
-                  ) : (
-                    <p className='red'>registrationQ3 is invalid!</p>
+            <Grid
+              p={1}
+              width='30%'
+              display='flex'
+              flexDirection='column'
+              alignItems={loadingSidePanel ? 'center' : 'left'}
+            >
+              {loadingSidePanel ? (
+                <CircularProgress />
+              ) : (
+                <div className='summary--question-div'>
+                  <h2>Patient Info</h2>
+                  {regi && (
+                    <>
+                      {regi.registrationQ3 instanceof Date ? (
+                        <p>
+                          Birthday: <strong>{regi.registrationQ3.toDateString()}</strong>
+                        </p>
+                      ) : (
+                        <p className='red'>registrationQ3 is invalid!</p>
+                      )}
+                      <p>
+                        Age: <strong>{regi.registrationQ4}</strong>
+                      </p>
+                      <p>
+                        Gender: <strong>{String(regi.registrationQ5)}</strong>
+                      </p>
+                    </>
                   )}
-                  <p>
-                    Age: <strong>{regi.registrationQ4}</strong>
-                  </p>
-                  <p>
-                    Gender: <strong>{String(regi.registrationQ5)}</strong>
-                  </p>
-                </>
-              )}
 
-              {triage && (
-                <>
-                  <p>
-                    Height (in cm): <strong>{triage.triageQ10}</strong>
-                  </p>
-                  <p>
-                    Weight (in kg): <strong>{triage.triageQ11}</strong>
-                  </p>
-                </>
-              )}
+                  {triage && (
+                    <>
+                      <p>
+                        Height (in cm): <strong>{triage.triageQ10}</strong>
+                      </p>
+                      <p>
+                        Weight (in kg): <strong>{triage.triageQ11}</strong>
+                      </p>
+                    </>
+                  )}
 
-              {social && (
-                <>
-                  <p>
-                    Does patient currently smoke: <strong>{String(social.SOCIAL10)}</strong>
-                  </p>
-                  <p>
-                    How many pack years: <strong>{String(social.SOCIALShortAns10)}</strong>
-                  </p>
-                  <p>
-                    Does patient consume alcoholic drinks:{' '}
-                    <strong>{String(social.SOCIAL12)}</strong>
-                  </p>
-                </>
+                  {social && (
+                    <>
+                      <p>
+                        Does patient currently smoke: <strong>{String(social.SOCIAL10)}</strong>
+                      </p>
+                      <p>
+                        How many pack years: <strong>{String(social.SOCIALShortAns10)}</strong>
+                      </p>
+                      <p>
+                        Does patient consume alcoholic drinks:{' '}
+                        <strong>{String(social.SOCIAL12)}</strong>
+                      </p>
+                    </>
+                  )}
+                </div>
               )}
-            </div>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

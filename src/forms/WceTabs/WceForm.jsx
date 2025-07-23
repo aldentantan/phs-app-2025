@@ -3,21 +3,9 @@ import { Fragment, useContext, useEffect, useState } from 'react'
 import { Formik, Form, useFormikContext, Field } from 'formik'
 import * as Yup from 'yup'
 
-import {
-  Divider,
-  Paper,
-  Grid,
-  CircularProgress,
-  Button,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  FormHelperText,
-} from '@mui/material'
+import { Divider, Paper, Grid, CircularProgress, Button, Typography } from '@mui/material'
 
-import { submitFormSpecial } from '../../api/api.jsx'
+import { submitForm, submitFormSpecial } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 
 import { getSavedData } from '../../services/mongoDB'
@@ -26,26 +14,64 @@ import allForms from '../forms.json'
 
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 
-// Yup validation schema
+const formName = 'wceForm'
+
+const formOptions = {
+  wceQ3: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+    { label: 'Not Applicable', value: 'Not Applicable' },
+  ],
+  wceQ4: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+    { label: 'Not Applicable', value: 'Not Applicable' },
+  ],
+  wceQ5: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+    { label: 'Not Applicable', value: 'Not Applicable' },
+  ],
+  wceQ7: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  wceQ8: [
+    { label: 'Never before', value: 'Never before' },
+    { label: 'Less than 5 years', value: 'Less than 5 years' },
+    { label: '5 years or longer', value: '5 years or longer' },
+  ],
+  wceQ9: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  wceQ10: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  wceQ11: [
+    { label: 'Never before', value: 'Never before' },
+    { label: 'Within the last 3 years', value: 'Within the last 3 years' },
+    { label: '3 years or longer', value: '3 years or longer' },
+  ],
+  wceQ12: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+}
+
 const validationSchema = Yup.object({
-  wceQ3: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ4: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ5: Yup.string().oneOf(['Yes', 'No', 'Not Applicable'], 'Invalid selection'),
-  wceQ7: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ8: Yup.string().oneOf(
-    ['Never before', 'Less than 5 years', '5 years or longer'],
-    'Invalid selection',
-  ),
-  wceQ9: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ10: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
-  wceQ11: Yup.string().oneOf(
-    ['Never before', 'Within the last 3 years', '3 years or longer'],
-    'Invalid selection',
-  ),
-  wceQ12: Yup.string().oneOf(['Yes', 'No'], 'Invalid selection'),
+  wceQ3: Yup.string().required(),
+  wceQ4: Yup.string().required(),
+  wceQ5: Yup.string().required(),
+  wceQ7: Yup.string().required(),
+  wceQ8: Yup.string().required(),
+  wceQ9: Yup.string().required(),
+  wceQ10: Yup.string().required(),
+  wceQ11: Yup.string().required(),
+  wceQ12: Yup.string().required(),
 })
 
-// Initial values
 const initialValues = {
   wceQ3: '',
   wceQ4: '',
@@ -99,8 +125,6 @@ function CheckHpvEligibility() {
   }
 }
 
-const formName = 'wceForm'
-
 const WceForm = (props) => {
   const { patientId } = useContext(FormContext)
   const { changeTab, nextTab } = props
@@ -119,7 +143,6 @@ const WceForm = (props) => {
       const hxFamilyData = getSavedData(patientId, allForms.hxFamilyForm)
 
       Promise.all([savedData, regData, hxSocialData, hxFamilyData]).then((result) => {
-        // Merge saved data with initial values to ensure all fields are present
         setSaveData({ ...initialValues, ...result[0] })
         setReg(result[1])
         setHxSocial(result[2])
@@ -130,81 +153,33 @@ const WceForm = (props) => {
     fetchData()
   }, [])
 
-  const formOptions = {
-    wceQ3: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-      { label: 'Not Applicable', value: 'Not Applicable' },
-    ],
-    wceQ4: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-      { label: 'Not Applicable', value: 'Not Applicable' },
-    ],
-    wceQ5: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-      { label: 'Not Applicable', value: 'Not Applicable' },
-    ],
-    wceQ7: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-    wceQ8: [
-      { label: 'Never before', value: 'Never before' },
-      { label: 'Less than 5 years', value: 'Less than 5 years' },
-      { label: '5 years or longer', value: '5 years or longer' },
-    ],
-    wceQ9: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-    wceQ10: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-    wceQ11: [
-      { label: 'Never before', value: 'Never before' },
-      { label: 'Within the last 3 years', value: 'Within the last 3 years' },
-      { label: '3 years or longer', value: '3 years or longer' },
-    ],
-    wceQ12: [
-      { label: 'Yes', value: 'Yes' },
-      { label: 'No', value: 'No' },
-    ],
-  }
-
-  const handleSubmit = async (values) => {
-    isLoading(true)
-    const response = await submitFormSpecial(values, patientId, formName)
-    if (response.result) {
-      isLoading(false)
-      setTimeout(() => {
-        alert('Successfully submitted form')
-        changeTab(event, nextTab)
-      }, 80)
-    } else {
-      isLoading(false)
-      setTimeout(() => {
-        alert(`Unsuccessful. ${response.error}`)
-      }, 80)
-    }
-  }
-
   return (
-    <Paper elevation={2} p={0} m={0}>
-      <Grid display='flex' flexDirection='row'>
-        <Grid xs={9}>
-          <Paper elevation={2} p={0} m={0}>
-            <Formik
-              initialValues={saveData}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              enableReinitialize={true}
-            >
-              {() => (
-                <Form>
-                  <div className='form--div fieldPadding'>
+    <Formik
+      initialValues={saveData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={async (values, { setSubmitting }) => {
+        isLoading(true)
+        const response = await submitForm(values, patientId, formName)
+        setTimeout(() => {
+          isLoading(false)
+          setSubmitting(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            changeTab(null, nextTab)
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+    >
+      {({ handleSubmit, errors, submitCount }) => (
+        <Paper elevation={2} p={0} m={0}>
+          <Grid display='flex' flexDirection='row'>
+            <Grid xs={9}>
+              <Paper elevation={2} p={0} m={0}>
+                <form onSubmit={handleSubmit} className='fieldPadding'>
+                  <div className='form--div'>
                     <h1>WCE</h1>
 
                     <h3>Completed Breast Self Examination station?</h3>
@@ -300,6 +275,12 @@ const WceForm = (props) => {
                     <CheckHpvEligibility />
                   </div>
 
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
+                  )}
+
                   <div style={{ paddingLeft: '16px', paddingBottom: '16px' }}>
                     {loading ? (
                       <CircularProgress />
@@ -312,73 +293,73 @@ const WceForm = (props) => {
 
                   <br />
                   <Divider />
-                </Form>
-              )}
-            </Formik>
-          </Paper>
-        </Grid>
-        <Grid
-          p={1}
-          width='30%'
-          display='flex'
-          flexDirection='column'
-          alignItems={loadingSidePanel ? 'center' : 'left'}
-        >
-          {loadingSidePanel ? (
-            <CircularProgress />
-          ) : (
-            <div className='summary--question-div'>
-              <h2>Social Support</h2>
-              <p className='underlined'>CHAS Status 社保援助计划:</p>
-              {reg && reg.registrationQ12 ? (
-                <p className='blue'>{reg.registrationQ12}</p>
+                </form>
+              </Paper>
+            </Grid>
+            <Grid
+              p={1}
+              width='30%'
+              display='flex'
+              flexDirection='column'
+              alignItems={loadingSidePanel ? 'center' : 'left'}
+            >
+              {loadingSidePanel ? (
+                <CircularProgress />
               ) : (
-                <p className='blue'>nil</p>
-              )}
+                <div className='summary--question-div'>
+                  <h2>Social Support</h2>
+                  <p className='underlined'>CHAS Status 社保援助计划:</p>
+                  {reg && reg.registrationQ12 ? (
+                    <p className='blue'>{reg.registrationQ12}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
 
-              <p className='underlined'>Pioneer Generation Status 建国一代配套:</p>
-              {reg && reg.registrationQ13 ? (
-                <p className='blue'>{reg.registrationQ13}</p>
-              ) : (
-                <p className='blue'>nil</p>
-              )}
+                  <p className='underlined'>Pioneer Generation Status 建国一代配套:</p>
+                  {reg && reg.registrationQ13 ? (
+                    <p className='blue'>{reg.registrationQ13}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
 
-              <p className='underlined'>
-                Patient on any other Government Financial Assistance, other than CHAS and PG:
-              </p>
-              {hxSocial && hxSocial.SOCIAL3 ? (
-                <p className='blue'>{hxSocial.SOCIAL3}</p>
-              ) : (
-                <p className='blue'>nil</p>
-              )}
-              {hxSocial && hxSocial.SOCIALShortAns3 ? (
-                <p className='blue'>{hxSocial.SOCIALShortAns3}</p>
-              ) : (
-                <p className='blue'>nil</p>
-              )}
+                  <p className='underlined'>
+                    Patient on any other Government Financial Assistance, other than CHAS and PG:
+                  </p>
+                  {hxSocial && hxSocial.SOCIAL3 ? (
+                    <p className='blue'>{hxSocial.SOCIAL3}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
+                  {hxSocial && hxSocial.SOCIALShortAns3 ? (
+                    <p className='blue'>{hxSocial.SOCIALShortAns3}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
 
-              <h2>Family History</h2>
-              <p className='underlined'>
-                Is there positive family history{' '}
-                <span className='red'>(AMONG FIRST DEGREE RELATIVES)</span> for the following
-                cancers?:
-              </p>
-              {hxFamily && hxFamily.FAMILY1 ? (
-                <p className='blue'>{hxFamily.FAMILY1}</p>
-              ) : (
-                <p className='blue'>nil</p>
+                  <h2>Family History</h2>
+                  <p className='underlined'>
+                    Is there positive family history{' '}
+                    <span className='red'>(AMONG FIRST DEGREE RELATIVES)</span> for the following
+                    cancers?:
+                  </p>
+                  {hxFamily && hxFamily.FAMILY1 ? (
+                    <p className='blue'>{hxFamily.FAMILY1}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
+                  <p className='underlined'>Age of diagnosis:</p>
+                  {hxFamily && hxFamily.FAMILYShortAns1 ? (
+                    <p className='blue'>{hxFamily.FAMILYShortAns1}</p>
+                  ) : (
+                    <p className='blue'>nil</p>
+                  )}
+                </div>
               )}
-              <p className='underlined'>Age of diagnosis:</p>
-              {hxFamily && hxFamily.FAMILYShortAns1 ? (
-                <p className='blue'>{hxFamily.FAMILYShortAns1}</p>
-              ) : (
-                <p className='blue'>nil</p>
-              )}
-            </div>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

@@ -11,6 +11,9 @@ import '../forms.css'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
 import CustomTextField from '../../components/form-components/CustomTextField.jsx'
 
+import PopupText from 'src/utils/popupText'
+import { useNavigate } from 'react-router'
+
 const validationSchema = Yup.object({
   GRACE1: Yup.string().notRequired(),
   GRACE2: Yup.string().oneOf(['Yes', 'No']).required('Required'),
@@ -24,7 +27,7 @@ const formName = 'geriGraceForm'
 const GeriGraceForm = (props) => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
-  const { changeTab, nextTab } = props
+  const navigate = useNavigate()
   const [initialValues, setInitialValues] = useState({
     GRACE1: '',
     GRACE2: '',
@@ -67,7 +70,7 @@ const GeriGraceForm = (props) => {
             const event = null
             setTimeout(() => {
               alert('Successfully submitted form')
-              changeTab(event, nextTab)
+              navigate('/app/dashboard', { replace: true })
             }, 80)
           } else {
             setTimeout(() => {
@@ -76,8 +79,7 @@ const GeriGraceForm = (props) => {
           }
         }}
       >
-        {(formikProps) => {
-          const { submitCount, errors } = formikProps
+        {(formikProps, handleSubmit, errors, submitCount) => {
           return (
             <Form className='fieldPadding'>
               <div className='form--div'>
@@ -86,7 +88,7 @@ const GeriGraceForm = (props) => {
                 <h3>MMSE score (_/_):</h3>
                 <FastField
                   name='GRACE1'
-                  label='MMSE Score'
+                  label='GRACE1'
                   component={CustomTextField}
                   fullWidth
                   rows={1}
@@ -95,65 +97,59 @@ const GeriGraceForm = (props) => {
                 <h3>Need referral to G-RACE associated polyclinics/partners?</h3>
                 <FastField
                   name='GRACE2'
-                  label='Referral needed?'
+                  label='GRACE2'
                   component={CustomRadioGroup}
                   options={radioOptions}
                   row
                 />
-
-                <h3>Polyclinic:</h3>
-                <FastField
-                  name='GRACE3'
-                  label='Polyclinic'
-                  component={CustomTextField}
-                  fullWidth
-                  rows={1}
-                />
+                <PopupText qnNo='GRACE2' triggerValue='Yes'>
+                  <h3>Polyclinic:</h3>
+                  <FastField
+                    name='GRACE3'
+                    label='GRACE3'
+                    component={CustomTextField}
+                    fullWidth
+                    rows={1}
+                  />
+                </PopupText>
 
                 <h3>Referral to Doctor&apos;s Consult?</h3>
                 <p>For geri patients who may be depressed</p>
                 <FastField
                   name='GRACE4'
-                  label='Doctor referral?'
+                  label='GRACE4'
                   component={CustomRadioGroup}
                   options={radioOptions}
                   row
                 />
-
-                <h3>Reason for referral:</h3>
-                <FastField
-                  name='GRACE5'
-                  label='Reason for referral'
-                  component={CustomTextField}
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
-                {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                  <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                    Please fill in all required fields correctly.
-                  </Typography>
-                )}
+                <PopupText qnNo='GRACE4' triggerValue='Yes'>
+                  <h3>Reason for referral:</h3>
+                  <FastField
+                    name='GRACE5'
+                    label='Reason for referral'
+                    component={CustomTextField}
+                    fullWidth
+                    multiline
+                    rows={3}
+                  />
+                </PopupText>
               </div>
 
-              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                {loading || formikProps.isSubmitting ? (
+              {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                  Please fill in all required fields correctly.
+                </Typography>
+              )}
+
+              <div>
+                {loading ? (
                   <CircularProgress />
                 ) : (
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    color='primary'
-                    size='large'
-                    disabled={formikProps.isSubmitting}
-                  >
+                  <Button type='submit' variant='contained' color='primary'>
                     Submit
                   </Button>
                 )}
-              </Box>
-
-              <br />
-              <Divider />
+              </div>
             </Form>
           )
         }}

@@ -39,6 +39,7 @@ const formOptions = {
 const validationSchema = Yup.object({
   geriOtConsultQ1: Yup.string().required(),
   geriOtConsultQ2: Yup.string()
+    .required()
     .oneOf(formOptions.geriOtConsultQ2.map((opt) => opt.value))
     .required(),
   geriOtConsultQ3: Yup.string(),
@@ -49,9 +50,15 @@ const validationSchema = Yup.object({
   geriOtConsultQ6: Yup.array().of(
     Yup.string().oneOf(formOptions.geriOtConsultQ6.map((opt) => opt.value)),
   ),
-  geriOtConsultQ7: Yup.string().oneOf(formOptions.geriOtConsultQ7.map((opt) => opt.value)),
-  geriOtConsultQ8: Yup.string().oneOf(formOptions.geriOtConsultQ8.map((opt) => opt.value)),
-  geriOtConsultQ9: Yup.string().oneOf(formOptions.geriOtConsultQ9.map((opt) => opt.value)),
+  geriOtConsultQ7: Yup.string()
+    .required()
+    .oneOf(formOptions.geriOtConsultQ7.map((opt) => opt.value)),
+  geriOtConsultQ8: Yup.string()
+    .required()
+    .oneOf(formOptions.geriOtConsultQ8.map((opt) => opt.value)),
+  geriOtConsultQ9: Yup.string()
+    .required()
+    .oneOf(formOptions.geriOtConsultQ9.map((opt) => opt.value)),
 })
 
 function GetSppbScore(q2, q6, q8) {
@@ -129,7 +136,7 @@ const GeriOtConsultForm = () => {
           setSubmitting(false)
           if (response.result) {
             alert('Successfully submitted form')
-            changeTab(null, nextTab)
+            navigate('/app/dashboard', { replace: true })
           } else {
             alert(`Unsuccessful. ${response.error}`)
           }

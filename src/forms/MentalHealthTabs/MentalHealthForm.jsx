@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
-import { Button, CircularProgress, Paper, Grid } from '@mui/material'
+import { Button, CircularProgress, Paper, Grid, Typography } from '@mui/material'
 import { Formik, Form, FastField } from 'formik'
 
 import { submitForm } from '../../api/api.jsx'
@@ -12,14 +12,7 @@ import '../fieldPadding.css'
 
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 
-const dayRangeFormOptions = [
-  { label: '0 - Not at all', value: '0 - Not at all' },
-  { label: '1 - Several days', value: '1 - Several days' },
-  { label: '2 - More than half the days', value: '2 - More than half the days' },
-  { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
-]
-
-const yesNoOptions = [
+const yesNo = [
   { label: 'Yes', value: 'Yes' },
   { label: 'No', value: 'No' },
 ]
@@ -27,25 +20,28 @@ const yesNoOptions = [
 const formName = 'mentalHealthForm'
 
 const validationSchema = Yup.object({
-  SAMH1: Yup.string().oneOf(['Yes', 'No']).required('Required'),
-  SAMH2: Yup.string().oneOf(['Yes', 'No']).required('Required'),
+  SAMH1: Yup.string().required(),
+  SAMH2: Yup.string().required(),
 })
 
 const MentalHealthForm = () => {
   const { patientId } = useContext(FormContext)
   const [loadingSidePanel, isLoadingSidePanel] = useState(true)
   const [loading, setLoading] = useState(false)
-  const [savedData, setSavedData] = useState({})
 
   const [regi, setReg] = useState({})
   const [phq, setPHQ] = useState({})
   const navigate = useNavigate()
 
+  const [initialValues, setInitialValues] = useState({
+    SAMH1: '',
+    SAMH2: '',
+  })
+
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      setSavedData(savedData)
-
+      setInitialValues(savedData)
       const regData = getSavedData(patientId, allForms.registrationForm)
       const phqData = getSavedData(patientId, allForms.geriPhqForm)
 
@@ -59,34 +55,31 @@ const MentalHealthForm = () => {
     fetchData()
   }, [])
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    setLoading(true)
-    const response = await submitForm(values, patientId, formName)
-    setLoading(false)
-    if (response.result) {
-      alert('Successfully submitted form')
-      navigate('/app/dashboard', { replace: true })
-    } else {
-      alert(`Unsuccessful. ${response.error}`)
-    }
-    setSubmitting(false)
-  }
-
   return (
-    <Paper elevation={2}>
-      <Grid display='flex' flexDirection='row'>
-        <Grid xs={9}>
-          <Paper elevation={2}>
-            <Formik
-              initialValues={{
-                SAMH1: savedData?.SAMH1 || '',
-                SAMH2: savedData?.SAMH2 || '',
-              }}
-              validationSchema={validationSchema}
-              onSubmit={handleSubmit}
-              enableReinitialize={true}
-            >
-              {({ isValid }) => (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { setSubmitting }) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+        setTimeout(() => {
+          setLoading(false)
+          setSubmitting(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            navigate('/app/dashboard', { replace: true })
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+      enableReinitialize={true}
+    >
+      {({ handleSubmit, errors, submitCount, isValid }) => (
+        <Paper elevation={2}>
+          <Grid display='flex' flexDirection='row'>
+            <Grid xs={9}>
+              <Paper elevation={2}>
                 <Form className='fieldPadding'>
                   <div className='form--div'>
                     <h3>Patient has attended mental health consultation?</h3>
@@ -94,7 +87,7 @@ const MentalHealthForm = () => {
                       name='SAMH1'
                       label='SAMH1'
                       component={CustomRadioGroup}
-                      options={yesNoOptions}
+                      options={yesNo}
                       row
                     />
 
@@ -103,11 +96,17 @@ const MentalHealthForm = () => {
                       name='SAMH2'
                       label='SAMH2'
                       component={CustomRadioGroup}
-                      options={yesNoOptions}
+                      options={yesNo}
                       row
                     />
                   </div>
-                  <br />
+
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
+                  )}
+
                   <div>
                     {loading ? (
                       <CircularProgress />
@@ -123,38 +122,38 @@ const MentalHealthForm = () => {
                     )}
                   </div>
                 </Form>
-              )}
-            </Formik>
-          </Paper>
-        </Grid>
+              </Paper>
+            </Grid>
 
-        <Grid
-          p={1}
-          width='30%'
-          display='flex'
-          flexDirection='column'
-          alignItems={loadingSidePanel ? 'center' : 'left'}
-        >
-          {loadingSidePanel ? (
-            <CircularProgress />
-          ) : (
-            <div className='summary--question-div'>
-              <h2>Patient Info</h2>
-              {regi && regi.registrationQ4 ? (
-                <p className='blue'>Age: {regi.registrationQ4}</p>
+            <Grid
+              p={1}
+              width='30%'
+              display='flex'
+              flexDirection='column'
+              alignItems={loadingSidePanel ? 'center' : 'left'}
+            >
+              {loadingSidePanel ? (
+                <CircularProgress />
               ) : (
-                <p className='blue'>Age: nil</p>
-              )}
+                <div className='summary--question-div'>
+                  <h2>Patient Info</h2>
+                  {regi && regi.registrationQ4 ? (
+                    <p className='blue'>Age: {regi.registrationQ4}</p>
+                  ) : (
+                    <p className='blue'>Age: nil</p>
+                  )}
 
-              <p className='blue'>PHQ Score: {phq.PHQ10}</p>
-              <p className='underlined'>Would the patient benefit from counselling:</p>
-              <p className='blue'>{phq.PHQ11}</p>
-              <p className='blue'>{phq.PHQShortAns11}</p>
-            </div>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+                  <p className='blue'>PHQ Score: {phq.PHQ10}</p>
+                  <p className='underlined'>Would the patient benefit from counselling:</p>
+                  <p className='blue'>{phq.PHQ11}</p>
+                  <p className='blue'>{phq.PHQShortAns11}</p>
+                </div>
+              )}
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 
