@@ -26,13 +26,13 @@ const timelineItems = [
   { key: 'dietitiansconsult', label: "Dietitian's Consultation", path: 'dietitiansconsultation' },
   { key: 'gericog', label: 'Geriatrics - Cognitive', path: 'gericog' },
   { key: 'gerimobility', label: 'Geriatrics - Mobility', path: 'gerimobility' },
-  { key: 'gerivision', label: 'Geriatrics - Vision', path: 'gerivision' },
+  { key: 'ophthal', label: 'Ophthalmology', path: 'ophthal' },
   { key: 'oralhealth', label: 'Oral Health', path: 'oralhealth' },
   { key: 'socialservice', label: 'Social Services', path: 'socialservice' },
   { key: 'mentalhealth', label: 'Mental Health', path: 'mentalhealth' },
   { key: 'mammobus', label: 'Mammobus', path: 'mammobus' },
   { key: 'hpv', label: 'HPV', path: 'hpv' },
-  { key: 'geriaudio', label: 'Geriatrics - Audiometry', path: 'geriaudio' },
+  { key: 'audio', label: 'Audiometry', path: 'audio' },
   { key: 'vax', label: 'Vaccination', path: 'vax' },
   { key: 'doctorsconsult', label: "Doctor's Station", path: 'doctorsconsult' },
 ]
@@ -49,8 +49,8 @@ const eligibilityKeyMap = {
   vax: 'Vaccination',
   gericog: 'Geriatric Screening',
   gerimobility: 'Geriatric Screening',
-  gerivision: 'Geriatric Screening',
-  geriaudio: 'Audiometry',
+  ophthal: 'Ophthalmology',
+  audio: 'Audiometry',
   hpv: 'HPV On-Site Testing',
   doctorsconsult: "Doctor's Station",
   dietitiansconsult: "Dietitian's Consult",
@@ -75,8 +75,8 @@ function generateStatusObject(record) {
     mentalhealth: false,
     hpv: false,
     gerimobility: false,
-    geriaudio: false,
-    gerivision: false,
+    audio: false,
+    ophthal: false,
     doctorsconsult: false,
     dietitiansconsult: false,
     socialservice: false,
@@ -115,8 +115,8 @@ function generateStatusObject(record) {
         record.geriSppbForm !== undefined &&
         record.geriPtConsultForm !== undefined &&
         record.geriOtConsultForm !== undefined,
-      gerivision: record.geriVisionForm !== undefined,
-      geriaudio: record.geriAudiometryForm !== undefined,
+      ophthal: record.OphthalForm !== undefined,
+      audio: record.AudiometryForm !== undefined,
       hpv: record.hpvForm !== undefined,
       doctorsconsult: record.doctorConsultForm !== undefined, // doctor's consult
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult
