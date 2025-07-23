@@ -21,7 +21,7 @@ const timelineItems = [
   { key: 'hsg', label: 'HealthierSG', path: 'hsg' },
   { key: 'lungfn', label: 'Lung Function', path: 'lungfn' },
   { key: 'wce', label: 'WCE', path: 'wce' },
-  { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
+  // { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
   { key: 'podiatry', label: 'Podiatry', path: 'podiatry' },
   { key: 'dietitiansconsult', label: "Dietitian's Consultation", path: 'dietitiansconsultation' },
   { key: 'gericog', label: 'Geriatrics - Cognitive', path: 'gericog' },
