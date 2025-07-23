@@ -33,6 +33,8 @@ import GeriAudiometryForm from './forms/GeriAudiometryForm'
 import GeriVisionForm from './forms/GeriVisionForm'
 import GeriMobilityTabs from './forms/GeriMobilityTabs/GeriMobility'
 import GeriCognitiveTabs from './forms/GeriCognitiveTabs/GeriCognitive'
+import MammobusForm from './forms/MammobusForm'
+import PodiatryForm from './forms/PodiatryForm'
 
 import Eligibility from './pages/Eligibility'
 
@@ -68,7 +70,9 @@ const routes = [
       { path: 'queue', element: <Queue /> },
       { path: 'eligibility', element: <Eligibility /> },
       { path: '*', element: <Navigate to='/404' /> },
-      { path: 'docadmin', element: <DoctorAdmin />}
+      { path: 'docadmin', element: <DoctorAdmin /> },
+      { path: 'mammobus', element: <MammobusForm /> },
+      { path: 'podiatry', element: <PodiatryForm /> },
     ],
   },
   {

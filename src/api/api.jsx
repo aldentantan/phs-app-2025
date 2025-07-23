@@ -1596,9 +1596,9 @@ export const generateDoctorPdf = async (entry) => {
     // Dietitian Referral
     content.push({
       text: `Refer to Dietitian: ${
-        savedDoctorConsultData.doctorSConsultQ4 === true
+        savedDoctorConsultData.doctorSConsultQ4 === 'Yes'
           ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ4 === false
+          : savedDoctorConsultData.doctorSConsultQ4 === 'No'
           ? 'No'
           : 'No response'
       }`, style: 'subheader', decoration: 'underline',
@@ -1610,9 +1610,9 @@ export const generateDoctorPdf = async (entry) => {
     // Social Support Referral
     content.push({
       text: `Refer to Social Support: ${
-        savedDoctorConsultData.doctorSConsultQ6 === true
+        savedDoctorConsultData.doctorSConsultQ6 === 'Yes'
           ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ6 === false
+          : savedDoctorConsultData.doctorSConsultQ6 === 'No'
           ? 'No'
           : 'No response'
       }`, style: 'subheader', decoration: 'underline',
@@ -1624,9 +1624,9 @@ export const generateDoctorPdf = async (entry) => {
     // Dental Referral
     content.push({
       text: `Refer to Dental: ${
-        savedDoctorConsultData.doctorSConsultQ8 === true
+        savedDoctorConsultData.doctorSConsultQ8 === 'Yes'
           ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ8 === false
+          : savedDoctorConsultData.doctorSConsultQ8 === 'No'
           ? 'No'
           : 'No response'
       }`, style: 'subheader', decoration: 'underline',
@@ -1638,9 +1638,9 @@ export const generateDoctorPdf = async (entry) => {
     // Mental Health Referral
     content.push({
       text: `Refer to Mental Health: ${
-        savedDoctorConsultData.doctorSConsultQ13 === true
+        savedDoctorConsultData.doctorSConsultQ13 === 'Yes'
           ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ13 === false
+          : savedDoctorConsultData.doctorSConsultQ13 === 'No'
           ? 'No'
           : 'No response'
       }`, style: 'subheader', decoration: 'underline',
@@ -1648,9 +1648,9 @@ export const generateDoctorPdf = async (entry) => {
 
     content.push({
       text: `Does patient require urgent follow-up: ${
-        savedDoctorConsultData.doctorSConsultQ10 === true
+        savedDoctorConsultData.doctorSConsultQ10 === 'Yes'
           ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ10 === false
+          : savedDoctorConsultData.doctorSConsultQ10 === 'No'
           ? 'No'
           : 'No response'
       }`, style: 'subheader', decoration: 'underline',

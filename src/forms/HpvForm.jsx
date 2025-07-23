@@ -1,52 +1,44 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Formik, Form, ErrorMessage } from 'formik'
+import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
-import {
-  Paper,
-  CircularProgress,
-  Divider,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  FormHelperText,
-  Button,
-} from '@mui/material'
+import { Paper, CircularProgress, Divider, Box, Alert, Button, Typography } from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
+import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+
+const initialValues = {
+  HPV1: '',
+}
+
 const validationSchema = Yup.object().shape({
-  HPV1: Yup.array()
-    .of(
-      Yup.string().oneOf([
-        'Has completed the registration forms and finished the on-site testing.',
-      ]),
-    )
-    .required('This field is required'),
+  HPV1: Yup.string().required('This field is required'),
 })
+
+const formOptions = {
+  HPV1: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+}
 
 const formName = 'hpvForm'
 
 const HpvForm = () => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
-  const [initialValues, setInitialValues] = useState({
-    HPV1: [],
-  })
+  const [savedData, setSavedData] = useState(initialValues)
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
-      const savedData = await getSavedData(patientId, formName)
-      if (savedData) {
-        setInitialValues({
-          HPV1: Array.isArray(savedData.HPV1) ? savedData.HPV1 : [],
-        })
-      }
+      const res = await getSavedData(patientId, formName)
+      setSavedData({ ...initialValues, ...res })
     }
     fetchData()
   }, [patientId])
@@ -73,60 +65,55 @@ const HpvForm = () => {
     }
   }
 
+  const renderForm = () => (
+    <Formik
+      initialValues={savedData}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      enableReinitialize
+    >
+      {({ isSubmitting, submitCount, errors, touched }) => (
+        <Form className='fieldPadding'>
+          <div className='form--div'>
+            <h1>On-Site HPV Testing</h1>
+            <h3>Registration & Testing</h3>
+
+            <Typography variant='h6'>
+              Has the patient completed the registration forms and finished the on-site testing?
+            </Typography>
+            <FastField
+              name='HPV1'
+              label='HPV1'
+              component={CustomRadioGroup}
+              options={formOptions.HPV1}
+              row
+            />
+          </div>
+
+          {Object.keys(errors).length > 0 && submitCount > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <Alert severity='error'>Please correct the errors above before submitting.</Alert>
+            </Box>
+          )}
+          <div>
+            {loading ? (
+              <CircularProgress />
+            ) : (
+              <Button type='submit' variant='contained' color='primary' disabled={isSubmitting}>
+                Submit
+              </Button>
+            )}
+          </div>
+          <br />
+          <Divider />
+        </Form>
+      )}
+    </Formik>
+  )
+
   return (
     <Paper elevation={2} p={0} m={0}>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        {({ isSubmitting, values, setFieldValue }) => (
-          <Form className='fieldPadding'>
-            <div className='form--div'>
-              <h1>On-Site HPV Testing</h1>
-              <h3>Registration & Testing</h3>
-
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={
-                        values.HPV1?.includes(
-                          'Has completed the registration forms and finished the on-site testing.',
-                        ) || false
-                      }
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setFieldValue('HPV1', [
-                            'Has completed the registration forms and finished the on-site testing.',
-                          ])
-                        } else {
-                          setFieldValue('HPV1', [])
-                        }
-                      }}
-                    />
-                  }
-                  label='Has completed the registration forms and finished the on-site testing.'
-                />
-                <ErrorMessage name='HPV1' component={FormHelperText} error />
-              </FormGroup>
-            </div>
-
-            <div>
-              {loading ? (
-                <CircularProgress />
-              ) : (
-                <Button type='submit' variant='contained' color='primary' disabled={isSubmitting}>
-                  Submit
-                </Button>
-              )}
-            </div>
-            <br />
-            <Divider />
-          </Form>
-        )}
-      </Formik>
+      {renderForm()}
     </Paper>
   )
 }
