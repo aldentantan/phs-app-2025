@@ -72,7 +72,7 @@ const validationSchema = Yup.object().shape({
   AudiometryQ13: Yup.string().required(),
 })
 
-const formName = 'AudiometryForm'
+const formName = 'audiometryForm'
 
 const AudiometryForm = () => {
   const { patientId } = useContext(FormContext)

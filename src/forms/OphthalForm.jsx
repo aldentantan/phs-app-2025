@@ -66,7 +66,7 @@ const validationSchema = Yup.object().shape({
   OphthalQ13: Yup.string().required(),
 })
 
-const formName = 'OphthalForm'
+const formName = 'ophthalForm'
 
 const OphthalForm = () => {
   const { patientId } = useContext(FormContext)
