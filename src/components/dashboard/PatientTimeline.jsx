@@ -11,6 +11,7 @@ import mongoDB, { isAdmin } from '../../services/mongoDB'
 import { ScrollTopContext } from '../../api/utils.js'
 import CircularProgress from '@mui/material/CircularProgress'
 import { Box, Card, CardContent, CardHeader, Divider } from '@mui/material'
+import PodiatryForm from 'src/forms/PodiatryForm'
 
 // Timeline item configuration - add/delete stations here (comment out)
 const timelineItems = [
@@ -21,17 +22,19 @@ const timelineItems = [
   { key: 'lungfn', label: 'Lung Function', path: 'lungfn' },
   { key: 'wce', label: 'WCE', path: 'wce' },
   { key: 'osteo', label: 'Osteoporosis', path: 'osteoporosis' },
-  { key: 'mentalhealth', label: 'Mental Health', path: 'mentalhealth' },
-  { key: 'vax', label: 'Vaccination', path: 'vax' },
+  { key: 'podiatry', label: 'Podiatry', path: 'podiatry' },
+  { key: 'dietitiansconsult', label: "Dietitian's Consultation", path: 'dietitiansconsultation' },
   { key: 'gericog', label: 'Geriatrics - Cognitive', path: 'gericog' },
   { key: 'gerimobility', label: 'Geriatrics - Mobility', path: 'gerimobility' },
   { key: 'gerivision', label: 'Geriatrics - Vision', path: 'gerivision' },
-  { key: 'geriaudio', label: 'Geriatrics - Audiometry', path: 'geriaudio' },
-  { key: 'hpv', label: 'HPV', path: 'hpv' },
-  { key: 'doctorsconsult', label: "Doctor's Station", path: 'doctorsconsult' },
-  { key: 'dietitiansconsult', label: "Dietitian's Consultation", path: 'dietitiansconsultation' },
   { key: 'oralhealth', label: 'Oral Health', path: 'oralhealth' },
   { key: 'socialservice', label: 'Social Services', path: 'socialservice' },
+  { key: 'mentalhealth', label: 'Mental Health', path: 'mentalhealth' },
+  { key: 'mammobus', label: 'Mammobus', path: 'mammobus' },
+  { key: 'hpv', label: 'HPV', path: 'hpv' },
+  { key: 'geriaudio', label: 'Geriatrics - Audiometry', path: 'geriaudio' },
+  { key: 'vax', label: 'Vaccination', path: 'vax' },
+  { key: 'doctorsconsult', label: "Doctor's Station", path: 'doctorsconsult' },
 ]
 
 // Map between timeline keys and eligibility names -
@@ -53,6 +56,8 @@ const eligibilityKeyMap = {
   dietitiansconsult: "Dietitian's Consult",
   socialservice: 'Social Services',
   oralhealth: 'Oral Health',
+  mammobus: 'Mammobus',
+  podiatry: 'Podiatry',
 }
 
 // Refactor the generateStatusArray to generate an object instead
@@ -76,6 +81,8 @@ function generateStatusObject(record) {
     dietitiansconsult: false,
     socialservice: false,
     oralhealth: false,
+    mammobus: false,
+    podiatry: false,
   }
 
   if (record) {
@@ -115,6 +122,8 @@ function generateStatusObject(record) {
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult
       socialservice: record.socialServiceForm !== undefined, // social service,
       oralhealth: record.oralHealthForm !== undefined, // Oral Health
+      mammobus: record.mammobusForm !== undefined, // Mammobus
+      podiatry: record.podiatryForm !== undefined, // Podiatry
       // Add eligibility data to the status object
       eligibleStations: record.eligibleStations || [],
     }
