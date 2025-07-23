@@ -7,6 +7,7 @@ export const getEligibilityRows = (forms = {}) => {
     pmhx = {},
     hxsocial = {},
     // hxfamily = {},
+    hxgynae = {},
     triage = {},
     hcsr = {},
     hxoral = {},
@@ -21,11 +22,16 @@ export const getEligibilityRows = (forms = {}) => {
 
   const isVaccinationEligible = reg?.registrationQ4 >= 65 || ['CHAS Green', 'CHAS Orange', 'CHAS Blue'].includes(reg?.registrationQ12)
   const isHealthierSGEligible = reg?.registrationQ11 !== 'Yes'
-  const isLungFunctionEligible = reg?.registrationQ21 === 'Yes' && (hxsocial?.SOCIAL10 === 'Yes, (please specify how many pack-years)' || hxsocial?.SOCIAL11 === 'Yes, (please specify)')
+  const isLungFunctionEligible = reg?.registrationQ21 === 'Yes' && hxsocial?.SOCIAL16 === 'Yes' && (hxsocial?.SOCIAL10 === 'Yes' || hxsocial?.SOCIAL11 === 'Yes')
   const isWomenCancerEducationEligible = reg?.registrationQ5 === 'Female'
   const isPodiatryEligible = pmhx?.PMHX5?.includes('Diabetes')
   const isMentalHealthEligible = (phq?.PHQ10 >= 10 && reg?.registrationQ4 < 60) || phq?.PHQ11 === 'Yes'
   const isMammobusEligible = reg.registrationQ19 === 'Yes'
+  const isHPVEligible = (hxgynae?.GYNAE12 === '5 years or longer' || hxgynae?.GYNAE12 === 'Never before') &&
+                          hxgynae?.GYNAE14 === 'Yes' &&
+                          hxgynae?.GYNAE15 === 'No' &&
+                          (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
+                          hxgynae?.GYNAE16 === 'Yes'
   const isAudiometryEligible = reg?.registrationQ4 >= 40
   const isGeriatricScreeningEligible = reg?.registrationQ4 >= 40
 
@@ -43,7 +49,7 @@ export const getEligibilityRows = (forms = {}) => {
 
   const isDietitianEligible = hxsocial?.SOCIAL15 === 'Yes'
   const isSocialServicesEligible = hxsocial?.SOCIAL6 === 'Yes' ||
-    hxsocial?.SOCIAL7 === 'Yes, (please specify)' ||
+    hxsocial?.SOCIAL7 === 'Yes' ||
     (hxsocial?.SOCIAL8 === 'Yes' && hxsocial?.SOCIAL9 === 'No')
 
   const isDentalEligible = hxoral?.ORAL5 === 'Yes'
@@ -59,7 +65,7 @@ export const getEligibilityRows = (forms = {}) => {
     createData('Social Services', isSocialServicesEligible),
     createData('Mental Health', isMentalHealthEligible),
     createData('Mammobus', isMammobusEligible),
-    { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
+    createData('HPV On-Site Testing', isHPVEligible),
     createData('Audiometry', isAudiometryEligible),
     createData('Vaccination', isVaccinationEligible),
     createData("Doctor's Station", isDoctorStationEligible),
@@ -111,7 +117,7 @@ export const updateAllStationCounts = async (patientId) => {
 
   // fetch all relevant forms for eligibility
   const [
-    pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5,
+    pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5, hxgynae
   ] = await Promise.all([
     getSavedData(patientId, allForms.hxNssForm),
     getSavedData(patientId, allForms.hxSocialForm),
@@ -122,6 +128,8 @@ export const updateAllStationCounts = async (patientId) => {
     getSavedData(patientId, allForms.hxOralForm),
     getSavedData(patientId, allForms.wceForm),
     getSavedData(patientId, allForms.geriPhqForm),
+    getSavedData(patientId, allForms.hxM4M5ReviewForm),
+    getSavedData(patientId, allForms.hxGynaeForm)
   ])
 
   const formData = {
@@ -135,6 +143,7 @@ export const updateAllStationCounts = async (patientId) => {
     wce: wce || {},
     phq: phq || {},
     hxm4m5: hxm4m5 || {},
+    hxgynae: hxgynae || {},
   }
 
   const rows = getEligibilityRows(formData)
