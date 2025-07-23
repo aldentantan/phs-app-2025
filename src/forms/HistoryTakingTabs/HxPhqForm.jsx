@@ -1,90 +1,107 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {
-  Paper, Divider, Typography, CircularProgress,
-  FormControl, FormLabel, RadioGroup, FormControlLabel,
-  Radio, TextField, Button
-} from '@mui/material'
-import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik'
+import { Paper, Divider, Typography, CircularProgress, Button } from '@mui/material'
+import { Formik, Form, useFormikContext, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import { submitForm } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import '../fieldPadding.css'
+import CustomTextField from 'src/components/form-components/CustomTextField.jsx'
 
 const formName = 'geriPhqForm'
 
-const RadioGroupField = ({ name, label, values }) => (
-  <FormControl fullWidth sx={{ mb: 3 }}>
-    <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
-    <Field name={name}>
-      {({ field }) => (
-        <RadioGroup {...field} row>
-          {values.map((val) => (
-            <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
-          ))}
-        </RadioGroup>
-      )}
-    </Field>
-    <ErrorMessage name={name} component="div" style={{ color: 'red' }} />
-  </FormControl>
-)
+const pointsMap = {
+  '0 - Not at all': 0,
+  '1 - Several days': 1,
+  '2 - More than half the days': 2,
+  '3 - Nearly everyday': 3,
+}
 
 const GetScore = () => {
   const { values } = useFormikContext()
   const [score, setScore] = useState(0)
+  let condition = ''
 
   useEffect(() => {
-    const pointsMap = {
-      '0 - Not at all': 0,
-      '1 - Several days': 1,
-      '2 - More than half the days': 2,
-      '3 - Nearly everyday': 3,
-    }
-    const qns = ['PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9']
+    const qns = ['PHQ1', 'PHQ2', 'PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9']
     const total = qns.reduce((acc, qn) => acc + (pointsMap[values[qn]] || 0), 0)
     setScore(total)
   }, [values])
 
+  if (score >= 20) condition = 'Severe Depression'
+  else if (score >= 15) condition = 'Moderately Severe Depression'
+  else if (score >= 10) condition = 'Moderate Depression'
+  else if (score >= 5) condition = 'Mild Depression'
+
   return (
-    <Typography variant="subtitle1" sx={{ color: score >= 10 ? 'red' : 'blue' }}>
-      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}
+    <Typography variant='subtitle1' sx={{ color: score >= 10 ? 'red' : 'blue' }}>
+      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}<br />
+      {score >= 5 ? `Patient is at risk of ${condition}` : ''}
     </Typography>
   )
 }
 
 const initialValues = {
-    PHQ1: '', PHQ2: '', PHQ3: '', PHQ4: '', PHQ5: '',
-    PHQ6: '', PHQ7: '', PHQ8: '', PHQ9: '', PHQextra9: '',
-    PHQ10: 0, PHQ11: '', PHQShortAns11: ''
-  }
+  PHQ1: '',
+  PHQ2: '',
+  PHQ3: '',
+  PHQ4: '',
+  PHQ5: '',
+  PHQ6: '',
+  PHQ7: '',
+  PHQ8: '',
+  PHQ9: '',
+  PHQextra9: '',
+  PHQ10: 0,
+  PHQ11: '',
+  PHQShortAns11: '',
+}
+
+const validationSchema = Yup.object({
+  PHQ1: Yup.string().required('Required'),
+  PHQ2: Yup.string().required('Required'),
+  PHQ3: Yup.string().required('Required'),
+  PHQ4: Yup.string().required('Required'),
+  PHQ5: Yup.string().required('Required'),
+  PHQ6: Yup.string().required('Required'),
+  PHQ7: Yup.string().required('Required'),
+  PHQ8: Yup.string().required('Required'),
+  PHQ9: Yup.string().required('Required'),
+  PHQ11: Yup.string().required('Required'),
+})
+
+const formOptions = {
+  DAYRANGE: [
+    { label: '0 - Not at all', value: '0 - Not at all' },
+    { label: '1 - Several days', value: '1 - Several days' },
+    { label: '2 - More than half the days', value: '2 - More than half the days' },
+    { label: '3 - Nearly everyday', value: '3 - Nearly everyday' },
+  ],
+  PHQextra9: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  PHQ11: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+}
 
 export default function HxPhqForm({ changeTab, nextTab }) {
   const { patientId } = useContext(FormContext)
   const [savedData, setSavedData] = useState(initialValues)
   const [loading, setLoading] = useState(false)
 
-  const validationSchema = Yup.object({
-    PHQ1: Yup.string().required('Required'),
-    PHQ2: Yup.string().required('Required'),
-    PHQ3: Yup.string().required('Required'),
-    PHQ4: Yup.string().required('Required'),
-    PHQ5: Yup.string().required('Required'),
-    PHQ6: Yup.string().required('Required'),
-    PHQ7: Yup.string().required('Required'),
-    PHQ8: Yup.string().required('Required'),
-    PHQ9: Yup.string().required('Required'),
-    PHQ11: Yup.string().required('Required')
-  })
-
   useEffect(() => {
     const fetchData = async () => {
-      const res = await getSavedData(patientId, formName);
-      setSavedData({ ...initialValues, ...res });
-    };
+      const res = await getSavedData(patientId, formName)
+      setSavedData({ ...initialValues, ...res })
+    }
 
-    fetchData();
-  }, [patientId]);
+    fetchData()
+  }, [patientId])
 
   const handleSubmit = async (values, { setSubmitting }) => {
     const pointsMap = {
@@ -93,7 +110,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
       '2 - More than half the days': 2,
       '3 - Nearly everyday': 3,
     }
-    const qns = ['PHQ1','PHQ2','PHQ3','PHQ4','PHQ5','PHQ6','PHQ7','PHQ8','PHQ9']
+    const qns = ['PHQ1', 'PHQ2', 'PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9']
     const score = qns.reduce((acc, qn) => acc + (pointsMap[values[qn]] || 0), 0)
     values.PHQ10 = score
 
@@ -109,62 +126,156 @@ export default function HxPhqForm({ changeTab, nextTab }) {
     }
   }
 
-  return (
-    <Paper elevation={2}>
-      <Formik
-        initialValues={savedData}
-        validationSchema={validationSchema}
-        enableReinitialize
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form className="fieldPadding">
-            <Typography variant="subtitle1" fontWeight="bold">**When asking these questions, please let patient know that it can be sensitive**</Typography>
-            <Typography variant="subtitle1" fontWeight="bold">Over the last 2 weeks, how often have you been bothered by any of the following problems?</Typography>
+  const renderForm = () => (
+    <Formik
+      initialValues={savedData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={handleSubmit}
+    >
+      {({ isSubmitting, values }) => {
 
-            <RadioGroupField name="PHQ1" label="1. Little interest or pleasure in doing things" values={dayRange} />
-            <RadioGroupField name="PHQ2" label="2. Feeling down, depressed or hopeless" values={dayRange} />
-            <RadioGroupField name="PHQ3" label="3. Trouble falling asleep or staying asleep, or sleeping too much" values={dayRange} />
-            <RadioGroupField name="PHQ4" label="4. Feeling tired or having little energy" values={dayRange} />
-            <RadioGroupField name="PHQ5" label="5. Poor appetite or overeating" values={dayRange} />
-            <RadioGroupField name="PHQ6" label="6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down" values={dayRange} />
-            <RadioGroupField name="PHQ7" label="7. Trouble concentrating on things, such as reading the newspaper or television" values={dayRange} />
-            <RadioGroupField name="PHQ8" label="8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual" values={dayRange} />
-            <RadioGroupField name="PHQ9" label="9. Thoughts that you would be better off dead or hurting yourself in some way" values={dayRange} />
+        const score = (pointsMap[values.PHQ1] || 0) + (pointsMap[values.PHQ2] || 0)
+        return (
+          <Form className='fieldPadding'>
+            <Typography variant='h4'>
+              <strong>PHQ</strong>
+            </Typography>
+            <Typography variant='subtitle1' fontWeight='bold' color='red'>
+            **When asking these questions, please let patient know that it can be sensitive**
+          </Typography>
+          <Typography variant='subtitle1' fontWeight='bold'>
+            Over the last 2 weeks, how often have you been bothered by any of the following
+            problems?
+          </Typography>
 
-            <PopupText qnNo='PHQ9' triggerValue={['1 - Several days', '2 - More than half the days', '3 - Nearly everyday']}>
-              <RadioGroupField name="PHQextra9" label="*Do you want to take your life now?*" values={["Yes", "No"]} />
-            </PopupText>
-            <PopupText qnNo='PHQextra9' triggerValue='Yes'>
-              <Typography variant="subtitle1" sx={{ color: 'red' }}><b>*Patient requires urgent attention, please escalate*</b></Typography>
-            </PopupText>
+          <FastField
+            name='PHQ1'
+            label='PHQ1. Little interest or pleasure in doing things'
+            component={CustomRadioGroup}
+            options={formOptions.DAYRANGE}
+            row
+          />
+          <FastField
+            name='PHQ2'
+            label='PHQ2. Feeling down, depressed or hopeless'
+            component={CustomRadioGroup}
+            options={formOptions.DAYRANGE}
+            row
+          />
 
-            <GetScore />
+          {/* *PHQ3 - PHQ9 will only show if the score of PHQ1 + PHQ2 >= 3*/}
+          {score >= 3 && (
+            <>
+              <FastField
+                name='PHQ3'
+                label='PHQ3. Trouble falling asleep or staying asleep, or sleeping too much'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
 
-            <RadioGroupField name="PHQ11" label="Do you feel like the patient will benefit from counselling?" values={["Yes", "No"]} />
-            <Typography variant="subtitle2">Please specify.</Typography>
-            <Field name="PHQShortAns11" as={TextField} label="PHQ11" fullWidth multiline sx={{ mb: 3, mt: 1 }} />
-            <ErrorMessage name="PHQShortAns11" component="div" style={{ color: 'red' }} />
+              <FastField
+                name='PHQ4'
+                label='PHQ4. Feeling tired or having little energy'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
+              <FastField
+                name='PHQ5'
+                label='PHQ5. Poor appetite or overeating'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
+              <FastField
+                name='PHQ6'
+                label='PHQ6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
+              <FastField
+                name='PHQ7'
+                label='PHQ7. Trouble concentrating on things, such as reading the newspaper or watching television'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
+              <FastField
+                name='PHQ8'
+                label='PHQ8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
+              <FastField
+                name='PHQ9'
+                label='PHQ9. Thoughts that you would be better off dead or hurting yourself in some way'
+                component={CustomRadioGroup}
+                options={formOptions.DAYRANGE}
+                row
+              />
 
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? <CircularProgress /> : (
-                <Button type="submit" variant="contained" color="primary">
-                  Submit
-                </Button>
-              )}
-            </div>
-            <br />
-            <Divider />
-          </Form>
-        )}
-      </Formik>
-    </Paper>
+              <PopupText
+                qnNo='PHQ9'
+                triggerValue={[
+                  '1 - Several days',
+                  '2 - More than half the days',
+                  '3 - Nearly everyday',
+                ]}
+              >
+                <FastField
+                  name='PHQextra9'
+                  label='*Do you want to take your life now?*'
+                  component={CustomRadioGroup}
+                  options={formOptions.PHQextra9}
+                  row
+                />
+              </PopupText>
+              <PopupText qnNo='PHQextra9' triggerValue='Yes'>
+                <Typography variant='subtitle1' sx={{ color: 'red' }}>
+                  <b>*Patient requires urgent attention, please escalate*</b>
+                </Typography>
+              </PopupText>
+            </>
+          )}
+
+          <GetScore />
+
+          <FastField
+            name='PHQ11'
+            label='Do you feel like the patient will benefit from counselling?'
+            component={CustomRadioGroup}
+            options={formOptions.PHQ11}
+            row
+          />
+          <Typography variant='subtitle2'>Please specify.</Typography>
+          <FastField
+            name='PHQShortAns11'
+            label='PHQShortAns11'
+            component={CustomTextField}
+            fullWidth
+            multiline
+            sx={{ mb: 3, mt: 1 }}
+          />
+
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+            {loading || isSubmitting ? (
+              <CircularProgress />
+            ) : (
+              <Button type='submit' variant='contained' color='primary'>
+                Submit
+              </Button>
+            )}
+          </div>
+          <br />
+          <Divider />
+        </Form>
+      )}}
+    </Formik>
   )
-}
 
-const dayRange = [
-  '0 - Not at all',
-  '1 - Several days',
-  '2 - More than half the days',
-  '3 - Nearly everyday',
-]
+  return <Paper elevation={2}>{renderForm()}</Paper>
+}

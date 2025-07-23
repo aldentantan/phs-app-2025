@@ -640,29 +640,6 @@ const DoctorsConsultForm = () => {
                 ) : (
                   <p className='red'>nil social data!</p>
                 )}
-
-                {family && family.FAMILY1 ? (
-                  <li>
-                    <p>Family History</p>
-                    <ul>
-                      <li>
-                        <p>Cancers:</p>
-                        <ul>
-                          {family.FAMILY1.map((c) => (
-                            <li key={c}>{c}</li>
-                          ))}
-                        </ul>
-                      </li>
-                      <li>
-                        <p>
-                          Others: <strong>{family.FAMILY2}</strong>
-                        </p>
-                      </li>
-                    </ul>
-                  </li>
-                ) : (
-                  <p className='red'>nil family data!</p>
-                )}
               </ul>
             </div>
           )}

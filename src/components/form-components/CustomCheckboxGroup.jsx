@@ -23,17 +23,17 @@ const CustomCheckboxGroup = ({ field, form, options, label, ...props }) => {
         </Typography>
       )}
       {options.map((option) => (
-        <Box key={option} sx={{ mt: 1, mb: 1 }}>
+        <Box key={option.value} sx={{ mt: 1, mb: 1 }}>
           <FormControlLabel
             control={
               <Checkbox
-                checked={fieldValue.includes(option)}
-                onChange={() => handleChange(option)}
+                checked={fieldValue.includes(option.value)}
+                onChange={() => handleChange(option.value)}
                 color={showError ? 'error' : 'primary'}
                 {...props}
               />
             }
-            label={option}
+            label={option.label}
           />
         </Box>
       ))}
