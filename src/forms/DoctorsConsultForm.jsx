@@ -20,7 +20,6 @@ import { getPdfQueueCollection, getSavedData } from '../services/mongoDB.js'
 import './fieldPadding.css'
 import allForms from './forms.json'
 
-import CustomCheckboxGroup from '../components/form-components/CustomCheckboxGroup'
 import CustomTextField from 'src/components/form-components/CustomTextField'
 import PopupText from '../utils/popupText'
 import CustomRadioGroup from 'src/components/form-components/CustomRadioGroup.jsx'
@@ -609,9 +608,9 @@ const DoctorsConsultForm = () => {
             <ul>
               <li>
                 <p>
-                  Smoking: <strong>{social.SOCIAL10}</strong>
+                  Currently Smoking: <strong>{social.SOCIAL10}</strong>
                   <br></br>
-                  <strong>{social.SOCIALShortAns10}</strong>
+                  <strong>{social.SOCIALShortAns10} pack-years</strong>
                 </p>
                 <p>
                   Past Smoking: <strong>{social.SOCIAL11}</strong>
@@ -639,26 +638,26 @@ const DoctorsConsultForm = () => {
   )
 
   return (
-  <Paper elevation={2} p={0} m={0}>
-    <Grid container>
-      <Grid item xs={9}>
-        <Paper elevation={2} p={0} m={0}>
-          {renderForm()}
-        </Paper>
+    <Paper elevation={2} p={0} m={0}>
+      <Grid container>
+        <Grid item xs={9}>
+          <Paper elevation={2} p={0} m={0}>
+            {renderForm()}
+          </Paper>
+        </Grid>
+        <Grid
+          item
+          xs={3}
+          p={1}
+          display='flex'
+          flexDirection='column'
+          alignItems={loadingSidePanel ? 'center' : 'left'}
+        >
+          {loadingSidePanel ? <CircularProgress /> : renderSidePanel()}
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={3}
-        p={1}
-        display='flex'
-        flexDirection='column'
-        alignItems={loadingSidePanel ? 'center' : 'left'}
-      >
-        {loadingSidePanel ? <CircularProgress /> : renderSidePanel()}
-      </Grid>
-    </Grid>
-  </Paper>
-)
+    </Paper>
+  )
 }
 
 DoctorsConsultForm.contextType = FormContext
