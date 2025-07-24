@@ -147,7 +147,7 @@ const GeriOtConsultForm = () => {
         <Paper elevation={2} p={0} m={0}>
           <Grid display='flex' flexDirection='row'>
             <Grid xs={9}>
-              <Paper elevation={2} p={0} m={0}>
+              <Paper>
                 <form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>OT Consult</h1>
@@ -265,8 +265,6 @@ const GeriOtConsultForm = () => {
                       </Button>
                     )}
                   </div>
-                  <br />
-                  <Divider />
                 </form>
               </Paper>
             </Grid>

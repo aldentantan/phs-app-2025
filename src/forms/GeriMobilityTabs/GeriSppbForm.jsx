@@ -87,10 +87,11 @@ const initialEmptyValues = {
   geriSppbQ12: '',
 }
 
-const GeriSppbForm = () => {
+const GeriSppbForm = (props) => {
   const { patientId } = useContext(FormContext)
   const [initialValues, setInitialValues] = useState(initialEmptyValues)
   const [loading, setLoading] = useState(false)
+  const { changeTab, nextTab } = props
 
   useEffect(() => {
     const fetchData = async () => {
@@ -246,8 +247,6 @@ const GeriSppbForm = () => {
                 </Button>
               )}
             </div>
-            <br />
-            <Divider />
           </Paper>
         </Form>
       )}
