@@ -15,9 +15,6 @@ import { getSavedData } from '../services/mongoDB'
 import {mandarinNormal} from "./lang/mandarin-normal"
 import {mandarinBold} from "./lang/mandarin-bold"
 
-import {mandarinNormal} from "./lang/mandarin-normal"
-import {mandarinBold} from "./lang/mandarin-bold"
-
 pdfMake.vfs = pdfFonts.vfs
 
 export async function preRegister(preRegArgs) {
