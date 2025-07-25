@@ -97,56 +97,6 @@ const Eligibility = () => {
       console.log('eligible stations:', eligibleStationNames)
 
       //melanie pdf function
-      function createData(name, isEligible) {
-        const eligibility = isEligible ? 'YES' : 'NO'
-        return { name, eligibility }
-      }
-
-      const isVaccinationEligible =
-        reg?.registrationQ4 >= 65 && reg.registrationQ7 === 'Singapore Citizen 新加坡公民'
-      const isHealthierSGEligible = reg.registrationQ11 !== 'Yes'
-      const isLungFunctionEligible =
-        hxsocial.SOCIAL10 === 'Yes, (please specify how many pack-years)' ||
-        hxsocial.SOCIAL11 === 'Yes, (please specify)'
-      const isWomenCancerEducationEligible = reg.registrationQ5 === 'Female'
-      const isOsteoporosisEligible =
-        (reg.registrationQ5 === 'Female' && reg.registrationQ4 >= 45) ||
-        (reg.registrationQ5 === 'Male' && reg.registrationQ4 >= 55)
-
-      const isMentalHealthEligible =
-        (phq.PHQ10 >= 10 && reg.registrationQ4 < 60) || phq.PHQ11 === 'Yes'
-      const isAudiometryEligible = reg.registrationQ4 >= 60 && pmhx.PMHX13 === 'No'
-      const isGeriatricScreeningEligible = reg.registrationQ4 >= 60
-      const isDoctorStationEligible =
-        triage.triageQ9 === 'Yes' ||
-        hcsr.hxHcsrQ3 === 'Yes' ||
-        hcsr.hxHcsrQ8 === 'Yes' ||
-        pmhx.PMHX12 === 'Yes' ||
-        phq.PHQ10 >= 10 ||
-        phq.PHQ9 !== '0 - Not at all'
-      const isDietitianEligible = hxsocial.SOCIAL15 === 'Yes'
-      const isSocialServicesEligible =
-        hxsocial.SOCIAL6 === 'Yes' ||
-        hxsocial.SOCIAL7 === 'Yes, (please specify)' ||
-        (hxsocial.SOCIAL8 === 'Yes' && hxsocial.SOCIAL9 === 'No')
-      const isDentalEligible = hxoral.ORAL5 === 'Yes'
-
-      const rowsData = [
-        createData('Healthier SG Booth', isHealthierSGEligible),
-        createData('Lung Function Testing', isLungFunctionEligible),
-        createData("Women's Cancer Education", isWomenCancerEducationEligible),
-        createData('Osteoporosis', isOsteoporosisEligible),
-        createData('Mental Health', isMentalHealthEligible),
-        createData('Vaccination', isVaccinationEligible),
-        createData('Geriatric Screening', isGeriatricScreeningEligible),
-        createData('Audiometry', isAudiometryEligible),
-        { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
-        createData("Doctor's Station", isDoctorStationEligible),
-        createData("Dietitian's Consult", isDietitianEligible),
-        createData('Oral Health', isDentalEligible),
-        createData('Social Services', isSocialServicesEligible),
-      ]
-
       function eligibilitySection() {
 
         const col1Labels = [
@@ -183,7 +133,7 @@ const Eligibility = () => {
             stack: [
               {
                 columns: [
-                  { image: uncheckedBox, width: 10, margin: [0, 0, 5, 0] },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 5, 0] },
                   { text: 'Have not previously been enrolled in HSG', fontSize: 8 }
                 ]
               }
@@ -196,7 +146,7 @@ const Eligibility = () => {
             stack: [
               {
                 columns: [
-                  { image: uncheckedBox, width: 10, margin: [0, 0, 5, 0] },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 5, 0] },
                   { text: '>= 60 years old', fontSize: 8 }
                 ]
               }
@@ -204,27 +154,28 @@ const Eligibility = () => {
           },
           {text: ''},
           {
+            rowSpan: 3,
             stack: [
               {
                 columns: [
-                  { image: uncheckedBox, width: 10, margin: [0, 0, 2, 0] },
-                  { text: 'OT Questionnaire (HOMEFAST)', fontSize: 8 },
-                  { image: uncheckedBox, width: 10, margin: [2, 0, 2, 0] },
-                  { text: 'PT Questionnaire (PAL Qx)', fontSize: 8 }
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
+                  { text: 'OT Questionnaire (HOMEFAST)', fontSize: 8, margin: [0, 0, 0, 4] },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
+                  { text: 'PT Questionnaire (PAL Qx)', fontSize: 8, margin: [0, 0, 0, 4] }
                 ]
               },
               {
                 columns: [
-                  { image: uncheckedBox, width: 10, margin: [0, 0, 2, 0] },
-                  { text: 'Physical Tests (SPPB)', fontSize: 8 },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
+                  { text: 'Physical Tests (SPPB)', fontSize: 8, margin: [0, 0, 0, 4] },
                 ]
               },
               {
                 columns: [
-                  { text: 'Recommended for:', margin: [0, 0, 2, 0], fontSize: 8 },
-                  { image: uncheckedBox, width: 10, margin: [0, 0, 2, 0] },
+                  { text: 'Recommended for:', margin: [-2, 0, 2, 0], fontSize: 8 },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
                   { text: 'PT Consult', fontSize: 8 },
-                  { image: uncheckedBox, width: 10, margin: [2, 0, 2, 0] },
+                  { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
                   { text: 'OT Consult', fontSize: 8 }
                 ]
               }
@@ -254,11 +205,11 @@ const Eligibility = () => {
         });
         const col4Eligible = col2Texts.map((_, i) => {
           if (i == 7) {
-            return 'PT Consult:\n YES / NO';
+            return 'PT Consult:    YES   /   NO';
           } else if (i == 8) {
-            return 'OT Consult:\n YES / NO';
+            return 'OT Consult:    YES   /   NO';
           } else {
-            return 'YES / NO';
+            return { text: 'YES          /          NO', alignment: 'center'};
           }
         });
 
@@ -272,17 +223,49 @@ const Eligibility = () => {
               [
                 { text: '', bold: true, fontSize: 9, },
                 { text: 'Modality', bold: true, fontSize: 9, },
-                { text: 'ELIGIBLE?', bold: true, fontSize: 9, },
-                { text: 'COMPLETED?', bold: true, fontSize: 9, },
+                { text: 'ELIGIBLE?', bold: true, fontSize: 9, alignment: 'center' },
+                { text: 'COMPLETED?', bold: true, fontSize: 9, alignment: 'center' },
                 { text: 'Details', bold: true, fontSize: 9, }
               ],
-              // 20 rows with placeholders
-              ...col1Labels.map((label, index) => [
-                { text: label, fontSize: 9, },
-                { text: col2Texts[index] || '', fontSize: 9, },
-                { text: col3Eligible[index] || '', fontSize: 9, },
-                { text: col4Eligible[index] || '', fontSize: 9, },
-                col5Texts[index] || { text: '', fontSize: 8 }
+              // Rows 0–3: normal
+              ...[0, 1, 2, 3].map((i) => [
+                { text: col1Labels[i], fontSize: 9 },
+                { text: col2Texts[i], fontSize: 9 },
+                { text: col3Eligible[i], fontSize: 9 },
+                { text: col4Eligible[i], fontSize: 9 },
+                col5Texts[i]
+              ]),
+              // Row 4 (Geriatric Screening) with ELIGIBLE? rowSpan=5
+              [
+                { text: 8, fontSize: 9, rowSpan: 5},
+                { text: col2Texts[4], fontSize: 9 },
+                { text: 'YES          /          NO', fontSize: 9, alignment: 'center', rowSpan: 5 },
+                { text: col4Eligible[4], fontSize: 9 },
+                col5Texts[4]
+              ],
+              // Row 5 (Cognitive Function)
+              [
+                { text: '', fontSize: 9 },
+                { text: col2Texts[5], fontSize: 9 },
+                '', // skip because of rowSpan
+                { text: col4Eligible[5], fontSize: 9 },
+                col5Texts[5]
+              ],
+              // Row 6 (Mobility) with rowSpan=3
+              [
+                { text: '', fontSize: 9 },
+                { text: col2Texts[6], fontSize: 9, rowSpan: 3 },
+                '', // skip
+                { text: col4Eligible[6], fontSize: 9 },
+                col5Texts[6]
+              ],
+              // Rows 7–19: normal
+              ...[7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map((i) => [
+                { text: col1Labels[i], fontSize: 9 },
+                { text: col2Texts[i], fontSize: 9 },
+                { text: col3Eligible[i], fontSize: 9 },
+                { text: col4Eligible[i], fontSize: 9 },
+                col5Texts[i]
               ])
             ]
           },
@@ -292,7 +275,7 @@ const Eligibility = () => {
             hLineColor: () => 'black',
             vLineColor: () => 'black',
           },
-          margin: [0, 10, 0, 10]
+          margin: [0, 5, 0, 5]
         };
         return sectionTable;
       }
@@ -313,8 +296,8 @@ const Eligibility = () => {
                 {
                   text: 'FORM A',
                   bold: true,
-                  fontSize: 14,
-                  margin: [0,0,0,10],
+                  fontSize: 20,
+                  margin: [0,-35,0,15],
                   alignment: 'center'
                 }
               ],
@@ -357,7 +340,7 @@ const Eligibility = () => {
               // margin: [15, 0, 0, 10]
             }
           ],
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 15]
         };
         return chasSection;
       }
@@ -400,7 +383,7 @@ const Eligibility = () => {
 
               ],
               columnGap: 15,
-              // margin: [15, 0, 0, 10]
+              margin: [0, 0, 0, -5]
             }
           ],
           margin: [0, 0, 0, 10]
@@ -408,45 +391,106 @@ const Eligibility = () => {
         return pioneerSection;
       }
 
-      function triageTableSection() {
-        const sampleTable = {
+      function formatTriage(triage = {}) {
+        const {
+          triageQ1, triageQ2, triageQ3, triageQ4,
+          triageQ5, triageQ6, triageQ10, triageQ11,
+          triageQ12, triageQ13, triageQ7, triageQ8
+        } = triage
+
+        console.log(triage.triageQ11)
+      
+        return {
+          weightStr: triageQ11 ? `${triageQ11} kg` : '____ kg',
+          heightStr: triageQ10 ? `${triageQ10} cm` : '____ cm',
+          bmiStr: triageQ12 ? `${triageQ12} kg/m\u00B2` : '____',
+          bp1: `${triageQ1 ?? '___'} / ${triageQ2 ?? '___'}`,
+          bp2: `${triageQ3 ?? '___'} / ${triageQ4 ?? '___'}`,
+          bp3: `${triageQ5 ?? '___'} / ${triageQ6 ?? '___'}`,
+          avgBP: `${triageQ7 ?? '____'} / ${triageQ8 ?? '____'}`,
+          waist: triageQ13 ? `${triageQ13} cm` : '____ cm'
+        }
+      }
+
+      function triageTableSection(triage = {}) {
+        const {
+          weightStr, heightStr, bmiStr,
+          bp1, bp2, bp3, avgBP, waist
+        } = formatTriage(triage)
+
+        return {
           table: {
             widths: ['15%', '25%', '30%', '30%'], // Adjust widths as needed
             body: [
-              // Row 1
               [
-                { text: '2. TRIAGE', colSpan: 2 },
-                {}, // Empty cell due to colSpan
-                { text: '15A. Reasons for recommendation to Doctors Station', colSpan: 2 },
-                {}
+                { text: '2. TRIAGE', colSpan: 2, bold: true }, {},
+                { text: '15A. Reasons for recommendation to Doctors Station', colSpan: 2, bold: true }, {}
               ],
-              // Row 2
               [
                 {
-                  text: 'WEIGHT: ____ kg\nHEIGHT: ____ m\nBMI: ____ kg/m2',
-                  alignment: 'left',
-                  fontSize: 8,
+                  stack: [
+                    {
+                      columns: [
+                        { text: 'WEIGHT:', bold: true, fontSize: 9 },
+                        { text: weightStr, fontSize: 9,}
+                      ],
+                      margin: [0, 2, 0, 2]
+                    },
+                    {
+                      columns: [
+                        { text: 'HEIGHT:', bold: true, fontSize: 9 },
+                        { text: heightStr, fontSize: 9,}
+                      ],
+                      margin: [0, 2, 0, 2]
+                    },
+                    {
+                      columns: [
+                        { text: 'BMI:', bold: true, fontSize: 9 },
+                        { text: bmiStr, fontSize: 9,}
+                      ],
+                      margin: [0, 2, 0, 2]
+                    }
+                  ],
+                  margin: [0, 5, 0, 5]
+                },
+                // Middle column: BP and waist
+                {
+                  stack: [
+                    {
+                      text: [
+                        { text: '1st BP: ', bold: true, fontSize: 9 },
+                        { text: `${bp1}      `, fontSize: 9 },
+                        { text: '2nd BP: ', bold: true, fontSize: 9 },
+                        { text: `${bp2}`, fontSize: 9 }
+                      ], 
+                      margin:[0, 2, 0, 2]
+                    },
+                    {
+                      text: [
+                        { text: '3rd BP: ', bold: true, fontSize: 9 },
+                        { text: `${bp3}      `, fontSize: 9 },
+                        { text: 'AVE. BP: ', bold: true, fontSize: 9 },
+                        { text: `${avgBP}`, fontSize: 9 }
+                      ],
+                      margin: [0, 2, 0, 2]
+                    },
+                    { text: `Waist circumference: ${waist}`, fontSize: 9, margin: [0, 2, 0, 2]},
+                  ],
                   margin: [0, 5, 0, 5]
                 },
                 {
-                  text:
-                    '1st BP: ___ / ___   2nd BP: ___ / ___\n' +
-                    '3rd BP: ___ / ___   AVE. BP: _____ / _____\n' +
-                    'Waist circumference: _____ cm',
-                  fontSize: 8,
-                  margin: [0, 5, 0, 5]
-                },
+                  stack: [
+                    { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
+                    { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
+                  ], 
+                  margin: [0, 5, 0, 5], 
+                },             
                 {
-                  text: 'Referred from:\n' + 'Reason:\n',
-                  alignment: 'left',
-                  fontSize: 8,
-                  margin: [0, 5, 0, 5]
-                },
-                {
-                  text: 'Referred from:\n' + 'Reason:\n',
-                  alignment: 'left',
-                  fontSize: 8,
-                  margin: [0, 5, 0, 5]
+                  stack: [
+                    { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
+                    { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
+                  ],
+                  margin: [0, 5, 0, 5], 
                 },
               ]
             ]
@@ -457,10 +501,10 @@ const Eligibility = () => {
             hLineColor: () => 'black',
             vLineColor: () => 'black',
           },
-          margin: [0, 0, 0, 20]
-        };
-        return sampleTable;
+          margin: [0, 0, 0, 5]
+        }
       }
+        
 
       let formAImages = [pic1, pic2, pic3, pic4, pic5];
 
@@ -472,7 +516,7 @@ const Eligibility = () => {
             stack: [
               {
                 image: img,
-                width: 500,
+                width: 750,
               }
             ]
           }));
@@ -481,6 +525,7 @@ const Eligibility = () => {
       generatePDFRef.current = () => {
         let content = []
         const docDefinition = {
+          pageOrientation: 'landscape',
           content: content,
           styles: {
             header: {
@@ -507,7 +552,7 @@ const Eligibility = () => {
         }
         content.push(chasStatusSection())
         content.push(pioneerGenSection())
-        content.push(triageTableSection())
+        content.push(triageTableSection(triage))
         content.push(eligibilitySection())
         content.push(...picSections())
 
