@@ -185,14 +185,14 @@ const GeriPtConsultForm = (props) => {
                     <h3>Memo (for participant):</h3>
                     <FastField
                       name='geriPtConsultQ1'
-                      label='Memo (for participant)'
+                      label='geriPtConsultQ1'
                       component={CustomTextField}
                     />
 
                     <h3>To be referred for doctor&apos;s consult (PT)?</h3>
                     <FastField
                       name='geriPtConsultQ2'
-                      label='To be referred for doctor’s consult (PT)?'
+                      label='geriPtConsultQ2'
                       component={CustomRadioGroup}
                       options={formOptions.geriPtConsultQ2}
                       row
@@ -201,9 +201,9 @@ const GeriPtConsultForm = (props) => {
                     <h4>Reasons for referral to Doctor&apos;s consult (PT):</h4>
                     <FastField
                       name='geriPtConsultQ3'
-                      label='Reasons for referral to Doctor’s consult (PT)'
+                      label='geriPtConsultQ3'
                       component={CustomCheckboxGroup}
-                      options={formOptions.geriPtConsultQ3.map((o) => o.value)}
+                      options={formOptions.geriPtConsultQ3}
                     />
 
                     <h4>Please specify (if others):</h4>
@@ -216,7 +216,7 @@ const GeriPtConsultForm = (props) => {
                     <h3>To be referred for social support (PT):</h3>
                     <FastField
                       name='geriPtConsultQ4'
-                      label='To be referred for social support (PT)?'
+                      label='geriPtConsultQ4'
                       component={CustomRadioGroup}
                       options={formOptions.geriPtConsultQ4}
                       row
@@ -225,7 +225,7 @@ const GeriPtConsultForm = (props) => {
                     <h4>Please specify:</h4>
                     <FastField
                       name='geriPtConsultQ5'
-                      label='Please specify'
+                      label='geriPtConsultQ5'
                       component={CustomTextField}
                     />
                   </div>

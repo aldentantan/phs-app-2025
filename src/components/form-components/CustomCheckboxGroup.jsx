@@ -18,7 +18,7 @@ const CustomCheckboxGroup = ({ field, form, options, label, ...props }) => {
   return (
     <Box sx={{ mt: 1, mb: 2 }}>
       {label && (
-        <Typography variant='subtitle1' fontWeight='bold' sx={{ mb: 1 }}>
+        <Typography variant='subtitle1' sx={{ mb: 1 }}>
           {label}
         </Typography>
       )}
