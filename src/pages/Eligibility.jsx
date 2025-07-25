@@ -22,7 +22,7 @@ import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 pdfMake.vfs = pdfFonts.vfs
 
-import { parseFromLangKey } from '../api/langutil'
+import { parseFromLangKey, setLang } from '../api/langutil'
 
 import { getSavedData, getSavedPatientData, updateStationCounts } from '../services/mongoDB'
 import { FormContext } from '../api/utils.js'
