@@ -15,7 +15,6 @@ import pic1 from '../icons/pic1-forma';
 import pic2 from '../icons/pic2-forma';
 import pic3 from '../icons/pic3-forma';
 import pic4 from '../icons/pic4-forma';
-import pic5 from '../icons/pic5-forma';
 import { checkedBox, uncheckedBox } from '../icons/checked';
 
 import pdfMake from 'pdfmake/build/pdfmake'
@@ -106,31 +105,31 @@ const Eligibility = () => {
       function eligibilitySection() {
 
         const col1Labels = [
-          '4', '5', '6', '7', '8', '', '', '', '', '9', '10', '11', '12',
+          '4', '5', '6', '7', '8', '9', '', '', '', '', '10', '11', '12',
           '13', '14', '15', '16', '17', '18', '19'
         ];
 
         const col2Texts = [
-          'Healther SG Booth',
-          'Lung Function Testing',
-          'Womens Cancer Education',
-          'Podiatry',
-          'Geriatic Screening',
-          'Cognitive Function',
-          'Mobility',
-          '',
-          '',
-          'Visual Acuity',
-          'Dietitians Consult',
-          'Social Services',
-          'Mental Health',
-          'Dental Health',
-          'Mammobus',
-          'HPV On-Site Testing',
-          'Vaccination',
-          'Audiometry',
-          'Doctors Station',
-          'Screening Review',
+          { label: 'Healthier SG Booth', eligibilityKey: 'Healthier SG Booth' },
+          { label: 'Lung Function Testing', eligibilityKey: 'Lung Function Testing' },
+          { label: 'Womens Cancer Education', eligibilityKey: "Women's Cancer Education" },
+          { label: 'Podiatry', eligibilityKey: 'Podiatry' },
+          { label: 'Dietitians Consult', eligibilityKey: "Dietitian's Consult" },
+          { label: 'Geriatic Screening', eligibilityKey: 'Geriatric Screening' },
+          { label: '    Cognitive Function', eligibilityKey: 'Geriatric Screening' }, // grouped under GS
+          { label: '    Mobility', eligibilityKey: 'Geriatric Screening' },
+          { label: '', eligibilityKey: '' },
+          { label: '', eligibilityKey: '' },
+          { label: 'Visual Acuity', eligibilityKey: 'Geriatric Screening' },
+          { label: 'Dental Health', eligibilityKey: 'Oral Health' },
+          { label: 'Social Services', eligibilityKey: 'Social Services' },
+          { label: 'Mental Health', eligibilityKey: 'Mental Health' },
+          { label: 'Mammobus', eligibilityKey: 'Mammobus' },
+          { label: 'HPV On-Site Testing', eligibilityKey: 'HPV On-Site Testing' },
+          { label: 'Audiometry', eligibilityKey: 'Audiometry' },
+          { label: 'Vaccination', eligibilityKey: 'Vaccination' },
+          { label: 'Doctors Station', eligibilityKey: "Doctor's Station" },
+          { label: 'Screening Review', eligibilityKey: '' }, // no eligibility tracking
         ];
 
 
@@ -140,20 +139,21 @@ const Eligibility = () => {
               {
                 columns: [
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 5, 0] },
-                  { text: 'Have not previously been enrolled in HSG', fontSize: 8 }
+                  { text: 'Have not previously been enrolled in HSG', fontSize: 9 },
                 ]
               }
             ]
-          },
+          },          
           {text: ''},
-          {text: 'If the participant is eligible for HPV On-Site Testing, please indicate below in the cell OUTLINED with a double border', fontSize: 8},
+          {text: ''},
+          {text: ''},
           {text: ''},
           {
             stack: [
               {
                 columns: [
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 5, 0] },
-                  { text: '>= 60 years old', fontSize: 8 }
+                  { text: '>= 60 years old', fontSize: 9 }
                 ]
               }
             ]
@@ -165,24 +165,24 @@ const Eligibility = () => {
               {
                 columns: [
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
-                  { text: 'OT Questionnaire (HOMEFAST)', fontSize: 8, margin: [0, 0, 0, 4] },
+                  { text: 'OT Questionnaire (HOMEFAST)', fontSize: 9, margin: [0, 0, 0, 4] },
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
-                  { text: 'PT Questionnaire (PAL Qx)', fontSize: 8, margin: [0, 0, 0, 4] }
+                  { text: 'PT Questionnaire (PAL Qx)', fontSize: 9, margin: [0, 0, 0, 4] }
                 ]
               },
               {
                 columns: [
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
-                  { text: 'Physical Tests (SPPB)', fontSize: 8, margin: [0, 0, 0, 4] },
+                  { text: 'Physical Tests (SPPB)', fontSize: 9, margin: [0, 0, 0, 4] },
                 ]
               },
               {
                 columns: [
-                  { text: 'Recommended for:', margin: [-2, 0, 2, 0], fontSize: 8 },
+                  { text: 'Recommended for:', margin: [-2, 0, 2, 0], fontSize: 9 },
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
-                  { text: 'PT Consult', fontSize: 8 },
+                  { text: 'PT Consult', fontSize: 9 },
                   { image: uncheckedBox, width: 10, margin: [-2, 0, 2, 0] },
-                  { text: 'OT Consult', fontSize: 8 }
+                  { text: 'OT Consult', fontSize: 9 }
                 ]
               }
             ]
@@ -195,27 +195,34 @@ const Eligibility = () => {
           {text: ''},
           {text: ''},
           {text: ''},
+          {text: 'Part of Geriatric Screening', fontSize: 9},
           {text: ''},
-          {text: ''},
-          {text: 'Part of Geriatric Screening', fontSize: 8},
-          {text: 'Please refer above to part 15A for details on reason(s) for recommendation', fontSize: 8},
+          {text: 'Please refer above to part 15A for details on reason(s) for recommendation', fontSize: 9},
           {text: ''},
         ];
 
-        const col3Eligible = col2Texts.map((_, i) => {
-          if (i >= 5 && i <= 8) {
+        const col3Eligible = col2Texts.map(({ eligibilityKey }, i) => {
+          if (i >= 6 && i <= 9) { // Geri screening merged cells
             return '';
-          } else {
-            return 'YES / NO';
           }
+          if (i === 19) { // Screening review
+            return { text: "YES", alignment: 'center', color: 'blue'};
+          }
+          const eligibility = eligibilityRows.find((r) => r.name === eligibilityKey)?.eligibility;
+          return {
+            text: eligibility,
+            alignment: 'center',
+            color: eligibility === 'YES' ? 'blue' : 'red',
+          };
         });
+        
         const col4Eligible = col2Texts.map((_, i) => {
-          if (i == 7) {
+          if (i == 8) {
             return 'PT Consult:    YES   /   NO';
-          } else if (i == 8) {
+          } else if (i == 9) {
             return 'OT Consult:    YES   /   NO';
           } else {
-            return { text: 'YES          /          NO', alignment: 'center'};
+            return { text: 'YES          /          NO', alignment: 'center' };
           }
         });
 
@@ -223,52 +230,52 @@ const Eligibility = () => {
 
         const sectionTable = {
           table: {
-            widths: ['5%', '19%', '15%', '15%', '46%'],
+            widths: ['3%', '19%', '15%', '15%', '48%'],
             body: [
               // Header row
               [
-                { text: '', bold: true, fontSize: 9, },
+                { text: '', bold: true, fontSize: 10, },
                 { text: 'Modality', bold: true, fontSize: 9, },
                 { text: 'ELIGIBLE?', bold: true, fontSize: 9, alignment: 'center' },
                 { text: 'COMPLETED?', bold: true, fontSize: 9, alignment: 'center' },
                 { text: 'Details', bold: true, fontSize: 9, }
               ],
-              // Rows 0–3: normal
-              ...[0, 1, 2, 3].map((i) => [
-                { text: col1Labels[i], fontSize: 9 },
-                { text: col2Texts[i], fontSize: 9 },
+              // Rows 0–4: normal
+              ...[0, 1, 2, 3, 4].map((i) => [
+                { text: col1Labels[i], fontSize: 10 },
+                { text: col2Texts[i].label, fontSize: 11 },
                 { text: col3Eligible[i], fontSize: 9 },
                 { text: col4Eligible[i], fontSize: 9 },
                 col5Texts[i]
               ]),
-              // Row 4 (Geriatric Screening) with ELIGIBLE? rowSpan=5
+              // Row 5 (Geriatric Screening) with ELIGIBLE? rowSpan=5
               [
-                { text: 8, fontSize: 9, rowSpan: 5},
-                { text: col2Texts[4], fontSize: 9 },
-                { text: 'YES          /          NO', fontSize: 9, alignment: 'center', rowSpan: 5 },
-                { text: col4Eligible[4], fontSize: 9 },
-                col5Texts[4]
-              ],
-              // Row 5 (Cognitive Function)
-              [
-                { text: '', fontSize: 9 },
-                { text: col2Texts[5], fontSize: 9 },
-                '', // skip because of rowSpan
+                { text: 9, fontSize: 10, rowSpan: 5},
+                { text: col2Texts[5].label, fontSize: 11 },
+                { ...col3Eligible[5], fontSize: 9, alignment: 'center', rowSpan: 5 },
                 { text: col4Eligible[5], fontSize: 9 },
                 col5Texts[5]
               ],
-              // Row 6 (Mobility) with rowSpan=3
+              // Row 6 (Cognitive Function)
               [
-                { text: '', fontSize: 9 },
-                { text: col2Texts[6], fontSize: 9, rowSpan: 3 },
-                '', // skip
+                { text: '', fontSize: 10 },
+                { text: col2Texts[6].label, fontSize: 9, preserveLeadingSpaces: true },
+                '', // skip because of rowSpan
                 { text: col4Eligible[6], fontSize: 9 },
                 col5Texts[6]
               ],
-              // Rows 7–19: normal
-              ...[7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map((i) => [
+              // Row 7 (Mobility) with rowSpan=3
+              [
+                { text: '', fontSize: 10 },
+                { text: col2Texts[7].label, fontSize: 9, rowSpan: 3, preserveLeadingSpaces: true },
+                '', // skip
+                { text: col4Eligible[7], fontSize: 9 },
+                col5Texts[7]
+              ],
+              // Rows 8–19: normal
+              ...[8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map((i) => [
                 { text: col1Labels[i], fontSize: 9 },
-                { text: col2Texts[i], fontSize: 9 },
+                { text: col2Texts[i].label, fontSize: 11 },
                 { text: col3Eligible[i], fontSize: 9 },
                 { text: col4Eligible[i], fontSize: 9 },
                 col5Texts[i]
@@ -287,11 +294,11 @@ const Eligibility = () => {
       }
 
       function chasStatusSection() {
-        const chasStatus = reg?.chasStatus || 'none'; // Default to 'none' if not specified
+        const chasStatus = reg?.registrationQ12
         const chasOptions = {
-          blue: chasStatus === 'blue' ? checkedBox : uncheckedBox,
-          orange: chasStatus === 'orange' ? checkedBox : uncheckedBox,
-          none: chasStatus === 'none' ? checkedBox : uncheckedBox,
+          blue: chasStatus === 'CHAS Blue' ? checkedBox : uncheckedBox,
+          orange: chasStatus === 'CHAS Orange' ? checkedBox : uncheckedBox,
+          none: chasStatus === 'No CHAS' ? checkedBox : uncheckedBox,
         };
 
         // CHAS Status Section
@@ -303,7 +310,7 @@ const Eligibility = () => {
                   text: 'FORM A',
                   bold: true,
                   fontSize: 20,
-                  margin: [0,-35,0,15],
+                  margin: [0,-35,0,5],
                   alignment: 'center'
                 }
               ],
@@ -318,47 +325,51 @@ const Eligibility = () => {
                       style: 'sectionSubheader',
                     }
                   ],
-                  width: 'auto'
+                  width: 'auto',
+                  margin: [0, -5, 0, -5]
                 },
                 {
                   columns: [
                     { image: `${chasOptions.blue} `, width: 10 },
                     { text: 'CHAS Blue', style: 'checkboxLabel' }
                   ],
-                  width: 'auto'
+                  width: 'auto',
+                  margin: [0, -5, 0, -5]
                 },
                 {
                   columns: [
                     { image: `${chasOptions.orange} `, width: 10 },
                     { text: 'CHAS Orange', style: 'checkboxLabel' }
                   ],
-                  width: 'auto'
+                  width: 'auto',
+                  margin: [0, -5, 0, -5]
                 },
                 {
                   columns: [
                     { image: `${chasOptions.none} `, width: 10 },
                     { text: 'No CHAS', style: 'checkboxLabel' }
                   ],
-                  width: 'auto'
-                }
+                  width: 'auto',
+                  margin: [0, -5, 0, -5]
+                },
               ],
               columnGap: 15,
               // margin: [15, 0, 0, 10]
             }
           ],
-          margin: [0, 0, 0, 15]
+          margin: [0, -5, 0, 15]
         };
         return chasSection;
       }
 
       function pioneerGenSection() {
-        const isPioneerGen = true; // Default to 'none' if not specified
+        const isPioneerGen = reg?.registrationQ13 === 'Pioneer generation card holder'; // Default to 'none' if not specified
         const isPioneerGenOptions = {
           isPioneer: isPioneerGen === true ? checkedBox : uncheckedBox,
           isNotPioneer: isPioneerGen === false ? checkedBox : uncheckedBox,
         };
 
-        // CHAS Status Section
+        // Pioneer Section
         const pioneerSection = {
           stack: [
             {
@@ -403,8 +414,6 @@ const Eligibility = () => {
           triageQ5, triageQ6, triageQ10, triageQ11,
           triageQ12, triageQ13, triageQ7, triageQ8
         } = triage
-
-        console.log(triage.triageQ11)
       
         return {
           weightStr: triageQ11 ? `${triageQ11} kg` : '____ kg',
@@ -457,7 +466,7 @@ const Eligibility = () => {
                       margin: [0, 2, 0, 2]
                     }
                   ],
-                  margin: [0, 5, 0, 5]
+                  margin: [0, 4, 0, 4]
                 },
                 // Middle column: BP and waist
                 {
@@ -482,21 +491,21 @@ const Eligibility = () => {
                     },
                     { text: `Waist circumference: ${waist}`, fontSize: 9, margin: [0, 2, 0, 2]},
                   ],
-                  margin: [0, 5, 0, 5]
+                  margin: [0, 4, 0, 4]
                 },
                 {
                   stack: [
                     { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
                     { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
                   ], 
-                  margin: [0, 5, 0, 5], 
+                  margin: [0, 4, 0, 4], 
                 },             
                 {
                   stack: [
                     { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
                     { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
                   ],
-                  margin: [0, 5, 0, 5], 
+                  margin: [0, 4, 0, 4], 
                 },
               ]
             ]
@@ -512,7 +521,7 @@ const Eligibility = () => {
       }
         
 
-      let formAImages = [pic1, pic2, pic3, pic4, pic5];
+      let formAImages = [pic1, pic2, pic3, pic4];
 
       function picSections() {
         return formAImages
@@ -522,9 +531,10 @@ const Eligibility = () => {
             stack: [
               {
                 image: img,
-                width: 750,
+                width: 700,
+                alignment: 'center',
               }
-            ]
+            ],
           }));
       }
 

@@ -32,8 +32,8 @@ export const getEligibilityRows = (forms = {}) => {
                           hxgynae?.GYNAE15 === 'No' &&
                           (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
                           hxgynae?.GYNAE16 === 'Yes'
-  const isAudiometryEligible = reg?.registrationQ4 >= 40
-  const isGeriatricScreeningEligible = reg?.registrationQ4 >= 40
+  const isAudiometryEligible = reg?.registrationQ4 >= 60
+  const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
 
   const isDoctorStationEligible = triage?.triageQ9 === 'Yes' ||
     hcsr?.hxHcsrQ7 === 'Yes' ||
