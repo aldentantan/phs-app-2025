@@ -42,6 +42,7 @@
   "mentalHealthForm": "mentalHealthForm",
   "hxM4M5ReviewForm": "hxM4M5ReviewForm",
   "hxGynaeForm": "gynaeForm",
+  "ophthalForm": "ophthalForm",
 
   "Comments": "Please refactor away this name list because it makes no gurantees of the actual form name in the js file, doesn't autocomplete and isn't automatically maintained"
 }

@@ -120,7 +120,7 @@ const Eligibility = () => {
           { label: '    Mobility', eligibilityKey: 'Geriatric Screening' },
           { label: '', eligibilityKey: '' },
           { label: '', eligibilityKey: '' },
-          { label: 'Visual Acuity', eligibilityKey: 'Geriatric Screening' },
+          { label: 'Visual Acuity', eligibilityKey: 'Ophthalmology' },
           { label: 'Dental Health', eligibilityKey: 'Oral Health' },
           { label: 'Social Services', eligibilityKey: 'Social Services' },
           { label: 'Mental Health', eligibilityKey: 'Mental Health' },
@@ -298,6 +298,7 @@ const Eligibility = () => {
         const chasOptions = {
           blue: chasStatus === 'CHAS Blue' ? checkedBox : uncheckedBox,
           orange: chasStatus === 'CHAS Orange' ? checkedBox : uncheckedBox,
+          green: chasStatus === 'CHAS Green' ? checkedBox : uncheckedBox,
           none: chasStatus === 'No CHAS' ? checkedBox : uncheckedBox,
         };
 
@@ -340,6 +341,14 @@ const Eligibility = () => {
                   columns: [
                     { image: `${chasOptions.orange} `, width: 10 },
                     { text: 'CHAS Orange', style: 'checkboxLabel' }
+                  ],
+                  width: 'auto',
+                  margin: [0, -5, 0, -5]
+                },
+                {
+                  columns: [
+                    { image: `${chasOptions.green} `, width: 10 },
+                    { text: 'CHAS Green', style: 'checkboxLabel' }
                   ],
                   width: 'auto',
                   margin: [0, -5, 0, -5]
