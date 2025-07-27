@@ -32,8 +32,9 @@ export const getEligibilityRows = (forms = {}) => {
                           hxgynae?.GYNAE15 === 'No' &&
                           (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
                           hxgynae?.GYNAE16 === 'Yes'
-  const isAudiometryEligible = reg?.registrationQ4 >= 40
-  const isGeriatricScreeningEligible = reg?.registrationQ4 >= 40
+  const isAudiometryEligible = reg?.registrationQ4 >= 60 && hcsr?.hxHcsrQ5 === 'No'
+  const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
+  const isOphthalmologyEligible = reg?.registrationQ4 >= 40
 
   const isDoctorStationEligible = triage?.triageQ9 === 'Yes' ||
     hcsr?.hxHcsrQ7 === 'Yes' ||
@@ -61,6 +62,7 @@ export const getEligibilityRows = (forms = {}) => {
     createData("Podiatry", isPodiatryEligible),
     createData("Dietitian's Consult", isDietitianEligible),
     createData('Geriatric Screening', isGeriatricScreeningEligible),
+    createData('Ophthalmology', isOphthalmologyEligible),
     createData('Oral Health', isDentalEligible),
     createData('Social Services', isSocialServicesEligible),
     createData('Mental Health', isMentalHealthEligible),
@@ -81,8 +83,8 @@ export function computeVisitedStationsCount(record) {
     podiatry: ['podiatryForm'],
     dietitiansconsult: ['dietitiansConsultForm'],
     geriscreening: ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
-      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',
-      'geriVisionForm'],
+      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',],
+    ophthalmology: ['ophthalFrom'],
     oralhealth: ['oralHealthForm'],
     socialservice: ['socialServiceForm'],
     mentalhealth: ['mentalHealthForm'],
@@ -181,8 +183,8 @@ export const getVisitedStationNames = (record) => {
     "Podiatry": ['podiatryForm'],
     "Dietitian's Consult": ['dietitiansConsultForm'],
     'Geriatric Screening': ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
-      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',
-      'geriVisionForm'],
+      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',],
+    "Ophthalmology": ['ophthalForm'],
     'Oral Health': ['oralHealthForm'],
     'Social Services': ['socialServiceForm'],
     'Mental Health': ['mentalHealthForm'],

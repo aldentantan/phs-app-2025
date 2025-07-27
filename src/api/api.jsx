@@ -2,15 +2,18 @@ import React from 'react'
 import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services/mongoDB'
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
-import logo from 'src/icons/Icon'
+import updatedLogo from 'src/icons/UpdatedIcon';
 import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
-import { parseFromLangKey, setLang } from './langutil'
+import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import axios from 'axios'
 import { getSavedData } from '../services/mongoDB'
+
+import {mandarinNormal} from "./lang/mandarin-normal"
+import {mandarinBold} from "./lang/mandarin-bold"
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -536,7 +539,7 @@ export function patient(doc, reg, patients, k) {
   const salutation =
     typeof reg.registrationQ1 == 'undefined' ? parseFromLangKey('salutation') : reg.registrationQ1
 
-  doc.addImage(logo, 'PNG', 10, 10, 77.8, 26.7)
+  doc.addImage(updatedLogo, 'PNG', 10, 10, 77.8, 26.7)
   k = k + 3
 
   doc.setFont(undefined, 'bold')
@@ -1096,7 +1099,7 @@ export const regexPasswordPattern =
 // console.log('done')
 // deletes volunteer accounts
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
-pdfMake.vfs = pdfFonts.vfs
+
 export function generate_pdf_updated(
   reg,
   patients,
@@ -1123,6 +1126,7 @@ export function generate_pdf_updated(
   mental,
   social,
 ) {
+  setLangUpdated(reg.registrationQ14)
   let content = []
 
   content.push(...patientSection(reg, patients))
@@ -1157,29 +1161,35 @@ export function generate_pdf_updated(
     content: content,
     styles: {
       header: {
+       // font: 'NotoSansSC',
         fontSize: 16,
         bold: true,
         margin: [0, 10, 0, 5],
       },
       subheader: {
+      //  font: 'NotoSansSC',
         fontSize: 13,
         bold: true,
         margin: [0, 3, 0, 3],
       },
       normal: {
+    //    font: 'NotoSansSC',
         fontSize: 10,
         margin: [0, 0, 0, 4],
       },
       italicSmall: {
+   //     font: 'NotoSansSC',
         italics: true,
         fontSize: 10,
       },
     },
     defaultStyle: {
+   //   font: 'NotoSansSC',
       fontSize: 11,
     },
     pageMargins: [40, 60, 40, 60],
   }
+  
   pdfMake.createPdf(docDefinition).download(fileName)
 }
 
@@ -1187,8 +1197,8 @@ function patientSection(reg, patients) {
   const salutation = reg.registrationQ1 || 'Dear'
 
   const mainLogo = {
-    image: logo,
-    width: 220,
+    image: updatedLogo,
+    width: 150,
   }
 
   const title = [{ text: parseFromLangKey('title'), style: 'header' }]
@@ -1304,48 +1314,48 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
 
   return [
     { text: parseFromLangKey('other_title'), style: 'subheader' },
-    { text: parseFromLangKey('other_lung'), style: 'normal' },
+    //{ text: parseFromLangKey('other_lung'), style: 'normal' },
 
-    {
-      columns: [
-        {
-          style: 'tableExample',
-          margin: [0, 5, 0, 5],
-          table: {
-            widths: ['*', '*'],
-            body: [
-              [
-                {
-                  text: parseFromLangKey('other_lung_tbl_l_header'),
-                  style: 'tableHeader',
-                  bold: true,
-                  colSpan: 2, // <-- span across 2 columns
-                },
-                {},
-              ],
-              ['FVC (L)', `${lung.LUNG3}`],
-              ['FEV1 (L)', `${lung.LUNG4}`],
-              ['FVC (%pred)', `${lung.LUNG5}`],
-              ['FEV1 (%pred)', `${lung.LUNG6}`],
-              ['FEV1/FVC (%)', `${lung.LUNG7}`],
-            ],
-          },
-          layout: {
-            hLineWidth: () => 0.5,
-            vLineWidth: () => 0.5,
-            hLineColor: () => 'black',
-            vLineColor: () => 'black',
-          },
-        },
-        {
-          width: '*', // takes remaining space
-          text: '', // or you can add other content here or leave blank
-        },
-      ],
-    },
+    // {
+    //   columns: [
+    //     {
+    //       style: 'tableExample',
+    //       margin: [0, 5, 0, 5],
+    //       table: {
+    //         widths: ['*', '*'],
+    //         body: [
+    //           [
+    //             {
+    //               text: parseFromLangKey('other_lung_tbl_l_header'),
+    //               style: 'tableHeader',
+    //               bold: true,
+    //               colSpan: 2, // <-- span across 2 columns
+    //             },
+    //             {},
+    //           ],
+    //           ['FVC (L)', `${lung.LUNG3}`],
+    //           ['FEV1 (L)', `${lung.LUNG4}`],
+    //           ['FVC (%pred)', `${lung.LUNG5}`],
+    //           ['FEV1 (%pred)', `${lung.LUNG6}`],
+    //           ['FEV1/FVC (%)', `${lung.LUNG7}`],
+    //         ],
+    //       },
+    //       layout: {
+    //         hLineWidth: () => 0.5,
+    //         vLineWidth: () => 0.5,
+    //         hLineColor: () => 'black',
+    //         vLineColor: () => 'black',
+    //       },
+    //     },
+    //     {
+    //       width: '*', // takes remaining space
+    //       text: '', // or you can add other content here or leave blank
+    //     },
+    //   ],
+    // },
 
-    { text: `${other_lung_smoking_text}\n`, style: 'normal' },
-    { text: '', margin: [0, 5] },
+    //{ text: `${other_lung_smoking_text}\n`, style: 'normal' },
+    //{ text: '', margin: [0, 5] },
 
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
     {
@@ -1472,11 +1482,11 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+   // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
-    ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
-    ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
-    ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+   // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+   // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+   // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
