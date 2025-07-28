@@ -9,13 +9,30 @@ import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
+//import * as pdfMake from 'pdfmake-support-chinese-fonts/pdfmake.min';
+//import * as pdfFonts from 'pdfmake-support-chinese-fonts/vfs_fonts';
 import axios from 'axios'
 import { getSavedData } from '../services/mongoDB'
 
-import {mandarinNormal} from "./lang/mandarin-normal"
-import {mandarinBold} from "./lang/mandarin-bold"
+import { mandarinNormal } from "./lang/mandarin-normal"
+import { mandarinBold } from "./lang/mandarin-bold"
 
 pdfMake.vfs = pdfFonts.vfs
+
+pdfMake.fonts = {
+  Roboto: {
+    normal: 'Roboto-Regular.ttf',
+    bold: 'Roboto-Regular.ttf',
+    italics: 'Roboto-Regular.ttf',
+    bolditalics: 'Roboto-Regular.ttf'
+  },
+  fangzhen: {
+    normal: 'fzhei-jt.ttf',
+    bold: 'fzhei-jt.ttf',
+    italics: 'fzhei-jt.ttf',
+    bolditalics: 'fzhei-jt.ttf'
+  }
+};
 
 export async function preRegister(preRegArgs) {
   let gender = preRegArgs.gender
@@ -554,9 +571,9 @@ export function patient(doc, reg, patients, k) {
   // Thanks note
   var thanksNote = doc.splitTextToSize(
     kNewlines((k = k + 2)) +
-      parseFromLangKey('dear', salutation, patients.initials) +
-      '\n' +
-      parseFromLangKey('intro'),
+    parseFromLangKey('dear', salutation, patients.initials) +
+    '\n' +
+    parseFromLangKey('intro'),
     190,
   )
   doc.text(10, 10, thanksNote)
@@ -680,11 +697,11 @@ export function addBloodPressure(doc, triage, k) {
     10,
     10,
     kNewlines((k = k + 1)) +
-      parseFromLangKey('bp_reading') +
-      triage.triageQ7 +
-      '/' +
-      triage.triageQ8 +
-      ' mmHg.',
+    parseFromLangKey('bp_reading') +
+    triage.triageQ7 +
+    '/' +
+    triage.triageQ8 +
+    ' mmHg.',
   )
 
   doc.addImage(bloodpressureQR, 'png', 165, 75, 32, 32)
@@ -1157,41 +1174,68 @@ export function generate_pdf_updated(
     fileName = patients.initials.split(' ').join('_') + '_Report.pdf'
   }
 
-  const docDefinition = {
+  pdfMake.fonts = {
+    // download default Roboto font from cdnjs.com
+    Roboto: {
+      normal: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+      bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Medium.ttf',
+      italics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Italic.ttf',
+      bolditalics: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-MediumItalic.ttf'
+    },
+
+    NotoTamil: {
+      normal: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansTamil-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansTamil-Bold.ttf',
+      italics: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansTamil-Regular.ttf',
+      bolditalics: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansTamil-Regular.ttf',
+    },
+
+    // example of usage fonts in collection
+    PingFangSC: {
+      normal: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansSC-Regular.ttf',
+      bold: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansSC-Bold.ttf',
+      italics: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansSC-Regular.ttf',
+      bolditalics: 'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansSC-Regular.ttf',
+    },
+  }
+
+  const docDefinition1 = {
     content: content,
     styles: {
       header: {
-       // font: 'NotoSansSC',
+        font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
         fontSize: 16,
-        bold: true,
+        // bold: true,
         margin: [0, 10, 0, 5],
+        //  font: 'fangzhen',
       },
       subheader: {
-      //  font: 'NotoSansSC',
+        font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
         fontSize: 13,
         bold: true,
         margin: [0, 3, 0, 3],
       },
       normal: {
-    //    font: 'NotoSansSC',
+        font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
         fontSize: 10,
         margin: [0, 0, 0, 4],
       },
       italicSmall: {
-   //     font: 'NotoSansSC',
+        font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
         italics: true,
         fontSize: 10,
       },
     },
     defaultStyle: {
-   //   font: 'NotoSansSC',
+      font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
       fontSize: 11,
     },
     pageMargins: [40, 60, 40, 60],
   }
-  
-  pdfMake.createPdf(docDefinition).download(fileName)
+
+  pdfMake.createPdf(docDefinition1).download(fileName)
 }
+
 
 function patientSection(reg, patients) {
   const salutation = reg.registrationQ1 || 'Dear'
@@ -1482,11 +1526,11 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-   // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+    // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
-   // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
-   // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
-   // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+    // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+    // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+    // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
@@ -1601,17 +1645,16 @@ export const generateDoctorPdf = async (entry) => {
     content.push({ text: '\n' })
     content.push({ text: `Doctor's Memo:`, style: 'subheader', decoration: 'underline' })
     content.push({ text: `${savedDoctorConsultData.doctorSConsultQ3 || 'No response'}` })
-    content.push({ text: '\n'})
+    content.push({ text: '\n' })
 
     // Dietitian Referral
     content.push({
-      text: `Refer to Dietitian: ${
-        savedDoctorConsultData.doctorSConsultQ4 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ4 === 'No'
+      text: `Refer to Dietitian: ${savedDoctorConsultData.doctorSConsultQ4 === 'Yes'
+        ? 'Yes'
+        : savedDoctorConsultData.doctorSConsultQ4 === 'No'
           ? 'No'
           : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
+        }`, style: 'subheader', decoration: 'underline',
     })
     if (savedDoctorConsultData.doctorSConsultQ4) {
       content.push({ text: `Reason for Dietitian Referral: ${savedDoctorConsultData.doctorSConsultQ5 || 'No response'}` })
@@ -1619,13 +1662,12 @@ export const generateDoctorPdf = async (entry) => {
 
     // Social Support Referral
     content.push({
-      text: `Refer to Social Support: ${
-        savedDoctorConsultData.doctorSConsultQ6 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ6 === 'No'
+      text: `Refer to Social Support: ${savedDoctorConsultData.doctorSConsultQ6 === 'Yes'
+        ? 'Yes'
+        : savedDoctorConsultData.doctorSConsultQ6 === 'No'
           ? 'No'
           : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
+        }`, style: 'subheader', decoration: 'underline',
     })
     if (savedDoctorConsultData.doctorSConsultQ6) {
       content.push({ text: `Reason for Social Support Referral: ${savedDoctorConsultData.doctorSConsultQ7 || 'No response'}` })
@@ -1633,13 +1675,12 @@ export const generateDoctorPdf = async (entry) => {
 
     // Dental Referral
     content.push({
-      text: `Refer to Dental: ${
-        savedDoctorConsultData.doctorSConsultQ8 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ8 === 'No'
+      text: `Refer to Dental: ${savedDoctorConsultData.doctorSConsultQ8 === 'Yes'
+        ? 'Yes'
+        : savedDoctorConsultData.doctorSConsultQ8 === 'No'
           ? 'No'
           : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
+        }`, style: 'subheader', decoration: 'underline',
     })
     if (savedDoctorConsultData.doctorSConsultQ8) {
       content.push({ text: `Reason for Dental Referral: ${savedDoctorConsultData.doctorSConsultQ9 || 'No response'}` })
@@ -1647,23 +1688,21 @@ export const generateDoctorPdf = async (entry) => {
 
     // Mental Health Referral
     content.push({
-      text: `Refer to Mental Health: ${
-        savedDoctorConsultData.doctorSConsultQ13 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ13 === 'No'
+      text: `Refer to Mental Health: ${savedDoctorConsultData.doctorSConsultQ13 === 'Yes'
+        ? 'Yes'
+        : savedDoctorConsultData.doctorSConsultQ13 === 'No'
           ? 'No'
           : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
+        }`, style: 'subheader', decoration: 'underline',
     })
 
     content.push({
-      text: `Does patient require urgent follow-up: ${
-        savedDoctorConsultData.doctorSConsultQ10 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ10 === 'No'
+      text: `Does patient require urgent follow-up: ${savedDoctorConsultData.doctorSConsultQ10 === 'Yes'
+        ? 'Yes'
+        : savedDoctorConsultData.doctorSConsultQ10 === 'No'
           ? 'No'
           : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
+        }`, style: 'subheader', decoration: 'underline',
     })
   }
 
