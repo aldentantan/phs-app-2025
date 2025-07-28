@@ -1583,116 +1583,103 @@ export function recommendationSection() {
 export const generateDoctorPdf = async (entry) => {
   const savedDoctorConsultData = await getSavedData(entry.patientId, 'doctorConsultForm')
   console.log('savedDoctorConsultData: ', savedDoctorConsultData)
-  const content = [
-    { text: 'Doctor Consultation Summary', style: 'header' },
-    { text: `Patient ID: ${entry.patientId} | Doctor: ${entry.doctorName}` },
-    { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
-    { text: '' },
-  ]
 
-  for (const [key, value] of Object.entries(entry.data || {})) {
-    content.push({ text: `${key}: ${value}` })
-  }
+  const generateHeader = () => ({
+    margin: [40, 30, 40, 10],
+    stack: [
+      {
+        columns: [
+          { width: '*', text: '' },
+          {
+            width: 'auto',
+            stack: [
+              { text: 'PHS 2025', bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
+              { text: "DOCTOR'S CONSULTATION", bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
+              { text: 'MEMO SHEET', bold: true, fontSize: 16, alignment: 'center' }
+            ]
+          },
+          {
+            width: '*',
+            stack: [
+              {
+                image: updatedLogo,
+                width: 115,
+                alignment: 'right',
+                margin: [-10, -10, 0, 0]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }
+        ],
+        margin: [0, 10, 0, 0]
+      }
+    ]
+  });
 
-  // Add doctor consult form data
-  if (savedDoctorConsultData) {
-    content.push({ text: 'Clinical Findings:', style: 'subheader', decoration: 'underline' })
-    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ2 || 'No response'}\n` })
-    content.push({ text: '\n' })
-    content.push({ text: `Doctor's Memo:`, style: 'subheader', decoration: 'underline' })
-    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ3 || 'No response'}` })
-    content.push({ text: '\n'})
+  const generateMemoBody = () => {
+    return [
+      { text: 'Memo for ______________________', margin: [0, 20, 0, 2], alignment: 'center' },
+      { text: 'Dear Colleague:', margin: [0, 15, 0, 10] },
+  
+      // Doctor's Memo
+      {
+        stack: [
+          { text: "Doctor's Memo:", bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
+          { text: savedDoctorConsultData?.doctorSConsultQ2 || 'No response' }
+        ],
+        margin: [0, 2, 0, 5],
+      },
+  
+      // Clinical Findings
+      {
+        stack: [
+          { text: 'Clinical Findings:', bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
+          { text: savedDoctorConsultData?.doctorSConsultQ3 || 'No response' }
+        ],
+        margin: [0, 2, 0, 10],
+      },
+  
+      { text: '\nThank you very much.', margin: [0, 2, 0, 10] },
+    ];
+  };
 
-    // Dietitian Referral
-    content.push({
-      text: `Refer to Dietitian: ${
-        savedDoctorConsultData.doctorSConsultQ4 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ4 === 'No'
-          ? 'No'
-          : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ4) {
-      content.push({ text: `Reason for Dietitian Referral: ${savedDoctorConsultData.doctorSConsultQ5 || 'No response'}` })
-    }
+  const generateSignatureBlock = () => ({
+    margin: [0, 0, 0, 20],
+    stack: [
+      { text: 'Yours Sincerely,\nDr\nMCR:\nPhysician volunteer\nPublic Health Service', margin: [0, 10, 0, 2] },
+      { text: "NUS Medical Society, c/o The Dean's Office, NUS Yong Loo Lin School of Medicine\n1E Kent Ridge Road, NUHS Tower Block Level 11, Singapore 119228" }
+    ]
+  })
 
-    // Social Support Referral
-    content.push({
-      text: `Refer to Social Support: ${
-        savedDoctorConsultData.doctorSConsultQ6 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ6 === 'No'
-          ? 'No'
-          : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ6) {
-      content.push({ text: `Reason for Social Support Referral: ${savedDoctorConsultData.doctorSConsultQ7 || 'No response'}` })
-    }
-
-    // Dental Referral
-    content.push({
-      text: `Refer to Dental: ${
-        savedDoctorConsultData.doctorSConsultQ8 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ8 === 'No'
-          ? 'No'
-          : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ8) {
-      content.push({ text: `Reason for Dental Referral: ${savedDoctorConsultData.doctorSConsultQ9 || 'No response'}` })
-    }
-
-    // Mental Health Referral
-    content.push({
-      text: `Refer to Mental Health: ${
-        savedDoctorConsultData.doctorSConsultQ13 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ13 === 'No'
-          ? 'No'
-          : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
-    })
-
-    content.push({
-      text: `Does patient require urgent follow-up: ${
-        savedDoctorConsultData.doctorSConsultQ10 === 'Yes'
-          ? 'Yes'
-          : savedDoctorConsultData.doctorSConsultQ10 === 'No'
-          ? 'No'
-          : 'No response'
-      }`, style: 'subheader', decoration: 'underline',
-    })
-  }
-
+  const generateFooter = () => ({
+    margin: [40, 60, 40, 20],
+    columns: [
+      {
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 1.2, lineColor: '#1b73e8'}],
+        width: 100
+      },
+      {
+        text: 'Public Health Service 2025 [\u00A0\u00A0]',
+        alignment: 'right',
+        fontSize: 9
+      }
+    ]
+  });
+  
   const docDefinition = {
-    content,
-
-    styles: {
-      header: {
-        fontSize: 16,
-        bold: true,
-        margin: [0, 10, 0, 5],
-      },
-      subheader: {
-        fontSize: 11,
-        bold: true,
-      },
-      normal: {
-        fontSize: 10,
-      },
-      italicSmall: {
-        italics: true,
-        fontSize: 8,
-      },
-    },
-    defaultStyle: {
-      fontSize: 10,
-    },
-    pageMargins: [40, 60, 40, 60],
-  }
+    content: [
+      generateMemoBody(),
+      generateSignatureBlock(),
+    ],
+    header: generateHeader,
+    footer: generateFooter,
+    pageMargins: [40, 110, 40, 120],
+    defaultStyle: { fontSize: 10 },
+  };  
 
   pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
 }
