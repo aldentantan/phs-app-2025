@@ -1,8 +1,8 @@
 {
     "salutation" : "Mr/Mrs",
-    "title" : "Laporan Pemeriksaan Kesihatan 2024 Perkhidmatan Kesihatan Awam",
+    "title" : "Laporan Pemeriksaan Kesihatan 2025 Perkhidmatan Kesihatan Awam",
     "dear": "{0} {1} Yang dihormati",
-    "intro": "Terima kasih kerana mengambil bahagian dalam pemeriksaan kesihatan kami di The Frontier CC dan Pusat Perubatan Jurong pada 17 dan 18 Ogos tahun ini. Berikut adalah hasil saringan anda:",
+    "intro": "Terima kasih kerana mengambil bahagian dalam pemeriksaan kesihatan kami di The Frontier CC dan Pusat Perubatan Jurong pada 16 dan 17 Ogos tahun ini. Berikut adalah hasil saringan anda:",
 
     "bp_title": "Tekanan darah",
     "bp_reading": "Purata bacaan tekanan darah anda ialah ",
@@ -60,5 +60,5 @@
     "rec": "Anda amat digalakkan untuk mendapatkan susulan berdasarkan hasil pemeriksaan kesihatan anda. \n\nSeperti yang dinyatakan di atas, ahli PHS mungkin akan menghubungi anda tidak lama lagi sebagai satu bentuk susulan dalam masa beberapa minggu, jika anda tidak menarik diri daripada Inisiatif Telekesihatan kami.",
 
     "disclaimer_title": "Penafian Laporan Pemeriksaan Kesihatan",
-    "disclaimer" : "Pemeriksaan kesihatan mungkin mengenal pasti faktor risiko perubatan tertentu, keadaan atau penyakit tetapi tidak bertujuan untuk menjadi pemeriksaan kesihatan yang komprehensif atau menggantikan perundingan perubatan untuk sebarang gejala atau kebimbangan perubatan. Walaupun tiada sebarang penemuan abnormal dalam keputusan saringan anda, kita tidak boleh memberi jaminan bahawa anda tiada penyakit lain. Anda dinasihatkan untuk memperhatikan jika ada sebarang gejala yang berkaitan dengan keadaan ini, dan mendapatkan rawatan perubatan apabila ragu-ragu. Keadaan-keadaan seperti demam dan penyakit lain semasa atau sejurus sebelum masa saringan boleh menjejaskan tafsiran keputusan dan oleh itu anda dinasihatkan untuk berjumpa doktor anda untuk tafsiran laporan kesihatan. Sila pastikan anda memenuhi kriteria kelayakan sebelum anda kembali untuk pemeriksaan kesihatan anda yang seterusnya. \n\nSekiranya anda mempunyai sebarang pertanyaan, sila hubungi kami di hello@publichealthservice.org. Terima kasih kerana mengambil bahagian dalam PHS 2024 dan kami berharap anda telah mendapat manfaat dan akan terus menyokong kami pada masa hadapan. "
+    "disclaimer" : "Pemeriksaan kesihatan mungkin mengenal pasti faktor risiko perubatan tertentu, keadaan atau penyakit tetapi tidak bertujuan untuk menjadi pemeriksaan kesihatan yang komprehensif atau menggantikan perundingan perubatan untuk sebarang gejala atau kebimbangan perubatan. Walaupun tiada sebarang penemuan abnormal dalam keputusan saringan anda, kita tidak boleh memberi jaminan bahawa anda tiada penyakit lain. Anda dinasihatkan untuk memperhatikan jika ada sebarang gejala yang berkaitan dengan keadaan ini, dan mendapatkan rawatan perubatan apabila ragu-ragu. Keadaan-keadaan seperti demam dan penyakit lain semasa atau sejurus sebelum masa saringan boleh menjejaskan tafsiran keputusan dan oleh itu anda dinasihatkan untuk berjumpa doktor anda untuk tafsiran laporan kesihatan. Sila pastikan anda memenuhi kriteria kelayakan sebelum anda kembali untuk pemeriksaan kesihatan anda yang seterusnya. \n\nSekiranya anda mempunyai sebarang pertanyaan, sila hubungi kami di hello@publichealthservice.org. Terima kasih kerana mengambil bahagian dalam PHS 2025 dan kami berharap anda telah mendapat manfaat dan akan terus menyokong kami pada masa hadapan. "
 }

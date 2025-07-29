@@ -90,6 +90,7 @@ const DashboardSidebar = ({ onMobileClose, openMobile }) => {
         <Typography
           color={patientId === -1 ? 'textSecondary' : 'primary.main'}
           variant={patientId === -1 ? 'body2' : 'h5'}
+          align="center"
         >
           {patientId === -1 ? null : 'Initials: ' + patientInfo.initials}
         </Typography>

@@ -1,9 +1,6 @@
-
 import React, { useContext, useEffect, useState } from 'react'
-import Divider from '@mui/material/Divider'
-import Paper from '@mui/material/Paper'
-import CircularProgress from '@mui/material/CircularProgress'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
+import { Paper, Divider, Typography, CircularProgress, Box, Button } from '@mui/material'
+import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
@@ -11,6 +8,11 @@ import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import '../forms.css'
 
+import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
+import CustomTextField from '../../components/form-components/CustomTextField.jsx'
+
+import PopupText from 'src/utils/popupText'
+import { useNavigate } from 'react-router'
 
 const validationSchema = Yup.object({
   GRACE1: Yup.string().notRequired(),
@@ -20,13 +22,12 @@ const validationSchema = Yup.object({
   GRACE5: Yup.string().notRequired(),
 })
 
-
 const formName = 'geriGraceForm'
 
 const GeriGraceForm = (props) => {
   const { patientId } = useContext(FormContext)
   const [loading, setLoading] = useState(false)
-  const { changeTab, nextTab } = props
+  const navigate = useNavigate()
   const [initialValues, setInitialValues] = useState({
     GRACE1: '',
     GRACE2: '',
@@ -69,7 +70,7 @@ const GeriGraceForm = (props) => {
             const event = null
             setTimeout(() => {
               alert('Successfully submitted form')
-              changeTab(event, nextTab)
+              navigate('/app/dashboard', { replace: true })
             }, 80)
           } else {
             setTimeout(() => {
@@ -78,44 +79,80 @@ const GeriGraceForm = (props) => {
           }
         }}
       >
-        {() => (
-          <Form className='fieldPadding'>
-            <div className='form--div'>
-              <h1>G-RACE</h1>
-              <h3>MMSE score (_/_):</h3>
-              <Field as='textarea' name='GRACE1' className='form-control' />
-              <ErrorMessage name='GRACE1' component='div' className='error' />
-              <h3>Need referral to G-RACE associated polyclinics/partners?</h3>
-              <div role='group' aria-labelledby='GRACE2'>
-                {radioOptions.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='GRACE2' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='GRACE2' component='div' className='error' />
+        {(formikProps, handleSubmit, errors, submitCount) => {
+          return (
+            <Form className='fieldPadding'>
+              <div className='form--div'>
+                <h1>G-RACE</h1>
+
+                <h3>MMSE score (_/_):</h3>
+                <FastField
+                  name='GRACE1'
+                  label='GRACE1'
+                  component={CustomTextField}
+                  fullWidth
+                  rows={1}
+                />
+
+                <h3>Need referral to G-RACE associated polyclinics/partners?</h3>
+                <FastField
+                  name='GRACE2'
+                  label='GRACE2'
+                  component={CustomRadioGroup}
+                  options={radioOptions}
+                  row
+                />
+                <PopupText qnNo='GRACE2' triggerValue='Yes'>
+                  <h3>Polyclinic:</h3>
+                  <FastField
+                    name='GRACE3'
+                    label='GRACE3'
+                    component={CustomTextField}
+                    fullWidth
+                    rows={1}
+                  />
+                </PopupText>
+
+                <h3>Referral to Doctor&apos;s Consult?</h3>
+                <p>For geri patients who may be depressed</p>
+                <FastField
+                  name='GRACE4'
+                  label='GRACE4'
+                  component={CustomRadioGroup}
+                  options={radioOptions}
+                  row
+                />
+                <PopupText qnNo='GRACE4' triggerValue='Yes'>
+                  <h3>Reason for referral:</h3>
+                  <FastField
+                    name='GRACE5'
+                    label='Reason for referral'
+                    component={CustomTextField}
+                    fullWidth
+                    multiline
+                    rows={3}
+                  />
+                </PopupText>
               </div>
-              <h3>Polyclinic:</h3>
-              <Field as='textarea' name='GRACE3' className='form-control' />
-              <ErrorMessage name='GRACE3' component='div' className='error' />
-              <h3>Referral to Doctor&apos;s Consult?</h3>
-              <p>For geri patients who may be depressed</p>
-              <div role='group' aria-labelledby='GRACE4'>
-                {radioOptions.map((opt) => (
-                  <label key={opt.value} style={{ marginRight: 16 }}>
-                    <Field type='radio' name='GRACE4' value={opt.value} /> {opt.label}
-                  </label>
-                ))}
-                <ErrorMessage name='GRACE4' component='div' className='error' />
+
+              {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                  Please fill in all required fields correctly.
+                </Typography>
+              )}
+
+              <div>
+                {loading ? (
+                  <CircularProgress />
+                ) : (
+                  <Button type='submit' variant='contained' color='primary'>
+                    Submit
+                  </Button>
+                )}
               </div>
-              <h3>Reason for referral: </h3>
-              <Field as='textarea' name='GRACE5' className='form-control' />
-              <ErrorMessage name='GRACE5' component='div' className='error' />
-              <br />
-            </div>
-            <div>{loading ? <CircularProgress /> : <button type='submit'>Submit</button>}</div>
-            <Divider />
-          </Form>
-        )}
+            </Form>
+          )
+        }}
       </Formik>
     </Paper>
   )

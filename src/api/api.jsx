@@ -2,14 +2,18 @@ import React from 'react'
 import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services/mongoDB'
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
-import logo from 'src/icons/Icon'
+import updatedLogo from 'src/icons/UpdatedIcon';
 import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
-import { parseFromLangKey, setLang } from './langutil'
+import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import axios from 'axios'
+import { getSavedData } from '../services/mongoDB'
+
+import {mandarinNormal} from "./lang/mandarin-normal"
+import {mandarinBold} from "./lang/mandarin-bold"
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -535,7 +539,7 @@ export function patient(doc, reg, patients, k) {
   const salutation =
     typeof reg.registrationQ1 == 'undefined' ? parseFromLangKey('salutation') : reg.registrationQ1
 
-  doc.addImage(logo, 'PNG', 10, 10, 77.8, 26.7)
+  doc.addImage(updatedLogo, 'PNG', 10, 10, 77.8, 26.7)
   k = k + 3
 
   doc.setFont(undefined, 'bold')
@@ -1095,7 +1099,7 @@ export const regexPasswordPattern =
 // console.log('done')
 // deletes volunteer accounts
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
-pdfMake.vfs = pdfFonts.vfs
+
 export function generate_pdf_updated(
   reg,
   patients,
@@ -1122,6 +1126,7 @@ export function generate_pdf_updated(
   mental,
   social,
 ) {
+  setLangUpdated(reg.registrationQ14)
   let content = []
 
   content.push(...patientSection(reg, patients))
@@ -1156,29 +1161,35 @@ export function generate_pdf_updated(
     content: content,
     styles: {
       header: {
+       // font: 'NotoSansSC',
         fontSize: 16,
         bold: true,
         margin: [0, 10, 0, 5],
       },
       subheader: {
+      //  font: 'NotoSansSC',
         fontSize: 13,
         bold: true,
         margin: [0, 3, 0, 3],
       },
       normal: {
+    //    font: 'NotoSansSC',
         fontSize: 10,
         margin: [0, 0, 0, 4],
       },
       italicSmall: {
+   //     font: 'NotoSansSC',
         italics: true,
         fontSize: 10,
       },
     },
     defaultStyle: {
+   //   font: 'NotoSansSC',
       fontSize: 11,
     },
     pageMargins: [40, 60, 40, 60],
   }
+  
   pdfMake.createPdf(docDefinition).download(fileName)
 }
 
@@ -1186,8 +1197,8 @@ function patientSection(reg, patients) {
   const salutation = reg.registrationQ1 || 'Dear'
 
   const mainLogo = {
-    image: logo,
-    width: 220,
+    image: updatedLogo,
+    width: 150,
   }
 
   const title = [{ text: parseFromLangKey('title'), style: 'header' }]
@@ -1303,48 +1314,48 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
 
   return [
     { text: parseFromLangKey('other_title'), style: 'subheader' },
-    { text: parseFromLangKey('other_lung'), style: 'normal' },
+    //{ text: parseFromLangKey('other_lung'), style: 'normal' },
 
-    {
-      columns: [
-        {
-          style: 'tableExample',
-          margin: [0, 5, 0, 5],
-          table: {
-            widths: ['*', '*'],
-            body: [
-              [
-                {
-                  text: parseFromLangKey('other_lung_tbl_l_header'),
-                  style: 'tableHeader',
-                  bold: true,
-                  colSpan: 2, // <-- span across 2 columns
-                },
-                {},
-              ],
-              ['FVC (L)', `${lung.LUNG3}`],
-              ['FEV1 (L)', `${lung.LUNG4}`],
-              ['FVC (%pred)', `${lung.LUNG5}`],
-              ['FEV1 (%pred)', `${lung.LUNG6}`],
-              ['FEV1/FVC (%)', `${lung.LUNG7}`],
-            ],
-          },
-          layout: {
-            hLineWidth: () => 0.5,
-            vLineWidth: () => 0.5,
-            hLineColor: () => 'black',
-            vLineColor: () => 'black',
-          },
-        },
-        {
-          width: '*', // takes remaining space
-          text: '', // or you can add other content here or leave blank
-        },
-      ],
-    },
+    // {
+    //   columns: [
+    //     {
+    //       style: 'tableExample',
+    //       margin: [0, 5, 0, 5],
+    //       table: {
+    //         widths: ['*', '*'],
+    //         body: [
+    //           [
+    //             {
+    //               text: parseFromLangKey('other_lung_tbl_l_header'),
+    //               style: 'tableHeader',
+    //               bold: true,
+    //               colSpan: 2, // <-- span across 2 columns
+    //             },
+    //             {},
+    //           ],
+    //           ['FVC (L)', `${lung.LUNG3}`],
+    //           ['FEV1 (L)', `${lung.LUNG4}`],
+    //           ['FVC (%pred)', `${lung.LUNG5}`],
+    //           ['FEV1 (%pred)', `${lung.LUNG6}`],
+    //           ['FEV1/FVC (%)', `${lung.LUNG7}`],
+    //         ],
+    //       },
+    //       layout: {
+    //         hLineWidth: () => 0.5,
+    //         vLineWidth: () => 0.5,
+    //         hLineColor: () => 'black',
+    //         vLineColor: () => 'black',
+    //       },
+    //     },
+    //     {
+    //       width: '*', // takes remaining space
+    //       text: '', // or you can add other content here or leave blank
+    //     },
+    //   ],
+    // },
 
-    { text: `${other_lung_smoking_text}\n`, style: 'normal' },
-    { text: '', margin: [0, 5] },
+    //{ text: `${other_lung_smoking_text}\n`, style: 'normal' },
+    //{ text: '', margin: [0, 5] },
 
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
     {
@@ -1471,11 +1482,11 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-    ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+   // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
-    ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
-    ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
-    ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+   // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+   // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+   // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
@@ -1569,45 +1580,106 @@ export function recommendationSection() {
 // console.log(await mongoDBConnection.collection("profiles").deleteMany({is_admin:{$eq : undefined}}))
 // }
 
-export const generateDoctorPdf = (entry) => {
-  const content = [
-    { text: 'Doctor Consultation Summary', style: 'header' },
-    { text: `Patient ID: ${entry.patientId}` },
-    { text: `Doctor: ${entry.doctorName}` },
-    { text: `Submitted At: ${new Date(entry.createdAt).toLocaleString()}` },
-    { text: '' },
-  ]
+export const generateDoctorPdf = async (entry) => {
+  const savedDoctorConsultData = await getSavedData(entry.patientId, 'doctorConsultForm')
+  console.log('savedDoctorConsultData: ', savedDoctorConsultData)
 
-  for (const [key, value] of Object.entries(entry.data || {})) {
-    content.push({ text: `${key}: ${value}` })
-  }
+  const generateHeader = () => ({
+    margin: [40, 30, 40, 10],
+    stack: [
+      {
+        columns: [
+          { width: '*', text: '' },
+          {
+            width: 'auto',
+            stack: [
+              { text: 'PHS 2025', bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
+              { text: "DOCTOR'S CONSULTATION", bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
+              { text: 'MEMO SHEET', bold: true, fontSize: 16, alignment: 'center' }
+            ]
+          },
+          {
+            width: '*',
+            stack: [
+              {
+                image: updatedLogo,
+                width: 115,
+                alignment: 'right',
+                margin: [-10, -10, 0, 0]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        canvas: [
+          { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }
+        ],
+        margin: [0, 10, 0, 0]
+      }
+    ]
+  });
 
+  const generateMemoBody = () => {
+    return [
+      { text: 'Memo for ______________________', margin: [0, 20, 0, 2], alignment: 'center' },
+      { text: 'Dear Colleague:', margin: [0, 15, 0, 10] },
+  
+      // Doctor's Memo
+      {
+        stack: [
+          { text: "Doctor's Memo:", bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
+          { text: savedDoctorConsultData?.doctorSConsultQ2 || 'No response' }
+        ],
+        margin: [0, 2, 0, 5],
+      },
+  
+      // Clinical Findings
+      {
+        stack: [
+          { text: 'Clinical Findings:', bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
+          { text: savedDoctorConsultData?.doctorSConsultQ3 || 'No response' }
+        ],
+        margin: [0, 2, 0, 10],
+      },
+  
+      { text: '\nThank you very much.', margin: [0, 2, 0, 10] },
+    ];
+  };
+
+  const generateSignatureBlock = () => ({
+    margin: [0, 0, 0, 20],
+    stack: [
+      { text: 'Yours Sincerely,\nDr\nMCR:\nPhysician volunteer\nPublic Health Service', margin: [0, 10, 0, 2] },
+      { text: "NUS Medical Society, c/o The Dean's Office, NUS Yong Loo Lin School of Medicine\n1E Kent Ridge Road, NUHS Tower Block Level 11, Singapore 119228" }
+    ]
+  })
+
+  const generateFooter = () => ({
+    margin: [40, 60, 40, 20],
+    columns: [
+      {
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 1.2, lineColor: '#1b73e8'}],
+        width: 100
+      },
+      {
+        text: 'Public Health Service 2025 [\u00A0\u00A0]',
+        alignment: 'right',
+        fontSize: 9
+      }
+    ]
+  });
+  
   const docDefinition = {
-    content,
-
-    styles: {
-      header: {
-        fontSize: 16,
-        bold: true,
-        margin: [0, 10, 0, 5],
-      },
-      subheader: {
-        fontSize: 11,
-        bold: true,
-      },
-      normal: {
-        fontSize: 10,
-      },
-      italicSmall: {
-        italics: true,
-        fontSize: 8,
-      },
-    },
-    defaultStyle: {
-      fontSize: 10,
-    },
-    pageMargins: [40, 60, 40, 60],
-  }
+    content: [
+      generateMemoBody(),
+      generateSignatureBlock(),
+    ],
+    header: generateHeader,
+    footer: generateFooter,
+    pageMargins: [40, 110, 40, 120],
+    defaultStyle: { fontSize: 10 },
+  };  
 
   pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
 }

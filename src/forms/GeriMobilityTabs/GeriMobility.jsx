@@ -65,7 +65,7 @@ export default function GeriMobilityTabs() {
   return (
     <GeriMobilityWrapper>
       <AppBar position='static' color='default'>
-        <Tabs value={value} onChange={handleChange} aria-label='simple tabs example'>
+        <Tabs value={value} onChange={handleChange} aria-label='GeriMobility tabs'>
           <Tab label='Physical Activity Level' {...a11yProps(0)} />
           <Tab label='Homefast' {...a11yProps(1)} />
           <Tab label='SPPB' {...a11yProps(2)} />

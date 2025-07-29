@@ -1,10 +1,18 @@
 import React, { useContext, useEffect, useState } from 'react'
 import {
-  Paper, Divider, Typography, CircularProgress,
-  FormControl, FormLabel, RadioGroup, FormControlLabel,
-  Radio, Button, Grid, Box, Alert
+  Paper,
+  Divider,
+  Typography,
+  CircularProgress,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Button,
+  Grid,
 } from '@mui/material'
-import { Formik, Form, Field } from 'formik'
+import { Formik, Form, Field, FastField, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
@@ -13,30 +21,19 @@ import allForms from './forms.json'
 import './fieldPadding.css'
 import { useNavigate } from 'react-router'
 
+import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+
 const formName = 'vaccineForm'
 
-const RadioGroupField = ({ name, label, values, error, touched, submitCount }) => (
-  <FormControl fullWidth sx={{ mb: 3 }} error={(touched || submitCount > 0) && !!error}>
-    <FormLabel><Typography variant="subtitle1" fontWeight="bold">{label}</Typography></FormLabel>
-    <Field name={name}>
-      {({ field }) => (
-        <RadioGroup {...field} row>
-          {values.map((val) => (
-            <FormControlLabel key={val} value={val} control={<Radio />} label={val} />
-          ))}
-        </RadioGroup>
-      )}
-    </Field>
-    {(touched || submitCount > 0) && error && (
-      <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '4px' }}>
-        {error}
-      </div>
-    )}
-  </FormControl>
-)
-
 const initialValues = {
-  VAX1: ''
+  VAX1: '',
+}
+
+const formOptions = {
+  VAX1: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
 }
 
 export default function VaccineForm() {
@@ -48,9 +45,7 @@ export default function VaccineForm() {
   const navigate = useNavigate()
 
   const validationSchema = Yup.object({
-    VAX1: Yup.string()
-      .oneOf(['Yes', 'No'], 'Please select Yes or No')
-      .required('Required')
+    VAX1: Yup.string().oneOf(['Yes', 'No'], 'Please select Yes or No').required('Required'),
   })
 
   useEffect(() => {
@@ -67,52 +62,46 @@ export default function VaccineForm() {
     fetchData()
   }, [patientId])
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    setLoading(true)
-    setSubmitting(true)
-    
-    const response = await submitForm(values, patientId, formName)
-    
-    setLoading(false)
-    setSubmitting(false)
-    
-    if (response.result) {
-      setTimeout(() => {
-        alert('Successfully submitted form')
-        navigate('/app/dashboard', { replace: true })
-      }, 80)
-    } else {
-      setTimeout(() => {
-        alert(`Unsuccessful. ${response.error}`)
-      }, 80)
-    }
-  }
-
   return (
-    <Paper elevation={2} p={0} m={0}>
-      <Grid display='flex' flexDirection='row'>
-        <Grid xs={9}>
-          <Paper elevation={2} p={0} m={0}>
-            <Formik
-              initialValues={saveData}
-              validationSchema={validationSchema}
-              enableReinitialize
-              onSubmit={handleSubmit}
-            >
-              {({ isSubmitting, errors, touched, submitCount }) => (
-                <Form className="fieldPadding">
-                  <Typography variant="h6" gutterBottom>Vaccination</Typography>
-                  <Typography variant="subtitle1" gutterBottom>
+    <Formik
+      initialValues={saveData}
+      validationSchema={validationSchema}
+      enableReinitialize
+      onSubmit={async (values, { setSubmitting }) => {
+        setLoading(true)
+        const response = await submitForm(values, patientId, formName)
+
+        setTimeout(() => {
+          setLoading(false)
+          setSubmitting(false)
+          if (response.result) {
+            alert('Successfully submitted form')
+            navigate('/app/dashboard', { replace: true })
+          } else {
+            alert(`Unsuccessful. ${response.error}`)
+          }
+        }, 80)
+      }}
+    >
+      {({ errors, submitCount, isSubmitting }) => (
+        <Paper elevation={2}>
+          <Grid display='flex' flexDirection='row'>
+            <Grid xs={9}>
+              <Paper elevation={2}>
+                <Form className='fieldPadding'>
+                  <Typography variant='h4' gutterBottom>
+                    Vaccination
+                  </Typography>
+                  <Typography variant='subtitle1' gutterBottom>
                     You have signed up for your complimentary influenza vaccination.
                   </Typography>
 
-                  <RadioGroupField 
-                    name="VAX1" 
-                    label="VAX1" 
-                    values={["Yes", "No"]} 
-                    error={errors.VAX1}
-                    touched={touched.VAX1}
-                    submitCount={submitCount}
+                  <FastField
+                    name='VAX1'
+                    label='VAX1'
+                    component={CustomRadioGroup}
+                    options={formOptions.VAX1}
+                    row
                   />
 
                   {/* Display form errors */}
@@ -124,9 +113,11 @@ export default function VaccineForm() {
                     </Box>
                   )}
 
-                  <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-                    {loading || isSubmitting ? <CircularProgress /> : (
-                      <Button type="submit" variant="contained" color="primary">
+                  <div>
+                    {loading || isSubmitting ? (
+                      <CircularProgress />
+                    ) : (
+                      <Button type='submit' variant='contained' color='primary'>
                         Submit
                       </Button>
                     )}
@@ -134,35 +125,44 @@ export default function VaccineForm() {
                   <br />
                   <Divider />
                 </Form>
-              )}
-            </Formik>
-          </Paper>
-        </Grid>
-        <Grid
-          p={1}
-          width='30%'
-          display='flex'
-          flexDirection='column'
-          alignItems={loadingSidePanel ? 'center' : 'left'}
-        >
-          {loadingSidePanel ? (
-            <CircularProgress />
-          ) : (
-            <div className='summary--question-div'>
-              <Typography variant="h6" gutterBottom>Patient Info</Typography>
-              {regi ? (
-                <>
-                  <Typography variant="body1" className='blue'>Age: {regi.registrationQ4}</Typography>
-                  <Typography variant="body1" className='blue'>Citizenship: {regi.registrationQ7}</Typography>
-                </>
+              </Paper>
+            </Grid>
+
+            <Grid
+              p={1}
+              width='30%'
+              display='flex'
+              flexDirection='column'
+              alignItems={loadingSidePanel ? 'center' : 'left'}
+            >
+              {loadingSidePanel ? (
+                <CircularProgress />
               ) : (
-                <Typography variant="body1" className='red'>NO REGI DATA</Typography>
+                <div className='summary--question-div'>
+                  <Typography variant='h6' gutterBottom>
+                    Patient Info
+                  </Typography>
+                  {regi ? (
+                    <>
+                      <Typography variant='body1' className='blue'>
+                        Age: {regi.registrationQ4}
+                      </Typography>
+                      <Typography variant='body1' className='blue'>
+                        Citizenship: {regi.registrationQ7}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant='body1' className='red'>
+                      NO REGI DATA
+                    </Typography>
+                  )}
+                </div>
               )}
-            </div>
-          )}
-        </Grid>
-      </Grid>
-    </Paper>
+            </Grid>
+          </Grid>
+        </Paper>
+      )}
+    </Formik>
   )
 }
 

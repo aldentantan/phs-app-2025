@@ -36,6 +36,7 @@ const initialValues = {
   registrationQ18: '',
   registrationQ19: '',
   registrationQ20: '',
+  registrationQ21: '',
 }
 
 const formName = 'registrationForm'
@@ -52,14 +53,6 @@ const RegForm = () => {
     const fetchData = async () => {
       console.log('Patient ID: ' + patientId)
       const res = await getSavedData(patientId, formName)
-
-      // const phlebCountersCollection = getClinicSlotsCollection()
-      // const phlebCounters = await phlebCountersCollection.find()
-      // for (const { postalCode, counterItems } of phlebCounters) {
-      //   if (postalCode && counterItems) {
-      //     temp[postalCode] -= counterItems.length
-      //   }
-      // }
 
       // Set date to current date if no birthday was previously saved
       if (patientId == -1) {
@@ -159,7 +152,7 @@ const RegForm = () => {
             form.setFieldValue(field.name, null)
           }
         }}
-        onBlur={(e) => {
+        onInput={(e) => {
           const dateValue = e.target.value
           if (dateValue) {
             const date = new Date(dateValue)
@@ -245,6 +238,10 @@ const RegForm = () => {
       { label: 'No', value: 'No' },
     ],
     registrationQ20: [
+      { label: 'Yes', value: 'Yes' },
+      { label: 'No', value: 'No' },
+    ],
+    registrationQ21: [
       { label: 'Yes', value: 'Yes' },
       { label: 'No', value: 'No' },
     ],
@@ -475,6 +472,17 @@ const RegForm = () => {
               label='registrationQ20'
               component={CustomRadioGroup}
               options={formOptions.registrationQ20}
+              row
+            />
+
+            <Typography variant='h6' component='h3' gutterBottom>
+              Does the patient speak English or Chinese?
+            </Typography>
+            <FastField
+              name='registrationQ21'
+              label='registrationQ21'
+              component={CustomRadioGroup}
+              options={formOptions.registrationQ21}
               row
             />
           </div>

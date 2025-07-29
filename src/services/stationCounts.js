@@ -1,5 +1,5 @@
-import { getSavedData, getSavedPatientData, updateStationCounts } from './mongoDB'
 import allForms from '../forms/forms.json'
+import { getSavedData, getSavedPatientData, updateStationCounts } from './mongoDB'
 
 export const getEligibilityRows = (forms = {}) => {
   const {
@@ -7,10 +7,12 @@ export const getEligibilityRows = (forms = {}) => {
     pmhx = {},
     hxsocial = {},
     // hxfamily = {},
+    hxgynae = {},
     triage = {},
     hcsr = {},
     hxoral = {},
     phq = {},
+    hxm4m5 = {},
   } = forms
 
   const createData = (name, isEligible) => ({
@@ -18,32 +20,37 @@ export const getEligibilityRows = (forms = {}) => {
     eligibility: isEligible ? 'YES' : 'NO'
   })
 
-  const isVaccinationEligible = reg?.registrationQ4 >= 65 && reg?.registrationQ7 === 'Singapore Citizen 新加坡公民'
+  const isVaccinationEligible = reg?.registrationQ4 >= 65 || ['CHAS Green', 'CHAS Orange', 'CHAS Blue'].includes(reg?.registrationQ12)
   const isHealthierSGEligible = reg?.registrationQ11 !== 'Yes'
-  const isLungFunctionEligible = hxsocial?.SOCIAL10 === 'Yes, (please specify how many pack-years)' || hxsocial?.SOCIAL11 === 'Yes, (please specify)'
+  const isLungFunctionEligible = reg?.registrationQ21 === 'Yes' && hxsocial?.SOCIAL16 === 'Yes' && (hxsocial?.SOCIAL10 === 'Yes' || hxsocial?.SOCIAL11 === 'Yes')
   const isWomenCancerEducationEligible = reg?.registrationQ5 === 'Female'
-  const isOsteoporosisEligible =
-    (reg?.registrationQ5 === 'Female' && reg?.registrationQ4 >= 45) ||
-    (reg?.registrationQ5 === 'Male' && reg?.registrationQ4 >= 55)
-
+  const isPodiatryEligible = pmhx?.PMHX5?.includes('Diabetes')
   const isMentalHealthEligible = (phq?.PHQ10 >= 10 && reg?.registrationQ4 < 60) || phq?.PHQ11 === 'Yes'
-  const isAudiometryEligible = reg?.registrationQ4 >= 60 && pmhx?.PMHX13 === 'No'
+  const isMammobusEligible = reg.registrationQ19 === 'Yes'
+  const isHPVEligible = (hxgynae?.GYNAE12 === '5 years or longer' || hxgynae?.GYNAE12 === 'Never before') &&
+                          hxgynae?.GYNAE14 === 'Yes' &&
+                          hxgynae?.GYNAE15 === 'No' &&
+                          (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
+                          hxgynae?.GYNAE16 === 'Yes'
+  const isAudiometryEligible = reg?.registrationQ4 >= 60 && hcsr?.hxHcsrQ5 === 'No'
   const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
+  const isOphthalmologyEligible = reg?.registrationQ4 >= 40
 
   const isDoctorStationEligible = triage?.triageQ9 === 'Yes' ||
-    hcsr?.hxHcsrQ3 === 'Yes' ||
-    hcsr?.hxHcsrQ8 === 'Yes' ||
-    pmhx?.PMHX12 === 'Yes' ||
+    hcsr?.hxHcsrQ7 === 'Yes' ||
+    hcsr?.hxHcsrQ6 === 'Yes' ||
+    pmhx?.PMHX7 === 'Yes' ||
     //phq?.PHQ9 !== '0 - Not at all'
     // NOTE^ this makes Doctor's Station Eligible with phq?.PHQ9 !== '0 - Not at all'
     phq?.PHQ10 >= 10 ||
     phq?.PHQ9 == '1 - Several days' ||
     phq?.PHQ9 == '2 - More than half the days' ||
-    phq?.PHQ9 == '3 - Nearly everyday'
+    phq?.PHQ9 == '3 - Nearly everyday' ||
+    hxm4m5?.hxM4M5Q1 === 'Yes'
 
   const isDietitianEligible = hxsocial?.SOCIAL15 === 'Yes'
   const isSocialServicesEligible = hxsocial?.SOCIAL6 === 'Yes' ||
-    hxsocial?.SOCIAL7 === 'Yes, (please specify)' ||
+    hxsocial?.SOCIAL7 === 'Yes' ||
     (hxsocial?.SOCIAL8 === 'Yes' && hxsocial?.SOCIAL9 === 'No')
 
   const isDentalEligible = hxoral?.ORAL5 === 'Yes'
@@ -52,16 +59,18 @@ export const getEligibilityRows = (forms = {}) => {
     createData('Healthier SG Booth', isHealthierSGEligible),
     createData('Lung Function Testing', isLungFunctionEligible),
     createData("Women's Cancer Education", isWomenCancerEducationEligible),
-    createData('Osteoporosis', isOsteoporosisEligible),
-    createData('Mental Health', isMentalHealthEligible),
-    createData('Vaccination', isVaccinationEligible),
-    createData('Geriatric Screening', isGeriatricScreeningEligible),
-    createData('Audiometry', isAudiometryEligible),
-    { name: 'HPV On-Site Testing', eligibility: 'Determined at another station' },
-    createData("Doctor's Station", isDoctorStationEligible),
+    createData("Podiatry", isPodiatryEligible),
     createData("Dietitian's Consult", isDietitianEligible),
+    createData('Geriatric Screening', isGeriatricScreeningEligible),
+    createData('Ophthalmology', isOphthalmologyEligible),
     createData('Oral Health', isDentalEligible),
     createData('Social Services', isSocialServicesEligible),
+    createData('Mental Health', isMentalHealthEligible),
+    createData('Mammobus', isMammobusEligible),
+    createData('HPV On-Site Testing', isHPVEligible),
+    createData('Audiometry', isAudiometryEligible),
+    createData('Vaccination', isVaccinationEligible),
+    createData("Doctor's Station", isDoctorStationEligible),
   ]
 }
 
@@ -71,18 +80,19 @@ export function computeVisitedStationsCount(record) {
     hsg: ['hsgForm'],
     lungfn: ['lungFnForm'],
     wce: ['wceForm', 'gynaeForm'],
-    osteo: ['osteoForm'],
-    mentalhealth: ['mentalHealthForm'],
-    vax: ['vaccineForm'],
-    geriscreening: ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
-      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',
-      'geriVisionForm'],
-    geriaudio: ['geriAudiometryForm'],
-    doctorsconsult: ['doctorConsultForm'],
+    podiatry: ['podiatryForm'],
     dietitiansconsult: ['dietitiansConsultForm'],
+    geriscreening: ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
+      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',],
+    ophthalmology: ['ophthalFrom'],
     oralhealth: ['oralHealthForm'],
     socialservice: ['socialServiceForm'],
+    mentalhealth: ['mentalHealthForm'],
+    mammobus: ['mammobusForm'],
     hpv: ['hpvForm'],
+    geriaudio: ['geriAudiometryForm'],
+    vax: ['vaccineForm'],
+    doctorsconsult: ['doctorConsultForm'],
   }
 
   let visitedCount = 0
@@ -109,7 +119,7 @@ export const updateAllStationCounts = async (patientId) => {
 
   // fetch all relevant forms for eligibility
   const [
-    pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq,
+    pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5, hxgynae
   ] = await Promise.all([
     getSavedData(patientId, allForms.hxNssForm),
     getSavedData(patientId, allForms.hxSocialForm),
@@ -120,6 +130,8 @@ export const updateAllStationCounts = async (patientId) => {
     getSavedData(patientId, allForms.hxOralForm),
     getSavedData(patientId, allForms.wceForm),
     getSavedData(patientId, allForms.geriPhqForm),
+    getSavedData(patientId, allForms.hxM4M5ReviewForm),
+    getSavedData(patientId, allForms.hxGynaeForm)
   ])
 
   const formData = {
@@ -132,6 +144,8 @@ export const updateAllStationCounts = async (patientId) => {
     hxoral: hxoral || {},
     wce: wce || {},
     phq: phq || {},
+    hxm4m5: hxm4m5 || {},
+    hxgynae: hxgynae || {},
   }
 
   const rows = getEligibilityRows(formData)
@@ -166,18 +180,19 @@ export const getVisitedStationNames = (record) => {
     'Healthier SG Booth': ['hsgForm'],
     'Lung Function Testing': ['lungFnForm'],
     "Women's Cancer Education": ['wceForm', 'gynaeForm'],
-    'Osteoporosis': ['osteoForm'],
-    'Mental Health': ['mentalHealthForm'],
-    'Vaccination': ['vaccineForm'],
-    'Geriatric Screening': ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
-      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',
-      'geriVisionForm'],
-    'Audiometry': ['geriAudiometryForm'],
-    "Doctor's Station": ['doctorConsultForm'],
+    "Podiatry": ['podiatryForm'],
     "Dietitian's Consult": ['dietitiansConsultForm'],
+    'Geriatric Screening': ['geriAmtForm', 'geriGraceForm', 'geriWhForm', 'geriInterForm',
+      'geriPhysicalActivityLevelForm', 'geriOtQuestionnaireForm', 'geriSppbForm', 'geriPtConsultForm', 'geriOtConsultForm',],
+    "Ophthalmology": ['ophthalForm'],
     'Oral Health': ['oralHealthForm'],
     'Social Services': ['socialServiceForm'],
+    'Mental Health': ['mentalHealthForm'],
+    'Mammobus': ['mammobusForm'],
     'HPV On-Site Testing': ['hpvForm'],
+    'Audiometry': ['geriAudiometryForm'],
+    'Vaccination': ['vaccineForm'],
+    "Doctor's Station": ['doctorConsultForm'],
   }
 
   for (const [stationName, formKeys] of Object.entries(stationFormMap)) {
