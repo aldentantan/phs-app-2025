@@ -61,7 +61,7 @@ const eligibilityKeyMap = {
 }
 
 // Refactor the generateStatusArray to generate an object instead
-function generateStatusObject(record) {
+export function generateStatusObject(record) {
   const recordStatus = {
     reg: false,
     triage: false,
