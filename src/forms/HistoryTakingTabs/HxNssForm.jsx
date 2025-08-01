@@ -41,15 +41,14 @@ const validationSchema = Yup.object({
   PMHX7: Yup.string().required('Required'),
 })
 
+const YesNo = [
+  { label: 'Yes', value: 'Yes' },
+  { label: 'No', value: 'No' },
+]
+
 const formOptions = {
-  PMHX3: [
-    { label: 'Yes, please specify', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  PMHX4: [
-    { label: 'Yes, please specify', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
+  PMHX3: YesNo,
+  PMHX4: YesNo,
   PMHX5: [
     { label: 'Kidney Disease', value: 'Kidney Disease' },
     { label: 'Hypertension', value: 'Hypertension' },
@@ -62,22 +61,10 @@ const formOptions = {
     },
     { label: 'Others', value: 'Others' },
   ],
-  PMHX7: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  PMHX8: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  PMHX9: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  PMHX10: [
-    { label: 'Yes, please specify', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
+  PMHX7: YesNo,
+  PMHX8: YesNo,
+  PMHX9: YesNo,
+  PMHX10: YesNo,
 }
 
 export default function HxNssForm({ changeTab, nextTab }) {
@@ -195,11 +182,11 @@ export default function HxNssForm({ changeTab, nextTab }) {
             Do you have any drug allergies? If yes, please specify.
           </Typography>
           <FastField
-          name='PMHX10'
-          label='PMHX10'
-          component={CustomRadioGroup}
-          options={formOptions.PMHX8}
-          row
+            name='PMHX10'
+            label='PMHX10'
+            component={CustomRadioGroup}
+            options={formOptions.PMHX8}
+            row
           />
           <PopupText qnNo='PMHX10' triggerValue='Yes'>
             <Typography fontWeight='bold'>Please specify:</Typography>
@@ -292,14 +279,17 @@ export default function HxNssForm({ changeTab, nextTab }) {
             options={formOptions.PMHX7}
             row
           />
-          <FastField
-            name='PMHXShortAns7'
-            component={CustomTextField}
-            label="PMHXShortAns7 (Explain reasons for recommendation to Doctor's Station)"
-            fullWidth
-            multiline
-            sx={{ mb: 3 }}
-          />
+
+          <PopupText qnNo='PMHX7' triggerValue='Yes'>
+            <FastField
+              name='PMHXShortAns7'
+              component={CustomTextField}
+              label="PMHXShortAns7 (Explain reasons for recommendation to Doctor's Station)"
+              fullWidth
+              multiline
+              sx={{ mb: 3 }}
+            />
+          </PopupText>
 
           {/* For participants who are 60 and above, show PMHX8 and PMHX9 */}
           {regForm.registrationQ4 >= 60 && (
@@ -373,9 +363,5 @@ export default function HxNssForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-  return (
-    <Paper elevation={2}>
-      {renderForm()}
-    </Paper>
-  )
+  return <Paper elevation={2}>{renderForm()}</Paper>
 }

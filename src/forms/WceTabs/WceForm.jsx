@@ -177,7 +177,7 @@ const WceForm = (props) => {
         <Paper elevation={2} p={0} m={0}>
           <Grid display='flex' flexDirection='row'>
             <Grid xs={9}>
-              <Paper elevation={2} p={0} m={0}>
+              <Paper p={0} m={0}>
                 <form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>WCE</h1>
@@ -198,79 +198,6 @@ const WceForm = (props) => {
                       component={CustomRadioGroup}
                     />
 
-                    <h3>
-                      When, if any, was the last hpv test you have taken? (Please verify on health
-                      hub) (HPV is different from Pap Smear, answer Pap Smear in the next question)
-                    </h3>
-                    <Field
-                      name='wceQ8'
-                      label='WCE Q8'
-                      options={formOptions.wceQ8}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>
-                      When if any, was the last Pap Smear test you have taken? (Please verify on
-                      health hub)
-                    </h3>
-                    <Field
-                      name='wceQ11'
-                      label='WCE Q11'
-                      options={formOptions.wceQ11}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>
-                      I am asking the next few questions to check your eligibility for a Pap Smear.
-                      This question may be sensitive, but could I ask if you have engaged in sexual
-                      intercourse before?
-                    </h3>
-                    <Field
-                      name='wceQ9'
-                      label='WCE Q9'
-                      options={formOptions.wceQ9}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>Are you pregnant?</h3>
-                    <Field
-                      name='wceQ10'
-                      label='WCE Q10'
-                      options={formOptions.wceQ10}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>
-                      Was your last menstrual period within the window where the first day falls
-                      between 28 July and 4 August 2025? If you are post-menopausal or use
-                      contraception, please indicate &apos;yes&apos;
-                    </h3>
-                    <Field
-                      name='wceQ12'
-                      label='WCE Q12'
-                      options={formOptions.wceQ12}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>Indicated interest for HPV Test under SCS?</h3>
-                    <Field
-                      name='wceQ5'
-                      label='WCE Q5'
-                      options={formOptions.wceQ5}
-                      component={CustomRadioGroup}
-                    />
-
-                    <h3>
-                      Is patient indicated for on-site testing? Please circle On-Site Testing on
-                      Form A as well
-                    </h3>
-                    <Field
-                      name='wceQ7'
-                      label='WCE Q7'
-                      options={formOptions.wceQ7}
-                      component={CustomRadioGroup}
-                    />
-
                     <h3>HPV Test Eligibility</h3>
                     <CheckHpvEligibility />
                   </div>
@@ -281,7 +208,7 @@ const WceForm = (props) => {
                     </Typography>
                   )}
 
-                  <div style={{ paddingLeft: '16px', paddingBottom: '16px' }}>
+                  <div>
                     {loading ? (
                       <CircularProgress />
                     ) : (
@@ -290,12 +217,10 @@ const WceForm = (props) => {
                       </Button>
                     )}
                   </div>
-
-                  <br />
-                  <Divider />
                 </form>
               </Paper>
             </Grid>
+            <Divider />
             <Grid
               p={1}
               width='30%'

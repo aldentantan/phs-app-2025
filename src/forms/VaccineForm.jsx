@@ -1,18 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import {
-  Paper,
-  Divider,
-  Typography,
-  CircularProgress,
-  FormControl,
-  FormLabel,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Button,
-  Grid,
-} from '@mui/material'
-import { Formik, Form, Field, FastField, ErrorMessage } from 'formik'
+import { Paper, Divider, Typography, CircularProgress, Button, Grid } from '@mui/material'
+import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
@@ -27,10 +15,15 @@ const formName = 'vaccineForm'
 
 const initialValues = {
   VAX1: '',
+  VAX2: '',
 }
 
 const formOptions = {
   VAX1: [
+    { label: 'Yes', value: 'Yes' },
+    { label: 'No', value: 'No' },
+  ],
+  VAX2: [
     { label: 'Yes', value: 'Yes' },
     { label: 'No', value: 'No' },
   ],
@@ -42,10 +35,12 @@ export default function VaccineForm() {
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [regi, setRegi] = useState({})
+  const [historyForm, setHistoryForm] = useState({})
   const navigate = useNavigate()
 
   const validationSchema = Yup.object({
-    VAX1: Yup.string().oneOf(['Yes', 'No'], 'Please select Yes or No').required('Required'),
+    VAX1: Yup.string().required(),
+    VAX2: Yup.string().required(),
   })
 
   useEffect(() => {
@@ -53,9 +48,11 @@ export default function VaccineForm() {
       const savedData = await getSavedData(patientId, formName)
       setSaveData(savedData || initialValues)
 
-      const regiData = getSavedData(patientId, allForms.registrationForm)
-      Promise.all([regiData]).then((result) => {
+      const regiData = await getSavedData(patientId, allForms.registrationForm)
+      const historyData = await getSavedData(patientId, allForms.hxNssForm)
+      Promise.all([regiData, historyData]).then((result) => {
         setRegi(result[0])
+        setHistoryForm(result[1])
         setLoadingSidePanel(false)
       })
     }
@@ -70,7 +67,6 @@ export default function VaccineForm() {
       onSubmit={async (values, { setSubmitting }) => {
         setLoading(true)
         const response = await submitForm(values, patientId, formName)
-
         setTimeout(() => {
           setLoading(false)
           setSubmitting(false)
@@ -89,13 +85,11 @@ export default function VaccineForm() {
             <Grid xs={9}>
               <Paper elevation={2}>
                 <Form className='fieldPadding'>
-                  <Typography variant='h4' gutterBottom>
-                    Vaccination
-                  </Typography>
-                  <Typography variant='subtitle1' gutterBottom>
-                    You have signed up for your complimentary influenza vaccination.
-                  </Typography>
+                  <Typography variant='h4'>Vaccination</Typography>
 
+                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
+                    You have received a pneumococcal vaccine.
+                  </Typography>
                   <FastField
                     name='VAX1'
                     label='VAX1'
@@ -104,13 +98,21 @@ export default function VaccineForm() {
                     row
                   />
 
-                  {/* Display form errors */}
-                  {Object.keys(errors).length > 0 && submitCount > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Alert severity="error">
-                        Please correct the errors above before submitting.
-                      </Alert>
-                    </Box>
+                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
+                    You have received an Influenza vaccine.
+                  </Typography>
+                  <FastField
+                    name='VAX2'
+                    label='VAX2'
+                    component={CustomRadioGroup}
+                    options={formOptions.VAX2}
+                    row
+                  />
+
+                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      Please fill in all required fields correctly.
+                    </Typography>
                   )}
 
                   <div>
@@ -150,10 +152,28 @@ export default function VaccineForm() {
                       <Typography variant='body1' className='blue'>
                         Citizenship: {regi.registrationQ7}
                       </Typography>
+                      <Typography variant='body1' className='blue'>
+                        CHAS status: {regi.registrationQ12}
+                      </Typography>
                     </>
                   ) : (
                     <Typography variant='body1' className='red'>
                       NO REGI DATA
+                    </Typography>
+                  )}
+
+                  {historyForm ? (
+                    <>
+                      <Typography variant='body1' className='blue'>
+                        Food Allergy: {historyForm.PMHXShortAns3}
+                      </Typography>
+                      <Typography variant='body1' className='blue'>
+                        Drug Allergy: {historyForm.PMHXShortAns10}
+                      </Typography>
+                    </>
+                  ) : (
+                    <Typography variant='body1' className='red'>
+                      NO HISTORY FORM DATA
                     </Typography>
                   )}
                 </div>

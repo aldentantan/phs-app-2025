@@ -28,7 +28,6 @@ const formOptions = {
   LUNG1: YesNo,
   LUNG1a: YesNo,
   LUNG2: YesNo,
-  LUNG14: YesNo,
 }
 
 const validationSchema = Yup.object({
@@ -45,11 +44,6 @@ const validationSchema = Yup.object({
     then: (schema) => schema.required(),
     otherwise: (schema) => schema,
   }),
-  LUNG3: Yup.number().typeError('Must be a number').required(),
-  LUNG4: Yup.number().typeError('Must be a number').required(),
-  LUNG5: Yup.number().typeError('Must be a number').required(),
-  LUNG6: Yup.number().typeError('Must be a number').required(),
-  LUNG7: Yup.number().typeError('Must be a number').required(),
 })
 
 function determineLungType(lung5, lung7) {
@@ -70,12 +64,6 @@ const LungFnForm = () => {
     LUNG1a: '',
     LUNG2: '',
     LUNGShortAns2: '',
-    LUNG3: '',
-    LUNG4: '',
-    LUNG5: '',
-    LUNG6: '',
-    LUNG7: '',
-    LUNG14: '',
   })
   const [social, setSocial] = useState({})
   const [lungType, setLungType] = useState(null)
@@ -164,41 +152,6 @@ const LungFnForm = () => {
                       fullWidth
                     />
                   )}
-
-                  <h2>Pre-bronchodilator Results</h2>
-                  <h3>FVC (L)</h3>
-                  <FastField name='LUNG3' label='FVC (L)' component={CustomNumberField} fullWidth />
-                  <h3>FEV1 (L)</h3>
-                  <FastField
-                    name='LUNG4'
-                    label='FEV1 (L)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  <h3>FVC (%pred)</h3>
-                  <FastField
-                    name='LUNG5'
-                    label='FVC (%pred)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  <h3>FEV1 (%pred)</h3>
-                  <FastField
-                    name='LUNG6'
-                    label='FEV1 (%pred)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  <h3>FEV1:FVC (%)</h3>
-                  <FastField
-                    name='LUNG7'
-                    label='FEV1:FVC (%)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-
-                  <h3>Lung Type:</h3>
-                  <p className='blue'>{determineLungType(values.LUNG5, values.LUNG7) || 'nil'}</p>
                 </div>
 
                 {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
