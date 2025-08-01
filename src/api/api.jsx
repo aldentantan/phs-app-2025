@@ -3,7 +3,7 @@ import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
 import updatedLogo from 'src/icons/UpdatedIcon';
-import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
+import { bloodpressureQR, bmiQR, tempQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
 import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
@@ -1143,12 +1143,15 @@ export function generate_pdf_updated(
   mental,
   social,
 ) {
+  console.log("TRIAGE", triage);
+  console.log("TRIAGE", geriAudiometry);
   setLangUpdated(reg.registrationQ14)
   let content = []
 
   content.push(...patientSection(reg, patients))
+  content.push(...temperatureSection(triage))
   content.push(...bloodPressureSection(triage))
-  content.push(...bmiSection(triage.triageQ10, triage.triageQ11))
+  content.push(...bmiSection(triage.triageQ10, triage.triageQ11, triage.triageQ12))
   content.push(...otherScreeningModularitiesSection(lung, geriVision, social))
   //content.push({ text: '', pageBreak: 'before' })
   content.push(
@@ -1166,7 +1169,7 @@ export function generate_pdf_updated(
       mental,
     ),
   )
-  content.push(...memoSection(geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult))
+  content.push(...memoSection(geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult, doctorSConsult))
   content.push(...recommendationSection())
 
   let fileName = 'Report.pdf'
@@ -1205,9 +1208,8 @@ export function generate_pdf_updated(
       header: {
         font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
         fontSize: 16,
-        // bold: true,
+        bold: true,
         margin: [0, 10, 0, 5],
-        //  font: 'fangzhen',
       },
       subheader: {
         font: (reg.registrationQ14.toLowerCase() === 'tamil' ? 'NotoTamil' : (reg.registrationQ14.toLowerCase() === 'mandarin' ? 'PingFangSC' : 'Roboto')),
@@ -1255,6 +1257,40 @@ function patientSection(reg, patients) {
   return [mainLogo, ...title, ...thanksNote]
 }
 
+export function temperatureSection(triage) {
+  const textSection = [
+    { text: 'Temperature', style: 'subheader' },
+    {
+      text: `Your temperature is ${triage.triageQ7} °C.\n`,
+      style: 'normal',
+    },
+    {
+      text: 'A temperature of 37.5 °C and above is considered a fever. Any temperature above 38.5 °C is considered a high fever. A mild fever can be managed by medication like paracetamol. If you are experiencing any other worrying symptoms along with the fever such as diarrhoea and confusion, or if you have a high fever or if the fever persists please consult a doctor who can better evaluate the cause of your fever and manage appropriately.',
+      style: 'normal'
+    },
+  ]
+
+  const imageSection = [
+    {
+      image: tempQR,
+      width: 60,
+      margin: [0, 0, 0, 5],
+    },
+  ]
+
+  return [
+    {
+      columns: [
+        { width: '*', stack: textSection },
+        { width: 'auto', stack: imageSection, alignment: 'right' },
+      ],
+      columnGap: 13,
+      margin: [0, 10, 0, 10],
+    },
+  ]
+}
+
+
 export function bloodPressureSection(triage) {
   const textSection = [
     { text: parseFromLangKey('bp_title'), style: 'subheader' },
@@ -1292,7 +1328,7 @@ export function bloodPressureSection(triage) {
   ]
 }
 
-export function bmiSection(height, weight) {
+export function bmiSection(height, weight, bmiString) {
   const bmi = calculateBMI(Number(height), Number(weight))
 
   const imageSection = [
@@ -1313,7 +1349,7 @@ export function bmiSection(height, weight) {
   return [
     { text: parseFromLangKey('bmi_title'), style: 'subheader' },
     {
-      text: parseFromLangKey('bmi_reading', height, weight, bmi.toString()),
+      text: parseFromLangKey('bmi_reading', height, weight, bmiString),
       style: 'normal',
     },
 
@@ -1358,49 +1394,6 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
 
   return [
     { text: parseFromLangKey('other_title'), style: 'subheader' },
-    //{ text: parseFromLangKey('other_lung'), style: 'normal' },
-
-    // {
-    //   columns: [
-    //     {
-    //       style: 'tableExample',
-    //       margin: [0, 5, 0, 5],
-    //       table: {
-    //         widths: ['*', '*'],
-    //         body: [
-    //           [
-    //             {
-    //               text: parseFromLangKey('other_lung_tbl_l_header'),
-    //               style: 'tableHeader',
-    //               bold: true,
-    //               colSpan: 2, // <-- span across 2 columns
-    //             },
-    //             {},
-    //           ],
-    //           ['FVC (L)', `${lung.LUNG3}`],
-    //           ['FEV1 (L)', `${lung.LUNG4}`],
-    //           ['FVC (%pred)', `${lung.LUNG5}`],
-    //           ['FEV1 (%pred)', `${lung.LUNG6}`],
-    //           ['FEV1/FVC (%)', `${lung.LUNG7}`],
-    //         ],
-    //       },
-    //       layout: {
-    //         hLineWidth: () => 0.5,
-    //         vLineWidth: () => 0.5,
-    //         hLineColor: () => 'black',
-    //         vLineColor: () => 'black',
-    //       },
-    //     },
-    //     {
-    //       width: '*', // takes remaining space
-    //       text: '', // or you can add other content here or leave blank
-    //     },
-    //   ],
-    // },
-
-    //{ text: `${other_lung_smoking_text}\n`, style: 'normal' },
-    //{ text: '', margin: [0, 5] },
-
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
     {
       columns: [
@@ -1426,13 +1419,13 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
               ],
               [
                 parseFromLangKey('other_eye_tbl_t_row'),
-                `6/${eye.geriVisionQ3}`,
-                `6/${eye.geriVisionQ4}`,
+                `6/${eye.OphthalQ3}`,
+                `6/${eye.OphthalQ4}`,
               ],
               [
                 parseFromLangKey('other_eye_tbl_b_row'),
-                `6/${eye.geriVisionQ5}`,
-                `6/${eye.geriVisionQ6}`,
+                `6/${eye.OphthalQ5}`,
+                `6/${eye.OphthalQ6}`,
               ],
             ],
           },
@@ -1450,7 +1443,7 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
       ],
     },
     { text: '', margin: [0, 5] },
-    { text: `${parseFromLangKey('other_eye_error')} ${eye.geriVisionQ8}\n`, style: 'normal' },
+    { text: `${parseFromLangKey('other_eye_error')} ${eye.OphthalQ8}\n`, style: 'normal' },
     { text: '', margin: [0, 5] },
   ]
 }
@@ -1476,29 +1469,6 @@ export function followUpSection(
   let hsgString = null
   if (hsg.HSG1 == 'Yes, I signed up for HSG today') {
     hsgString = `${parseFromLangKey('fw_hsg')}\n`
-  }
-
-  let phlebotomyString = null
-  if (reg.registrationQ15 == 'Yes') {
-    phlebotomyString += `${parseFromLangKey('fw_phlebotomy')}\n`
-    phlebotomyString += `${parseFromLangKey('fw_phlebotomy_1', reg.registrationQ18)}\n`
-  }
-
-  let fitString = null
-  if (fit.fitQ2 == 'Yes') {
-    fitString = `${parseFromLangKey('fw_fit')}\n`
-  }
-
-  let hpvString = null
-  if (wce.wceQ5 == 'Yes') {
-    hpvString += `${parseFromLangKey('fw_wce')}\n`
-    hpvString += `${parseFromLangKey('fw_wce_1')}\n`
-  }
-
-  let nkfString = null
-  if (nkf.NKF1 == 'Yes') {
-    nkfString += `${parseFromLangKey('fw_nkf', nkf.NKF2)}\n`
-    nkfString += `${parseFromLangKey('fw_nkf_1')}\n`
   }
 
   let mentalString = null
@@ -1540,11 +1510,11 @@ export function followUpSection(
   ]
 }
 
-export function memoSection(audioData, dietData, ptData, otData) {
+export function memoSection(audioData, dietData, ptData, otData, doctorData) {
   let audio =
     parseFromLangKey('memo_audio') +
-    parseFromLangKey('memo_audio_1', audioData.geriAudiometryQ13) +
-    parseFromLangKey('memo_audio_2', audioData.geriAudiometryQ12)
+    parseFromLangKey('memo_audio_1', audioData.AudiometryQ12) +
+    parseFromLangKey('memo_audio_2', audioData.AudiometryQ13)
 
   let diet = parseFromLangKey('memo_diet') + `${dietData.dietitiansConsultQ4}`
   if (dietData.dietitiansConsultQ5) {
@@ -1557,6 +1527,7 @@ export function memoSection(audioData, dietData, ptData, otData) {
 
   const pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
   const ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
+  const doctor = "Doctor Station:" + `\n\n${doctorData.doctorSConsultQ3}`
 
   return [
     { text: parseFromLangKey('memo_title'), style: 'subheader' },
@@ -1564,10 +1535,12 @@ export function memoSection(audioData, dietData, ptData, otData) {
       table: {
         widths: ['*'],
         body: [
-          [{ text: audio, style: 'normal' }],
+
           [{ text: diet, style: 'normal' }],
           [{ text: pt, style: 'normal' }],
           [{ text: ot, style: 'normal' }],
+          [{ text: audio, style: 'normal' }],
+          [{ text: doctor, style: 'normal' }],
         ],
       },
       layout: {
