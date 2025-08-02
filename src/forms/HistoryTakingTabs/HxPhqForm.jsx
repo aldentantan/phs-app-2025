@@ -37,7 +37,8 @@ const GetScore = () => {
 
   return (
     <Typography variant='subtitle1' sx={{ color: score >= 10 ? 'red' : 'blue' }}>
-      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}<br />
+      Score: {score} / 27{score >= 10 ? ' - Patient fails PHQ, score is 10 and above' : ''}
+      <br />
       {score >= 5 ? `Patient is at risk of ${condition}` : ''}
     </Typography>
   )
@@ -62,13 +63,6 @@ const initialValues = {
 const validationSchema = Yup.object({
   PHQ1: Yup.string().required('Required'),
   PHQ2: Yup.string().required('Required'),
-  PHQ3: Yup.string().required('Required'),
-  PHQ4: Yup.string().required('Required'),
-  PHQ5: Yup.string().required('Required'),
-  PHQ6: Yup.string().required('Required'),
-  PHQ7: Yup.string().required('Required'),
-  PHQ8: Yup.string().required('Required'),
-  PHQ9: Yup.string().required('Required'),
   PHQ11: Yup.string().required('Required'),
 })
 
@@ -84,7 +78,7 @@ const formOptions = {
     { label: 'No', value: 'No' },
   ],
   PHQ11: [
-    { label: 'Yes', value: 'Yes' },
+    { label: 'Yes, please specify', value: 'Yes' },
     { label: 'No', value: 'No' },
   ],
 }
@@ -133,147 +127,158 @@ export default function HxPhqForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting, values }) => {
-
+      {({ isSubmitting, values, setFieldValue, setFieldTouched, ...formikProps }) => {
         const score = (pointsMap[values.PHQ1] || 0) + (pointsMap[values.PHQ2] || 0)
+
+        // Resets PHQ3 to PHQ9 if the score of PHQ1 + PHQ2 is less than 3
+        useEffect(() => {
+          if (score < 3) {
+            ['PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9', 'PHQextra9'].forEach((qn) => {
+              setFieldValue(qn, '', false)
+              setFieldTouched(qn, false, false)
+            })
+          }
+        }, [score])
+
         return (
           <Form className='fieldPadding'>
             <Typography variant='h4'>
               <strong>PHQ</strong>
             </Typography>
             <Typography variant='subtitle1' fontWeight='bold' color='red'>
-            **When asking these questions, please let patient know that it can be sensitive**
-          </Typography>
-          <Typography variant='subtitle1' fontWeight='bold'>
-            Over the last 2 weeks, how often have you been bothered by any of the following
-            problems?
-          </Typography>
+              **When asking these questions, please let patient know that it can be sensitive**
+            </Typography>
+            <Typography variant='subtitle1' fontWeight='bold'>
+              Over the last 2 weeks, how often have you been bothered by any of the following
+              problems?
+            </Typography>
 
-          <FastField
-            name='PHQ1'
-            label='PHQ1. Little interest or pleasure in doing things'
-            component={CustomRadioGroup}
-            options={formOptions.DAYRANGE}
-            row
-          />
-          <FastField
-            name='PHQ2'
-            label='PHQ2. Feeling down, depressed or hopeless'
-            component={CustomRadioGroup}
-            options={formOptions.DAYRANGE}
-            row
-          />
+            <FastField
+              name='PHQ1'
+              label='PHQ1. Little interest or pleasure in doing things'
+              component={CustomRadioGroup}
+              options={formOptions.DAYRANGE}
+              row
+            />
+            <FastField
+              name='PHQ2'
+              label='PHQ2. Feeling down, depressed or hopeless'
+              component={CustomRadioGroup}
+              options={formOptions.DAYRANGE}
+              row
+            />
 
-          {/* *PHQ3 - PHQ9 will only show if the score of PHQ1 + PHQ2 >= 3*/}
-          {score >= 3 && (
-            <>
-              <FastField
-                name='PHQ3'
-                label='PHQ3. Trouble falling asleep or staying asleep, or sleeping too much'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-
-              <FastField
-                name='PHQ4'
-                label='PHQ4. Feeling tired or having little energy'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-              <FastField
-                name='PHQ5'
-                label='PHQ5. Poor appetite or overeating'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-              <FastField
-                name='PHQ6'
-                label='PHQ6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-              <FastField
-                name='PHQ7'
-                label='PHQ7. Trouble concentrating on things, such as reading the newspaper or watching television'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-              <FastField
-                name='PHQ8'
-                label='PHQ8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-              <FastField
-                name='PHQ9'
-                label='PHQ9. Thoughts that you would be better off dead or hurting yourself in some way'
-                component={CustomRadioGroup}
-                options={formOptions.DAYRANGE}
-                row
-              />
-
-              <PopupText
-                qnNo='PHQ9'
-                triggerValue={[
-                  '1 - Several days',
-                  '2 - More than half the days',
-                  '3 - Nearly everyday',
-                ]}
-              >
+            {/* *PHQ3 - PHQ9 will only be rendered if the score of PHQ1 + PHQ2 >= 3*/}
+            {score >= 3 && (
+              <>
                 <FastField
-                  name='PHQextra9'
-                  label='*Do you want to take your life now?*'
+                  name='PHQ3'
+                  label='PHQ3. Trouble falling asleep or staying asleep, or sleeping too much'
                   component={CustomRadioGroup}
-                  options={formOptions.PHQextra9}
+                  options={formOptions.DAYRANGE}
                   row
                 />
-              </PopupText>
-              <PopupText qnNo='PHQextra9' triggerValue='Yes'>
-                <Typography variant='subtitle1' sx={{ color: 'red' }}>
-                  <b>*Patient requires urgent attention, please escalate*</b>
-                </Typography>
-              </PopupText>
-            </>
-          )}
 
-          <GetScore />
+                <FastField
+                  name='PHQ4'
+                  label='PHQ4. Feeling tired or having little energy'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
+                <FastField
+                  name='PHQ5'
+                  label='PHQ5. Poor appetite or overeating'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
+                <FastField
+                  name='PHQ6'
+                  label='PHQ6. Feeling bad about yourself, or that you are a failure or have let yourself or your family down'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
+                <FastField
+                  name='PHQ7'
+                  label='PHQ7. Trouble concentrating on things, such as reading the newspaper or watching television'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
+                <FastField
+                  name='PHQ8'
+                  label='PHQ8. Moving or speaking so slowly that other people have noticed? Or the opposite, being so fidgety or restless that you have been moving around a lot more than usual'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
+                <FastField
+                  name='PHQ9'
+                  label='PHQ9. Thoughts that you would be better off dead or hurting yourself in some way'
+                  component={CustomRadioGroup}
+                  options={formOptions.DAYRANGE}
+                  row
+                />
 
-          <FastField
-            name='PHQ11'
-            label='Do you feel like the patient will benefit from counselling?'
-            component={CustomRadioGroup}
-            options={formOptions.PHQ11}
-            row
-          />
-          <Typography variant='subtitle2'>Please specify.</Typography>
-          <FastField
-            name='PHQShortAns11'
-            label='PHQShortAns11'
-            component={CustomTextField}
-            fullWidth
-            multiline
-            sx={{ mb: 3, mt: 1 }}
-          />
-
-          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-            {loading || isSubmitting ? (
-              <CircularProgress />
-            ) : (
-              <Button type='submit' variant='contained' color='primary'>
-                Submit
-              </Button>
+                <PopupText
+                  qnNo='PHQ9'
+                  triggerValue={[
+                    '1 - Several days',
+                    '2 - More than half the days',
+                    '3 - Nearly everyday',
+                  ]}
+                >
+                  <FastField
+                    name='PHQextra9'
+                    label='*Do you want to take your life now?*'
+                    component={CustomRadioGroup}
+                    options={formOptions.PHQextra9}
+                    row
+                  />
+                </PopupText>
+                <PopupText qnNo='PHQextra9' triggerValue='Yes'>
+                  <Typography variant='subtitle1' sx={{ color: 'red' }}>
+                    <b>*Patient requires urgent attention, please escalate*</b>
+                  </Typography>
+                </PopupText>
+              </>
             )}
-          </div>
-          <br />
-          <Divider />
-        </Form>
-      )}}
+
+            <GetScore />
+
+            <FastField
+              name='PHQ11'
+              label='Do you feel like the patient will benefit from counselling?'
+              component={CustomRadioGroup}
+              options={formOptions.PHQ11}
+              row
+            />
+            <Typography variant='subtitle2'>Please specify.</Typography>
+            <FastField
+              name='PHQShortAns11'
+              label='PHQShortAns11'
+              component={CustomTextField}
+              fullWidth
+              multiline
+              sx={{ mb: 3, mt: 1 }}
+            />
+
+            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+              {loading || isSubmitting ? (
+                <CircularProgress />
+              ) : (
+                <Button type='submit' variant='contained' color='primary'>
+                  Submit
+                </Button>
+              )}
+            </div>
+            <br />
+            <Divider />
+          </Form>
+        )
+      }}
     </Formik>
   )
 
