@@ -15,6 +15,7 @@ import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckbox from '../components/form-components/CustomCheckbox'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomSelect from '../components/form-components/CustomSelect'
+import ErrorNotification from 'src/components/form-components/ErrorNotification'
 
 const initialValues = {
   registrationQ1: 'Mr',
@@ -488,11 +489,10 @@ const RegForm = () => {
           </div>
 
           <Box mt={2} mb={2}>
-            {submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0 && (
-              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                Please fill in all required fields correctly.
-              </Typography>
-            )}
+            <ErrorNotification 
+              show={submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0}
+              message="Please fill in all required fields correctly."
+            />
             {loading || isSubmitting ? (
               <CircularProgress />
             ) : (
