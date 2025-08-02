@@ -134,7 +134,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
             <li>Complications</li>
             <li>Follow up route (specify whether GP/Polyclinic/FMC/SOC)</li>
           </Typography>
-          <FastField name='PMHX1' component={CustomTextField} label='PMHX1' sx={{ mb: 5 }} />
+          <FastField name='PMHX1' component={CustomTextField} label='PMHX1' sx={{ mb: 5 }} multiline/>
 
           <Typography variant='subtitle1' color='error' fontWeight='bold' gutterBottom>
             If participant is not engaged with any follow-up, ask:
@@ -198,7 +198,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
           name='PMHX10'
           label='PMHX10'
           component={CustomRadioGroup}
-          options={formOptions.PMHX8}
+          options={formOptions.PMHX10}
           row
           />
           <PopupText qnNo='PMHX10' triggerValue='Yes'>
