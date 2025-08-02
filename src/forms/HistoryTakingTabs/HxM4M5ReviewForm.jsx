@@ -38,9 +38,7 @@ const HxM4M5ReviewForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      const regForm = await getSavedData(patientId, allForms.registrationForm)
       setSavedData({ ...initialValues, ...savedData })
-      setRegForm(regForm)
       setLoadingSidePanel(false)
     }
 
