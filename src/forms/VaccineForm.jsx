@@ -162,14 +162,65 @@ export default function VaccineForm() {
                     </Typography>
                   )}
 
+                  {regi ? (
+                    <>
+                      {regi.registrationQ4 ? (
+                        <Typography variant='body1' className='blue'>
+                          Age: {regi.registrationQ4}
+                        </Typography>
+                      ) : (
+                        <Typography variant='body1' className='blue'>
+                          Age: nil
+                        </Typography>
+                      )}
+
+                      {regi.registrationQ7 ? (
+                        <Typography variant='body1' className='blue'>
+                          Citizenship: {regi.registrationQ7}
+                        </Typography>
+                      ) : (
+                        <Typography variant='body1' className='blue'>
+                          Citizenship: nil
+                        </Typography>
+                      )}
+
+                      {regi.registrationQ12 ? (
+                        <Typography variant='body1' className='blue'>
+                          CHAS status: {regi.registrationQ12}
+                        </Typography>
+                      ) : (
+                        <Typography variant='body1' className='blue'>
+                          CHAS status: nil
+                        </Typography>
+                      )}
+                    </>
+                  ) : (
+                    <Typography variant='body1' className='red'>
+                      NO REGI DATA
+                    </Typography>
+                  )}
+
                   {historyForm ? (
                     <>
-                      <Typography variant='body1' className='blue'>
-                        Food Allergy: {historyForm.PMHXShortAns3}
-                      </Typography>
-                      <Typography variant='body1' className='blue'>
-                        Drug Allergy: {historyForm.PMHXShortAns10}
-                      </Typography>
+                      {historyForm.PMHXShortAns3 ? (
+                        <Typography variant='body1' className='blue'>
+                          Food Allergy: {historyForm.PMHXShortAns3}
+                        </Typography>
+                      ) : (
+                        <Typography variant='body1' className='blue'>
+                          Food Allergy: nil
+                        </Typography>
+                      )}
+
+                      {historyForm.PMHXShortAns10 ? (
+                        <Typography variant='body1' className='blue'>
+                          Drug Allergy: {historyForm.PMHXShortAns10}
+                        </Typography>
+                      ) : (
+                        <Typography variant='body1' className='blue'>
+                          Drug Allergy: nil
+                        </Typography>
+                      )}
                     </>
                   ) : (
                     <Typography variant='body1' className='red'>

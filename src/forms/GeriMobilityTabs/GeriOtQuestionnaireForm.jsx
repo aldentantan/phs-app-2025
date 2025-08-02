@@ -13,6 +13,8 @@ import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomNumberField from '../../components/form-components/CustomNumberField'
 
+import PopupText from 'src/utils/popupText'
+
 const formName = 'geriOtQuestionnaireForm'
 
 const YesNo = [
@@ -315,10 +317,10 @@ const GeriOtQuestionnaireForm = (props) => {
       validationSchema={validationSchema}
       enableReinitialize
       onSubmit={async (values, { setSubmitting }) => {
-        isLoading(true)
+        setLoading(true)
         const response = await submitForm(values, patientId, formName)
         setTimeout(() => {
-          isLoading(false)
+          setLoading(false)
           setSubmitting(false)
           if (response.result) {
             alert('Successfully submitted form')
@@ -334,7 +336,7 @@ const GeriOtQuestionnaireForm = (props) => {
           <Grid container>
             <Grid item xs={9}>
               <Paper>
-                <Form onSubmit={handleSubmit} className='fieldPadding'>
+                <Form className='fieldPadding'>
                   <div className='form--div'>
                     <h1>HOME FALLS AND ACCIDENTS SCREENING TOOL (HOME FAST)</h1>
                     <h4 className='red'>
@@ -374,15 +376,17 @@ const GeriOtQuestionnaireForm = (props) => {
                       options={formOptions.geriOtQuestionnaireQ2}
                       row
                     />
-                    <h4>Please specify:</h4>
-                    <FastField
-                      name='geriOtQuestionnaireQ33'
-                      label='geriOtQuestionnaireQ33'
-                      component={CustomTextField}
-                      multiline
-                      rows={3}
-                      fullWidth
-                    />
+                    <PopupText qnNo='geriOtQuestionnaireQ2' triggerValue='Yes'>
+                      <h4>Please specify:</h4>
+                      <FastField
+                        name='geriOtQuestionnaireQ33'
+                        label='geriOtQuestionnaireQ33'
+                        component={CustomTextField}
+                        multiline
+                        rows={3}
+                        fullWidth
+                      />
+                    </PopupText>
                     <h3>3. Are your floor surfaces non slip?</h3>
                     <p>
                       <b>Definition:</b> Score ‘NO” if kitchen, toilet are non-slip, Score “YES” if
