@@ -1718,6 +1718,8 @@ async function updateGeriGraceEligibility(args, patientId, formCollection, patie
       { queueNo: patientId },
       { $set: { isEligibleForGrace: eligibleForGrace } },
     )
+  }
+}
 
 export const generateFormAPdf = async (patientId) => {
   const [pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5, hxgynae] = await Promise.all([
@@ -1819,7 +1821,7 @@ function eligibilitySection(eligibilityRows) {
           ]
         }
       ]
-    },          
+    },
     {text: ''},
     {text: ''},
     {text: ''},
@@ -1891,7 +1893,7 @@ function eligibilitySection(eligibilityRows) {
       color: eligibility === 'YES' ? 'blue' : 'red',
     };
   });
-  
+
   const col4Eligible = col2Texts.map((_, i) => {
     if (i == 8) {
       return 'PT Consult:    YES   /   NO';
@@ -2162,7 +2164,7 @@ function triageTableSection(triage = {}) {
                   { text: `${bp1}      `, fontSize: 9 },
                   { text: '2nd BP: ', bold: true, fontSize: 9 },
                   { text: `${bp2}`, fontSize: 9 }
-                ], 
+                ],
                 margin:[0, 2, 0, 2]
               },
               {
@@ -2182,15 +2184,15 @@ function triageTableSection(triage = {}) {
             stack: [
               { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
               { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
-            ], 
-            margin: [0, 4, 0, 4], 
-          },             
+            ],
+            margin: [0, 4, 0, 4],
+          },
           {
             stack: [
               { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
               { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
             ],
-            margin: [0, 4, 0, 4], 
+            margin: [0, 4, 0, 4],
           },
         ]
       ]
@@ -2204,7 +2206,7 @@ function triageTableSection(triage = {}) {
     margin: [0, 0, 0, 5]
   }
 }
-  
+
 
 let formAImages = [pic1, pic2, pic3, pic4];
 
