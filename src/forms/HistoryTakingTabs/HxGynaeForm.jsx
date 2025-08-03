@@ -372,8 +372,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
           />
 
           <Typography variant='h6' fontWeight='bold'>
-            Was your last menstrual period within the window where the first day falls between xx
-            and xx 2025? <br />
+            Was your last menstrual period within the window where the first day falls between 28 July and 4 Aug 2025? <br />
             If you are post-menopausal or use contraception, please indicate 'yes'
           </Typography>
           <FastField

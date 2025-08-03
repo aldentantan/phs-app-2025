@@ -38,9 +38,7 @@ const HxM4M5ReviewForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      const regForm = await getSavedData(patientId, allForms.registrationForm)
       setSavedData({ ...initialValues, ...savedData })
-      setRegForm(regForm)
       setLoadingSidePanel(false)
     }
 
@@ -74,7 +72,7 @@ const HxM4M5ReviewForm = () => {
             <strong>M4/M5 Review</strong>
           </Typography>
           <Typography fontWeight='bold'>
-            Does the patient need to go for Doctor's Consult station?
+            Does the patient need to go for Doctor's Station?
           </Typography>
           <FastField
             name='hxM4M5Q1'

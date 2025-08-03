@@ -49,6 +49,9 @@ const validationSchema = Yup.object({
   triageQ13: Yup.number()
     .required('Waist circumference is required')
     .min(0, 'Value must be positive'),
+  triageQ14: Yup.number()
+    .required('Temperature is required')
+    .min(0, 'Value must be positive')
 })
 
 const initialValues = {
@@ -68,6 +71,7 @@ const initialValues = {
   triageQ11: '',
   triageQ12: '',
   triageQ13: '',
+  triageQ14: '',
 }
 
 function CalcBMI({ values }) {
@@ -376,12 +380,12 @@ const TriageForm = () => {
 
               <h3>Malignant criteria:</h3>
               <ul>
-                <li>BP &gt; 120/80</li>
+                <li>BP &gt; 180/120</li>
               </ul>
-              <p>
-                Please tick to highlight if you feel <b>BLOOD PRESSURE</b> requires closer scrutiny
-                by doctors later. (e.g. Systolic above 180/120)
-              </p>
+              <Typography fontWeight='bold' variant='h6'>
+                Q9. Does the patient's blood pressure require closer scrutiny by doctors later?
+                (e.g. Systolic above 180/120)
+              </Typography>
 
               <Field
                 name='triageQ9'
@@ -405,6 +409,16 @@ const TriageForm = () => {
               <h2>3) Waist Circumference (all participants)</h2>
               <h3>Waist Circumference (in cm)</h3>
               <Field name='triageQ13' component={CustomNumberField} label='Triage Q13' min={0} />
+
+              <h2>4) Temperature</h2>
+              <h3>Temperature (in Celsius)</h3>
+              <Field
+                name='triageQ14'
+                component={CustomNumberField}
+                label='Triage Q14'
+                min={0}
+                step={0.1}
+              />
             </div>
 
             {/* Display form errors */}

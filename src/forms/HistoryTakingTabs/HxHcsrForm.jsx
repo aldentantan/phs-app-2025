@@ -108,7 +108,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             </Typography>
 
             <Typography variant='h6'>
-              Booth number and History-taker&apos;s surname followed by initials
+              Please enter History-taker&apos;s surname followed by initials (e.g. Tan J J)
             </Typography>
             <FastField
               name='hxHcsrQ1'

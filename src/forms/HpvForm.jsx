@@ -38,6 +38,10 @@ const HpvForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const res = await getSavedData(patientId, formName)
+      const reg = await getSavedData(patientId, 'registrationForm')
+      if (reg?.registrationQ5 === 'Male') {
+        alert('This patient is not female. Are you sure you want to proceed with the HPV form?')
+      }
       setSavedData({ ...initialValues, ...res })
     }
     fetchData()

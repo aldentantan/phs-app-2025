@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field, FastField } from 'formik'
 import { validationSchema } from './registrationSchema'
@@ -15,11 +15,16 @@ import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckbox from '../components/form-components/CustomCheckbox'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomSelect from '../components/form-components/CustomSelect'
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import dayjs from 'dayjs'
 
 const initialValues = {
   registrationQ1: 'Mr',
   registrationQ2: '',
-  registrationQ3: new Date(),
+  registrationQ3: dayjs(),
   registrationQ4: 0,
   registrationQ5: '',
   registrationQ6: '',
@@ -46,7 +51,7 @@ const RegForm = () => {
   const [loading, isLoading] = useState(true)
   const navigate = useNavigate()
   const [savedData, setSavedData] = useState(initialValues)
-  const [birthday, setBirthday] = useState(new Date())
+  const [birthday, setBirthday] = useState(dayjs())
   const [patientAge, setPatientAge] = useState(0)
 
   useEffect(() => {
@@ -54,14 +59,11 @@ const RegForm = () => {
       console.log('Patient ID: ' + patientId)
       const res = await getSavedData(patientId, formName)
 
-      // Set date to current date if no birthday was previously saved
-      if (patientId == -1) {
-        res.registrationQ3 = birthday
-      }
-
       // Calculate age if birthday exists in saved data
       if (res.registrationQ3) {
-        const calculatedAge = calculateAge(res.registrationQ3)
+        const dayjsBirthday = dayjs(res.registrationQ3)
+        setBirthday(dayjsBirthday)
+        const calculatedAge = calculateAgeFromDayjs(dayjsBirthday)
         setPatientAge(calculatedAge)
       }
       setSavedData(res)
@@ -70,28 +72,24 @@ const RegForm = () => {
     fetchData()
   }, [patientId])
 
-  const calculateAge = (birthDate) => {
-    const today = new Date()
-    if (birthDate) {
-      const birth = new Date(birthDate)
-      let age = today.getFullYear() - birth.getFullYear()
-      const monthDiff = today.getMonth() - birth.getMonth()
-
-      // Adjust age if birthday hasn't occurred this year yet
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-        age--
-      }
-
-      setBirthday(birth)
-      setPatientAge(age)
-      return age
+  const calculateAgeFromDayjs = (birthDayjs) => {
+    if (!birthDayjs || !birthDayjs.isValid()) return 0
+    const today = dayjs()
+    let age = today.year() - birthDayjs.year()
+    if (
+      today.month() < birthDayjs.month() ||
+      (today.month() === birthDayjs.month() && today.date() < birthDayjs.date())
+    ) {
+      age--
     }
-    return 0
+    setPatientAge(age)
+    return age
   }
 
   const handleSubmit = async (values, { setSubmitting }) => {
     isLoading(true)
     setSubmitting(true)
+    values.registrationQ3 = birthday.toDate()
     values.registrationQ4 = patientAge
 
     console.log('Patient ID: ' + patientId)
@@ -114,57 +112,8 @@ const RegForm = () => {
         alert(`Unsuccessful. ${response.error}`)
       }, 80)
     }
-
     isLoading(false)
     setSubmitting(false)
-  }
-
-  // Custom Field Components
-  const FormikDateField = ({ field, form, ...props }) => {
-    const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime())
-    const showError = form.errors[field.name] && (form.touched[field.name] || form.submitCount > 0)
-
-    // Convert Date object to YYYY-MM-DD string for input
-    const dateToString = (date) => {
-      if (date && isValidDate(date)) {
-        return date.toISOString().split('T')[0]
-      }
-      return '' // Handle null, undefined, or invalid dates
-    }
-
-    return (
-      <TextField
-        {...props}
-        type='date'
-        fullWidth
-        margin='normal'
-        error={showError}
-        helperText={showError ? form.errors[field.name] : ''}
-        value={dateToString(field.value)}
-        onChange={(e) => {
-          const dateValue = e.target.value
-          if (dateValue) {
-            const date = new Date(dateValue)
-            if (isValidDate(date)) {
-              form.setFieldValue(field.name, date)
-            }
-          } else {
-            // Set to null instead of invalid Date object
-            form.setFieldValue(field.name, null)
-          }
-        }}
-        onInput={(e) => {
-          const dateValue = e.target.value
-          if (dateValue) {
-            const date = new Date(dateValue)
-            if (isValidDate(date)) {
-              const calculatedAge = calculateAge(date)
-              form.setFieldValue('registrationQ4', calculatedAge)
-            }
-          }
-        }}
-      />
-    )
   }
 
   const formOptions = {
@@ -198,15 +147,6 @@ const RegForm = () => {
       { label: 'Widowed 已寡', value: 'Widowed 已寡' },
       { label: 'Separated 已分居', value: 'Separated 已分居' },
       { label: 'Divorced 已离婚', value: 'Divorced 已离婚' },
-    ],
-    registrationQ10: [
-      { label: 'Jurong', value: 'Jurong' },
-      { label: 'Yuhua', value: 'Yuhua' },
-      { label: 'Bukit Batok', value: 'Bukit Batok' },
-      { label: 'Pioneer', value: 'Pioneer' },
-      { label: 'West Coast', value: 'West Coast' },
-      { label: 'Hong Kah North', value: 'Hong Kah North' },
-      { label: 'Others', value: 'Others' },
     ],
     registrationQ11: [
       { label: 'Yes', value: 'Yes' },
@@ -255,7 +195,7 @@ const RegForm = () => {
       onSubmit={handleSubmit}
       enableReinitialize={true}
     >
-      {({ isSubmitting, submitCount, ...formikProps }) => (
+      {({ isSubmitting, submitCount, setFieldValue, values, ...formikProps }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
             <Typography variant='h4' component='h1' gutterBottom>
@@ -275,6 +215,9 @@ const RegForm = () => {
             <Typography variant='h6' component='h3' gutterBottom>
               Initials (e.g Chen Ren Ying - Chen R Y, Christie Tan En Ning - Christie T E N)
             </Typography>
+            <Typography>
+              For Indian/Malay/patients with no Chinese name, ask for their preferred name.
+            </Typography>
             <FastField
               name='registrationQ2'
               label='registrationQ2'
@@ -285,7 +228,39 @@ const RegForm = () => {
             <Typography variant='h6' component='h3' gutterBottom>
               Birthday
             </Typography>
-            <FastField name='registrationQ3' label='registrationQ3' component={FormikDateField} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <Box>
+                  <DatePicker
+                    label='registrationQ3'
+                    value={birthday}
+                    format="DD/MM/YYYY"
+                    onChange={(newValue) => {
+                      setBirthday(newValue)
+                      setFieldValue('registrationQ3', newValue.toDate())
+                      const age = calculateAgeFromDayjs(newValue)
+                      setPatientAge(age)
+                      setFieldValue('registrationQ4', age)
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                    onAccept={() => {
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                    onClose={() => {
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                  />
+                  {formikProps.errors.registrationQ3 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      {formikProps.errors.registrationQ3}
+                    </Typography>
+                  )}
+                </Box>
+              </DemoContainer>
+            </LocalizationProvider>
 
             <Typography variant='h6' component='h3' gutterBottom>
               Age
@@ -355,23 +330,6 @@ const RegForm = () => {
               Occupation 工作
             </Typography>
             <FastField name='registrationQ9' label='registrationQ9' component={CustomTextField} />
-
-            <Typography variant='h6' component='h3' gutterBottom>
-              GRC/SMC Subdivision{' '}
-              <a
-                href='https://www.parliament.gov.sg/mps/find-my-mp'
-                target='_blank'
-                rel='noreferrer'
-              >
-                [https://www.parliament.gov.sg/mps/find-my-mp]
-              </a>
-            </Typography>
-            <FastField
-              name='registrationQ10'
-              label='registrationQ10'
-              component={CustomSelect}
-              options={formOptions.registrationQ10}
-            />
 
             <Typography variant='h6' component='h3' gutterBottom>
               Are you currently part of HealthierSG?

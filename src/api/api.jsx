@@ -2,7 +2,7 @@ import React from 'react'
 import mongoDB, { getName, isAdmin, getClinicSlotsCollection } from '../services/mongoDB'
 import { jsPDF } from 'jspdf'
 import { autoTable } from 'jspdf-autotable'
-import updatedLogo from 'src/icons/UpdatedIcon';
+import updatedLogo from 'src/icons/UpdatedIcon'
 import { bloodpressureQR, bmiQR } from 'src/icons/QRCodes'
 //import 'jspdf-autotable'
 import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
@@ -21,8 +21,8 @@ import allForms from '../forms/forms.json';
 import { getEligibilityRows } from '../services/stationCounts';
 import { generateStatusObject } from 'src/components/dashboard/PatientTimeline';
 
-import {mandarinNormal} from "./lang/mandarin-normal"
-import {mandarinBold} from "./lang/mandarin-bold"
+import { mandarinNormal } from './lang/mandarin-normal'
+import { mandarinBold } from './lang/mandarin-bold'
 
 pdfMake.vfs = pdfFonts.vfs
 
@@ -107,8 +107,9 @@ export async function submitForm(args, patientId, formCollection) {
     const record = await patientsRecord.findOne({ queueNo: patientId })
 
     if (record) {
+      // Adds a key-value pair for each form submitted for the first time to the patient's document in the patients collection
+      // in MongoDB to track which forms have been successfully submitted
       if (record[formCollection] === undefined) {
-        // first time form is filled, create document for form
         await patientsRecord.updateOne(
           { queueNo: patientId },
           { $set: { [formCollection]: patientId } },
@@ -117,6 +118,8 @@ export async function submitForm(args, patientId, formCollection) {
         await registrationForms.insertOne({ _id: patientId, ...args })
 
         await updateAllStationCounts(patientId)
+
+        await updateGeriGraceEligibility(args, patientId, formCollection)
 
         return { result: true, data: data, qNum: patientId }
       } else {
@@ -135,6 +138,7 @@ export async function submitForm(args, patientId, formCollection) {
             )
           }
           await updateAllStationCounts(patientId)
+          await updateGeriGraceEligibility(args, patientId, formCollection, patientsRecord)
           // replace form
           // registrationForms.findOneAndReplace({_id: record[formCollection]}, args);
           // throw error message
@@ -1170,35 +1174,35 @@ export function generate_pdf_updated(
     content: content,
     styles: {
       header: {
-       // font: 'NotoSansSC',
+        // font: 'NotoSansSC',
         fontSize: 16,
         bold: true,
         margin: [0, 10, 0, 5],
       },
       subheader: {
-      //  font: 'NotoSansSC',
+        //  font: 'NotoSansSC',
         fontSize: 13,
         bold: true,
         margin: [0, 3, 0, 3],
       },
       normal: {
-    //    font: 'NotoSansSC',
+        //    font: 'NotoSansSC',
         fontSize: 10,
         margin: [0, 0, 0, 4],
       },
       italicSmall: {
-   //     font: 'NotoSansSC',
+        //     font: 'NotoSansSC',
         italics: true,
         fontSize: 10,
       },
     },
     defaultStyle: {
-   //   font: 'NotoSansSC',
+      //   font: 'NotoSansSC',
       fontSize: 11,
     },
     pageMargins: [40, 60, 40, 60],
   }
-  
+
   pdfMake.createPdf(docDefinition).download(fileName)
 }
 
@@ -1491,11 +1495,11 @@ export function followUpSection(
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
     ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
-   // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
-   // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
-   // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
-   // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
+    // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
+    // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
+    // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+    // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
@@ -1602,10 +1606,22 @@ export const generateDoctorPdf = async (entry) => {
           {
             width: 'auto',
             stack: [
-              { text: 'PHS 2025', bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
-              { text: "DOCTOR'S CONSULTATION", bold: true, fontSize: 16, alignment: 'center', margin: [0, 0, 0, 2] },
-              { text: 'MEMO SHEET', bold: true, fontSize: 16, alignment: 'center' }
-            ]
+              {
+                text: 'PHS 2025',
+                bold: true,
+                fontSize: 16,
+                alignment: 'center',
+                margin: [0, 0, 0, 2],
+              },
+              {
+                text: "DOCTOR'S STATION",
+                bold: true,
+                fontSize: 16,
+                alignment: 'center',
+                margin: [0, 0, 0, 2],
+              },
+              { text: 'MEMO SHEET', bold: true, fontSize: 16, alignment: 'center' },
+            ],
           },
           {
             width: '*',
@@ -1614,83 +1630,95 @@ export const generateDoctorPdf = async (entry) => {
                 image: updatedLogo,
                 width: 115,
                 alignment: 'right',
-                margin: [-10, -10, 0, 0]
-              }
-            ]
-          }
-        ]
+                margin: [-10, -10, 0, 0],
+              },
+            ],
+          },
+        ],
       },
       {
-        canvas: [
-          { type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }
-        ],
-        margin: [0, 10, 0, 0]
-      }
-    ]
-  });
+        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 515, y2: 0, lineWidth: 1 }],
+        margin: [0, 10, 0, 0],
+      },
+    ],
+  })
 
   const generateMemoBody = () => {
     return [
       { text: 'Memo for ______________________', margin: [0, 20, 0, 2], alignment: 'center' },
       { text: 'Dear Colleague:', margin: [0, 15, 0, 10] },
-  
+
       // Doctor's Memo
       {
         stack: [
           { text: "Doctor's Memo:", bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
-          { text: savedDoctorConsultData?.doctorSConsultQ2 || 'No response' }
+          { text: savedDoctorConsultData?.doctorSConsultQ2 || 'No response' },
         ],
         margin: [0, 2, 0, 5],
       },
-  
+
       // Clinical Findings
       {
         stack: [
           { text: 'Clinical Findings:', bold: true, decoration: 'underline', margin: [0, 2, 0, 2] },
-          { text: savedDoctorConsultData?.doctorSConsultQ3 || 'No response' }
+          { text: savedDoctorConsultData?.doctorSConsultQ3 || 'No response' },
         ],
         margin: [0, 2, 0, 10],
       },
-  
+
       { text: '\nThank you very much.', margin: [0, 2, 0, 10] },
-    ];
-  };
+    ]
+  }
 
   const generateSignatureBlock = () => ({
     margin: [0, 0, 0, 20],
     stack: [
-      { text: 'Yours Sincerely,\nDr\nMCR:\nPhysician volunteer\nPublic Health Service', margin: [0, 10, 0, 2] },
-      { text: "NUS Medical Society, c/o The Dean's Office, NUS Yong Loo Lin School of Medicine\n1E Kent Ridge Road, NUHS Tower Block Level 11, Singapore 119228" }
-    ]
+      {
+        text: 'Yours Sincerely,\nDr\nMCR:\nPhysician volunteer\nPublic Health Service',
+        margin: [0, 10, 0, 2],
+      },
+      {
+        text: "NUS Medical Society, c/o The Dean's Office, NUS Yong Loo Lin School of Medicine\n1E Kent Ridge Road, NUHS Tower Block Level 11, Singapore 119228",
+      },
+    ],
   })
 
   const generateFooter = () => ({
     margin: [40, 60, 40, 20],
     columns: [
       {
-        canvas: [{ type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 1.2, lineColor: '#1b73e8'}],
-        width: 100
+        canvas: [
+          { type: 'line', x1: 0, y1: 0, x2: 150, y2: 0, lineWidth: 1.2, lineColor: '#1b73e8' },
+        ],
+        width: 100,
       },
       {
         text: 'Public Health Service 2025 [\u00A0\u00A0]',
         alignment: 'right',
-        fontSize: 9
-      }
-    ]
-  });
-  
-  const docDefinition = {
-    content: [
-      generateMemoBody(),
-      generateSignatureBlock(),
+        fontSize: 9,
+      },
     ],
+  })
+
+  const docDefinition = {
+    content: [generateMemoBody(), generateSignatureBlock()],
     header: generateHeader,
     footer: generateFooter,
     pageMargins: [40, 110, 40, 120],
     defaultStyle: { fontSize: 10 },
-  };  
+  }
 
   pdfMake.createPdf(docDefinition).download(`DoctorConsult_${entry.patientId}.pdf`)
+}
+
+async function updateGeriGraceEligibility(args, patientId, formCollection, patientsRecord) {
+  if (formCollection == 'geriAmtForm') {
+    const eligibleForGrace = args.geriAmtQ12 === 'Yes (Eligible for G-RACE)'
+    await patientsRecord.updateOne(
+      { queueNo: patientId },
+      { $set: { isEligibleForGrace: eligibleForGrace } },
+    )
+  }
 }
 
 export const generateFormAPdf = async (patientId) => {
@@ -1793,7 +1821,7 @@ function eligibilitySection(eligibilityRows) {
           ]
         }
       ]
-    },          
+    },
     {text: ''},
     {text: ''},
     {text: ''},
@@ -1865,7 +1893,7 @@ function eligibilitySection(eligibilityRows) {
       color: eligibility === 'YES' ? 'blue' : 'red',
     };
   });
-  
+
   const col4Eligible = col2Texts.map((_, i) => {
     if (i == 8) {
       return 'PT Consult:    YES   /   NO';
@@ -2136,7 +2164,7 @@ function triageTableSection(triage = {}) {
                   { text: `${bp1}      `, fontSize: 9 },
                   { text: '2nd BP: ', bold: true, fontSize: 9 },
                   { text: `${bp2}`, fontSize: 9 }
-                ], 
+                ],
                 margin:[0, 2, 0, 2]
               },
               {
@@ -2156,15 +2184,15 @@ function triageTableSection(triage = {}) {
             stack: [
               { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
               { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
-            ], 
-            margin: [0, 4, 0, 4], 
-          },             
+            ],
+            margin: [0, 4, 0, 4],
+          },
           {
             stack: [
               { text: 'Referred from:', fontSize: 9, margin: [0, 2, 0, 2] },
               { text: 'Reason:', fontSize: 9, margin: [0, 2, 0, 2] }
             ],
-            margin: [0, 4, 0, 4], 
+            margin: [0, 4, 0, 4],
           },
         ]
       ]
@@ -2178,7 +2206,7 @@ function triageTableSection(triage = {}) {
     margin: [0, 0, 0, 5]
   }
 }
-  
+
 
 let formAImages = [pic1, pic2, pic3, pic4];
 

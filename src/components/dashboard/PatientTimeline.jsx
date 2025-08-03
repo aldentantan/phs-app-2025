@@ -106,17 +106,17 @@ export function generateStatusObject(record) {
       vax: record.vaccineForm !== undefined,
       gericog:
         record.geriAmtForm !== undefined &&
-        record.geriGraceForm !== undefined &&
-        record.geriWhForm !== undefined &&
-        record.geriInterForm !== undefined,
+        record.isEligibleForGrace !== undefined &&
+        (record.isEligibleForGrace === false ||
+          (record.isEligibleForGrace === true && record.geriGraceForm !== undefined)),
       gerimobility:
         record.geriPhysicalActivityLevelForm !== undefined &&
         record.geriOtQuestionnaireForm !== undefined &&
         record.geriSppbForm !== undefined &&
         record.geriPtConsultForm !== undefined &&
         record.geriOtConsultForm !== undefined,
-      ophthal: record.OphthalForm !== undefined,
-      audio: record.AudiometryForm !== undefined,
+      ophthal: record.ophthalForm !== undefined,
+      audio: record.audiometryForm !== undefined,
       hpv: record.hpvForm !== undefined,
       doctorsconsult: record.doctorConsultForm !== undefined, // doctor's consult
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult
