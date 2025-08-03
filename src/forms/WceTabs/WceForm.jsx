@@ -27,61 +27,16 @@ const formOptions = {
     { label: 'No', value: 'No' },
     { label: 'Not Applicable', value: 'Not Applicable' },
   ],
-  wceQ5: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-    { label: 'Not Applicable', value: 'Not Applicable' },
-  ],
-  wceQ7: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  wceQ8: [
-    { label: 'Never before', value: 'Never before' },
-    { label: 'Less than 5 years', value: 'Less than 5 years' },
-    { label: '5 years or longer', value: '5 years or longer' },
-  ],
-  wceQ9: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  wceQ10: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  wceQ11: [
-    { label: 'Never before', value: 'Never before' },
-    { label: 'Within the last 3 years', value: 'Within the last 3 years' },
-    { label: '3 years or longer', value: '3 years or longer' },
-  ],
-  wceQ12: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
 }
 
 const validationSchema = Yup.object({
   wceQ3: Yup.string().required(),
   wceQ4: Yup.string().required(),
-  wceQ5: Yup.string().required(),
-  wceQ7: Yup.string().required(),
-  wceQ8: Yup.string().required(),
-  wceQ9: Yup.string().required(),
-  wceQ10: Yup.string().required(),
-  wceQ11: Yup.string().required(),
-  wceQ12: Yup.string().required(),
 })
 
 const initialValues = {
   wceQ3: '',
   wceQ4: '',
-  wceQ5: '',
-  wceQ7: '',
-  wceQ8: '',
-  wceQ9: '',
-  wceQ10: '',
-  wceQ11: '',
-  wceQ12: '',
 }
 
 // HPV Eligibility Checker Component
@@ -176,8 +131,8 @@ const WceForm = (props) => {
       {({ handleSubmit, errors, submitCount }) => (
         <Paper elevation={2} p={0} m={0}>
           <Grid display='flex' flexDirection='row'>
-            <Grid xs={9}>
-              <Paper p={0} m={0}>
+            <Grid xs={9} width='50%'>
+              <Paper>
                 <form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>WCE</h1>
@@ -220,10 +175,10 @@ const WceForm = (props) => {
                 </form>
               </Paper>
             </Grid>
-            <Divider />
+
             <Grid
               p={1}
-              width='30%'
+              width='40%'
               display='flex'
               flexDirection='column'
               alignItems={loadingSidePanel ? 'center' : 'left'}
