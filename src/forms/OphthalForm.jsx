@@ -20,6 +20,8 @@ const YesNo = [
   { label: 'Yes', value: 'Yes' },
   { label: 'No', value: 'No' },
 ]
+
+//value declared but not used - comment out to pass CICD cehcks
 /*
 const VisualAcuityValues = [
   { label: 'CF2M', value: 'CF2M' },
