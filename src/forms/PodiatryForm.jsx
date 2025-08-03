@@ -68,7 +68,7 @@ const PodiatryForm = () => {
             <strong>Podiatry</strong>
           </Typography>
           <Typography fontWeight='bold'>
-            Dummy question for Podiatry station
+            Do you have your diabetic foot screening every year?
           </Typography>
           <FastField
             name='podiatryQ1'
@@ -77,7 +77,8 @@ const PodiatryForm = () => {
             options={formOptions.podiatryQ1}
             row
           />
-          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+
+          <div>
             {loading || isSubmitting ? (
               <CircularProgress />
             ) : (
