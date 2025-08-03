@@ -158,7 +158,23 @@ export const updateStationCounts = async (
   )
 }
 
-export const getPdfQueueCollection = () => {
+export const getDocPdfQueueCollection = () => {
   const mongoConnection = app.currentUser.mongoClient('mongodb-atlas')
-  return mongoConnection.db('phs').collection('pdfQueue')
+  return mongoConnection.db('phs').collection('docPdfQueue')
+}
+
+export const getFormAPdfQueueCollection = () => {
+  const mongoConnection = app.currentUser.mongoClient('mongodb-atlas')
+  return mongoConnection.db('phs').collection('formAPdfQueue')
+}
+
+export const addToFormAQueue = async (patientId) => {
+  const mongoConnection = app.currentUser.mongoClient('mongodb-atlas')
+  const queue = mongoConnection.db('phs').collection('formAPdfQueue')
+
+  await queue.insertOne({
+    patientId: patientId,
+    printed: false,
+    createdAt: new Date(),
+  })
 }

@@ -7,10 +7,10 @@ import {
   Paper,
   Stack,
 } from '@mui/material'
-import { getProfile, getDocPdfQueueCollection } from '../services/mongoDB'
-import { generateDoctorPdf } from '../api/api.jsx'
+import { getProfile, getFormAPdfQueueCollection } from '../services/mongoDB.js'
+import { generateFormAPdf } from '../api/api.jsx'
 
-const DoctorAdmin = () => {
+const FormAAdmin = () => {
   const [pdfQueue, setPdfQueue] = useState([])
   const [printedQueue, setPrintedQueue] = useState([])
   const [loading, setLoading] = useState(true)
@@ -34,7 +34,7 @@ const DoctorAdmin = () => {
 
         if (!isAdminUser) return
 
-        const collection = getDocPdfQueueCollection()
+        const collection = getFormAPdfQueueCollection()
         const unprinted = await collection.find({ printed: false })
         const printed = await collection.find({ printed: true })
 
@@ -63,7 +63,7 @@ const DoctorAdmin = () => {
 
     const fetchQueue = async () => {
       try {
-        const collection = getDocPdfQueueCollection()
+        const collection = getFormAPdfQueueCollection()
         const unprinted = await collection.find({ printed: false })
         const printed = await collection.find({ printed: true })
 
@@ -94,14 +94,14 @@ const DoctorAdmin = () => {
   }, [refresh])
 
   const handlePrint = async (entry) => {
-    await generateDoctorPdf(entry)
-    const collection = getDocPdfQueueCollection()
+    await generateFormAPdf(entry.patientId)
+    const collection = getFormAPdfQueueCollection()
     await collection.updateOne({ _id: entry._id }, { $set: { printed: true } })
     setRefresh((r) => !r)
   }
 
   const handleRemove = async (entry) => {
-    const collection = getDocPdfQueueCollection()
+    const collection = getFormAPdfQueueCollection()
     await collection.deleteOne({ _id: entry._id })
     setRefresh((r) => !r)
   }
@@ -113,7 +113,7 @@ const DoctorAdmin = () => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Doctor PDF Print Queue
+        Form A PDF Print Queue
       </Typography>
 
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
@@ -150,12 +150,11 @@ const DoctorAdmin = () => {
             >
               <Box>
                 <Typography variant="subtitle1">Patient ID: {entry.patientId}</Typography>
-                <Typography variant="body2">Doctor: {entry.doctorName}</Typography>
                 <Typography variant="body2">
                   Created At: {new Date(entry.createdAt).toLocaleString()}
                 </Typography>
               </Box>
-              <Button variant="outlined" onClick={() => generateDoctorPdf(entry)}>
+              <Button variant="outlined" onClick={() => generateFormAPdf(entry.patientId)}>
                 Reprint
               </Button>
             </Paper>
@@ -175,7 +174,6 @@ const DoctorAdmin = () => {
           >
             <Box>
               <Typography variant="subtitle1">Patient ID: {entry.patientId}</Typography>
-              <Typography variant="body2">Doctor: {entry.doctorName}</Typography>
               <Typography variant="body2">
                 Created At: {new Date(entry.createdAt).toLocaleString()}
               </Typography>
@@ -203,4 +201,4 @@ const DoctorAdmin = () => {
   )
 }
 
-export default DoctorAdmin
+export default FormAAdmin
