@@ -1605,7 +1605,7 @@ export const generateDoctorPdf = async (entry) => {
                 margin: [0, 0, 0, 2],
               },
               {
-                text: "DOCTOR'S CONSULTATION",
+                text: "DOCTOR'S STATION",
                 bold: true,
                 fontSize: 16,
                 alignment: 'center',
