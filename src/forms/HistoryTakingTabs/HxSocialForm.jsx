@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import { Paper, Divider, CircularProgress, Button, Typography } from '@mui/material'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
 import CustomNumberField from 'src/components/form-components/CustomNumberField.jsx'
@@ -171,6 +171,7 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       changeTab(null, nextTab)
     } else {
@@ -350,39 +351,42 @@ export default function HxSocialForm({ changeTab, nextTab }) {
             <Typography fontWeight='bold'>Total pack-years:</Typography>
             <PackYearsDisplay />
           </PopupText>
-
-          <Typography fontWeight='bold'>
-            Have you smoked before? For how long and when did you stop?
-          </Typography>
-
-          <FastField
-            name='SOCIAL11'
-            label='SOCIAL11'
-            component={CustomRadioGroup}
-            options={formOptions.SOCIAL11}
-            sx={{ mb: 3 }}
-            row
-          />
-          <PopupText qnNo='SOCIAL11' triggerValue='Yes'>
-            <Typography variant='subtitle1' fontWeight='bold'>
-              Please specify:
+          <PopupText qnNo='SOCIAL10' triggerValue='No'>
+            <Typography fontWeight='bold'>
+              Have you smoked before? For how long and when did you stop?
             </Typography>
+
             <FastField
-              name='SOCIALShortAns11'
-              label='SOCIALShortAns11'
-              component={CustomTextField}
-              sx={{ mb: 3, mt: 1 }}
+              name='SOCIAL11'
+              label='SOCIAL11'
+              component={CustomRadioGroup}
+              options={formOptions.SOCIAL11}
+              sx={{ mb: 3 }}
+              row
             />
+            <PopupText qnNo='SOCIAL11' triggerValue='Yes'>
+              <Typography variant='subtitle1' fontWeight='bold'>
+                Please specify:
+              </Typography>
+              <FastField
+                name='SOCIALShortAns11'
+                label='SOCIALShortAns11'
+                component={CustomTextField}
+                sx={{ mb: 3, mt: 1 }}
+              />
+            </PopupText>
           </PopupText>
 
-          <Typography fontWeight='bold'>Do you consume alcoholic drinks?</Typography>
+
           <Typography>
+            For the next question:<br />
             Appropriate amount of alcohol:
             <ul>
               <li> Males: &lt;2 standard drinks per day</li>
               <li> Females: &lt;1 standard drink per day</li>
             </ul>
           </Typography>
+          <Typography fontWeight='bold' sx={{ mt: 2 }}>Do you consume alcoholic drinks?</Typography>
           <FastField name='SOCIAL12' label='SOCIAL12' component={CustomTextField} />
 
           <Typography fontWeight='bold'>
@@ -475,9 +479,5 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-  return (
-    <Paper elevation={2}>
-      {renderForm()}
-    </Paper>
-  )
+  return <Paper elevation={2}>{renderForm()}</Paper>
 }

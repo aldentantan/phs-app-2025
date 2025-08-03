@@ -4,7 +4,7 @@ import { Formik, Form, Field, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
@@ -99,6 +99,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       changeTab(null, nextTab)
     } else {
@@ -371,8 +372,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
           />
 
           <Typography variant='h6' fontWeight='bold'>
-            Was your last menstrual period within the window where the first day falls between xx
-            and xx 2025? <br />
+            Was your last menstrual period within the window where the first day falls between 28 July and 4 Aug 2025? <br />
             If you are post-menopausal or use contraception, please indicate 'yes'
           </Typography>
           <FastField

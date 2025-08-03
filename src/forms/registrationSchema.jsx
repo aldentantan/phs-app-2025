@@ -7,9 +7,15 @@ export const validationSchema = Yup.object({
 
   registrationQ2: Yup.string().required('Initials are required'),
 
-  registrationQ3: Yup.date()
-    .required('Birthday is required')
-    .max(new Date(), 'Birthday cannot be in the future'),
+  registrationQ3: Yup.mixed()
+    .test('is-valid-date', 'Birthday is required', value => {
+      return value instanceof Date && !isNaN(value.getTime());
+    })
+    .test('not-in-future', 'Birthday cannot be in the future', value => {
+      if (!(value instanceof Date) || isNaN(value.getTime())) return false;
+      return value <= new Date();
+    })
+    .required('Birthday is required'),
 
   registrationQ4: Yup.number()
     .positive('Age must be positive')
@@ -48,13 +54,6 @@ export const validationSchema = Yup.object({
     .required('Marital status is required'),
 
   registrationQ9: Yup.string().required('Occupation is required'),
-
-  registrationQ10: Yup.string()
-    .oneOf(
-      ['Jurong', 'Yuhua', 'Bukit Batok', 'Pioneer', 'West Coast', 'Hong Kah North', 'Others'],
-      'Invalid GRC/SMC subdivision',
-    )
-    .required('GRC/SMC subdivision is required'),
 
   registrationQ11: Yup.string()
     .oneOf(['Yes', 'No', 'Unsure'], 'Invalid HealthierSG status')

@@ -16,7 +16,7 @@ import {
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
-import { getPdfQueueCollection, getSavedData } from '../services/mongoDB.js'
+import { getDocPdfQueueCollection, getSavedData } from '../services/mongoDB.js'
 import './fieldPadding.css'
 import allForms from './forms.json'
 
@@ -150,7 +150,7 @@ const DoctorsConsultForm = () => {
       const response = await submitForm(values, patientId, formName)
 
       if (response.result) {
-        const collection = getPdfQueueCollection()
+        const collection = getDocPdfQueueCollection()
         await collection.insertOne({
           patientId: patientId,
           doctorName: values.doctorSConsultQ1, // Using doctor's name from Q1

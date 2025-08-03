@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import { Paper, Divider, CircularProgress, TextField, Button, Typography } from '@mui/material'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import PopupText from '../../utils/popupText'
 
@@ -72,6 +72,7 @@ export default function HxOralForm({ changeTab, nextTab }) {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       changeTab(null, nextTab)
     } else {

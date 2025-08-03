@@ -61,7 +61,7 @@ const eligibilityKeyMap = {
 }
 
 // Refactor the generateStatusArray to generate an object instead
-function generateStatusObject(record) {
+export function generateStatusObject(record) {
   const recordStatus = {
     reg: false,
     triage: false,
@@ -106,9 +106,9 @@ function generateStatusObject(record) {
       vax: record.vaccineForm !== undefined,
       gericog:
         record.geriAmtForm !== undefined &&
-        record.geriGraceForm !== undefined &&
-        record.geriWhForm !== undefined &&
-        record.geriInterForm !== undefined,
+        record.isEligibleForGrace !== undefined &&
+        (record.isEligibleForGrace === false ||
+          (record.isEligibleForGrace === true && record.geriGraceForm !== undefined)),
       gerimobility:
         record.geriPhysicalActivityLevelForm !== undefined &&
         record.geriOtQuestionnaireForm !== undefined &&

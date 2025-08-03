@@ -104,10 +104,13 @@ export default function VaccineForm() {
                     row
                   />
 
-                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                      Please fill in all required fields correctly.
-                    </Typography>
+                  {/* Display form errors */}
+                  {Object.keys(errors).length > 0 && submitCount > 0 && (
+                    <Box sx={{ mt: 2 }}>
+                      <Alert severity="error">
+                        Please correct the errors above before submitting.
+                      </Alert>
+                    </Box>
                   )}
 
                   <div>

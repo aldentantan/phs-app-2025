@@ -36,7 +36,7 @@ const formOptions = {
     { label: 'Non-refractive', value: 'Non-refractive' },
     { label: 'None', value: 'None' },
   ],
-  OphthalQ9: [{ label: "Referred to Doctor's Consult", value: "Referred to Doctor's Consult" }],
+  OphthalQ9: [{ label: "Referred to Doctor's Station", value: "Referred to Doctor's Station" }],
   OphthalQ10: YesNo,
   OphthalQ12: YesNo,
   OphthalQ13: YesNo,
