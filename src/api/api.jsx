@@ -1143,9 +1143,10 @@ export function generate_pdf_updated(
   mental,
   social,
   podiatry,
+  mammobus,
+  hpv,
 ) {
   console.log("TRIAGE", triage);
-  console.log("PODIA", podiatry);
   setLangUpdated(reg.registrationQ14)
   let content = []
 
@@ -1153,13 +1154,14 @@ export function generate_pdf_updated(
   content.push(...temperatureSection(triage))
   content.push(...bloodPressureSection(triage))
   content.push(...bmiSection(triage.triageQ10, triage.triageQ11, triage.triageQ12))
-  content.push(...otherScreeningModularitiesSection(geriVision, podiatry))
+  content.push(...otherScreeningModularitiesSection(reg, geriVision, podiatry, vaccine))
   //content.push({ text: '', pageBreak: 'before' })
   content.push(
     ...followUpSection(
       reg,
       vaccine,
       hsg,
+      lung,
       phlebotomy,
       fit,
       wce,
@@ -1168,6 +1170,8 @@ export function generate_pdf_updated(
       hearts,
       oralHealth,
       mental,
+      mammobus,
+      hpv,
     ),
   )
   content.push(...memoSection(geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult, doctorSConsult))
@@ -1251,7 +1255,7 @@ function patientSection(reg, patients) {
   const title = [{ text: parseFromLangKey('title'), style: 'header' }]
 
   const thanksNote = [
-    { text: `${parseFromLangKey('dear', salutation, patients.initials)}`, style: 'normal' },
+    { text: `${parseFromLangKey('dear', salutation, reg.registrationQ2)}`, style: 'normal' },
     { text: `${parseFromLangKey('intro')}`, style: 'normal' },
   ]
 
@@ -1260,7 +1264,7 @@ function patientSection(reg, patients) {
 
 export function temperatureSection(triage) {
   const textSection = [
-    { text:  `${parseFromLangKey('temp_title')}`, style: 'subheader' },
+    { text: `${parseFromLangKey('temp_title')}`, style: 'subheader' },
     {
       text: `${parseFromLangKey('temp_reading')} ${triage.triageQ7} °C.\n`,
       style: 'normal',
@@ -1386,70 +1390,75 @@ export function bmiSection(height, weight, bmiString) {
   ]
 }
 
-export function otherScreeningModularitiesSection(eye, podiatry) {
-  let pdText = "";
-  print("PODIATRY", podiatry)
-  if(Object.keys(podiatry).length === 0){
-    pdText = parseFromLangKey('podiatry_screening_false');
-  }else{
-    pdText = parseFromLangKey('podiatry_screening_true');
-  }
+export function otherScreeningModularitiesSection(reg, eye, podiatry, vaccine) {
 
   return [
     { text: parseFromLangKey('other_title'), style: 'subheader' },
     { text: `${parseFromLangKey('other_eye')}\n`, style: 'normal' },
-    {
-      columns: [
-        {
-          width: '70%',
-          style: 'tableExample',
-          margin: [0, 5, 0, 5],
-          table: {
-            widths: ['*', '*', '*'],
-            body: [
-              [
-                { text: '', style: 'tableHeader' },
-                {
-                  text: parseFromLangKey('other_eye_tbl_l_header'),
-                  style: 'tableHeader',
-                  bold: true,
-                },
-                {
-                  text: parseFromLangKey('other_eye_tbl_r_header'),
-                  style: 'tableHeader',
-                  bold: true,
-                },
+    ...(reg?.registrationQ4 >= 60
+      ? [{
+        columns: [
+          {
+            width: '70%',
+            style: 'tableExample',
+            margin: [0, 5, 0, 5],
+            table: {
+              widths: ['*', '*', '*'],
+              body: [
+                [
+                  { text: '', style: 'tableHeader' },
+                  {
+                    text: parseFromLangKey('other_eye_tbl_l_header'),
+                    style: 'tableHeader',
+                    bold: true,
+                  },
+                  {
+                    text: parseFromLangKey('other_eye_tbl_r_header'),
+                    style: 'tableHeader',
+                    bold: true,
+                  },
+                ],
+                [
+                  parseFromLangKey('other_eye_tbl_t_row'),
+                  `6/${eye.OphthalQ3}`,
+                  `6/${eye.OphthalQ4}`,
+                ],
+                [
+                  parseFromLangKey('other_eye_tbl_b_row'),
+                  `6/${eye.OphthalQ5}`,
+                  `6/${eye.OphthalQ6}`,
+                ],
               ],
-              [
-                parseFromLangKey('other_eye_tbl_t_row'),
-                `6/${eye.OphthalQ3}`,
-                `6/${eye.OphthalQ4}`,
-              ],
-              [
-                parseFromLangKey('other_eye_tbl_b_row'),
-                `6/${eye.OphthalQ5}`,
-                `6/${eye.OphthalQ6}`,
-              ],
-            ],
+            },
+            layout: {
+              hLineWidth: () => 0.5,
+              vLineWidth: () => 0.5,
+              hLineColor: () => 'black',
+              vLineColor: () => 'black',
+            },
           },
-          layout: {
-            hLineWidth: () => 0.5,
-            vLineWidth: () => 0.5,
-            hLineColor: () => 'black',
-            vLineColor: () => 'black',
+          {
+            width: '*', // takes remaining space
+            text: '', // or you can add other content here or leave blank
           },
-        },
-        {
-          width: '*', // takes remaining space
-          text: '', // or you can add other content here or leave blank
-        },
-      ],
-    },
+        ],
+      },
+      { text: '', margin: [0, 5] },
+      { text: `${parseFromLangKey('other_eye_error')} ${eye.OphthalQ8}\n`, style: 'normal' }]
+      : []),
     { text: '', margin: [0, 5] },
-    { text: `${parseFromLangKey('other_eye_error')} ${eye.OphthalQ8}\n`, style: 'normal' },
-    { text: '', margin: [0, 5] },
-    { text: `${pdText}\n`, style: 'normal' },
-    { text: '', margin: [0, 5] },
+    ...(podiatry?.podiatryQ1 === "Yes"
+      ? [{ text: `${parseFromLangKey('podiatry_screening_true')}\n`, style: 'normal' }]
+      : []),
+    ...(vaccine?.VAX1 === "Yes"
+      ? [{ text: `${parseFromLangKey('vaccine_1')}\n`, style: 'normal' }]
+      : []),
+    ...(vaccine?.VAX2 === "Yes"
+      ? [{ text: `    ${parseFromLangKey('vaccine_2')}\n`, style: 'normal' }]
+      : []),
+    ...(vaccine?.VAX3 === "Yes"
+      ? [{ text: `    ${parseFromLangKey('vaccine_3')}\n`, style: 'normal' }]
+      : []),
   ]
 }
 
@@ -1457,6 +1466,7 @@ export function followUpSection(
   reg,
   vaccine,
   hsg,
+  lung,
   phlebotomy,
   fit,
   wce,
@@ -1465,6 +1475,8 @@ export function followUpSection(
   geriWhForm,
   oral,
   mental,
+  mammobus,
+  hpv,
 ) {
   let vaccineString = null
   if (vaccine.VAX1 == 'Yes') {
@@ -1474,6 +1486,21 @@ export function followUpSection(
   let hsgString = null
   if (hsg.HSG1 == 'Yes, I signed up for HSG today') {
     hsgString = `${parseFromLangKey('fw_hsg')}\n`
+  }
+
+  let lungString = null
+  if (lung.LUNG2 == "Yes") {
+    lungString = `${parseFromLangKey('fw_lung')}\n`
+  }
+
+  let mammobusString = null
+  if (mammobus.mammobusQ1 == "Yes") {
+    mammobusString = `${parseFromLangKey('fw_mammobus')}\n`
+  }
+
+  let hpvString = null
+  if (hpv.HPV1 == "Yes") {
+    hpvString = `${parseFromLangKey('fw_hpv')}\n`
   }
 
   let mentalString = null
@@ -1499,17 +1526,20 @@ export function followUpSection(
   return [
     { text: parseFromLangKey('fw_title'), style: 'subheader' },
     { text: parseFromLangKey('fw_intro'), style: 'normal' },
-    ...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
+    //...(vaccineString ? [{ text: vaccineString, style: 'normal' }] : []),
     ...(hsgString ? [{ text: hsgString, style: 'normal' }] : []),
+    ...(lungString ? [{ text: lungString, style: 'normal' }] : []),
     // ...(phlebotomyString ? [{ text: phlebotomyString, style: 'normal' }] : []),
     ,
     // ...(fitString ? [{ text: fitString, style: 'normal' }] : []),
     // ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
     // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
-    ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
-    ...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
-    ...(oralString ? [{ text: oralString, style: 'normal' }] : []),
+    ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
+    ...(mammobusString ? [{ text: mammobusString, style: 'normal' }] : []),
+    ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
+    //...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
+    //...(oralString ? [{ text: oralString, style: 'normal' }] : []),
     { text: '', margin: [0, 5] },
     //{ text: parseFromLangKey('fw_empty'), style: 'normal' },
   ]

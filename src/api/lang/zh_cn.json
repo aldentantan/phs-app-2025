@@ -34,7 +34,9 @@
     "other_eye_tbl_b_row": "带针孔遮挡器",
     "other_eye_error": "视力错误类型（如果有）",
     "podiatry_screening_true": "您已在足病诊疗站接受检查。",
-    "podiatry_screening_false": "您尚未在足病诊疗站接受检查。",
+    "vaccine_1": "您符合前往疫苗接种站的资格。",
+    "vaccine_2": "您已接种流感疫苗。",
+    "vaccine_3": "您已接种肺炎球菌疫苗。",
 
     "fw_title": "跟进",
     "fw_intro": "您已表示有兴趣或已报名与我们的外部合作伙伴进行跟进，详细信息如下：",
@@ -52,6 +54,9 @@
     "fw_grace": "您已被转介至 G-RACE 相关合作伙伴/综合诊所， {0}。请联系 G-RACE：g_race@nuhs.edu.sg",
     "fw_wh": "您已表示有兴趣跟进《低语之心》。窃窃私语之心将与您联系进行跟进。可以通过以下方式联系心声耳语： contact@viriya.org.sg",
     "fw_dent": "您已表示有兴趣与国大牙科进行跟进。如需进一步咨询，请通过 smileclinic@nus.edu.sg  联系新加坡国立大学牙科诊所。",
+    "fw_lung": "您今天已接受肺功能筛查，医生将在大约两周后致电您，跟进您的检查结果。如有任何疑问，请联系 PUMA 研究团队，电话：8775 9298，邮箱：lkcmed-puma@ntu.edu.sg。",
+    "fw_mammobus": "您已完成乳房X光检查。NHG稍后将与您联系，告知您的乳房X光检查结果。",
+    "fw_hpv": "您已接受HPV现场检测。我们将及时通过邮件通知您检测结果。如检测结果异常，请按照转诊信中的预约时间进行检测。如有任何疑问，请联系 communityhealth@singaporecancersociety.org.sg。",
     
     "memo_title": "推荐备忘录",
     "memo_audio" : "听力学：\n\n",

@@ -52,6 +52,8 @@ const SummaryForm = (props) => {
   const [hearts, setHearts] = useState({})
   const [mental, setMental] = useState({})
   const [podiatry, setPodiatry] = useState({})
+  const [mammobus, setMammobus] = useState({})
+  const [hpv, setHpv] = useState({})
 
   const [refresh, setRefresh] = useState(false)
 
@@ -91,6 +93,8 @@ const SummaryForm = (props) => {
         const heartsData = getSavedData(patientId, allForms.geriWhForm)
         const mentalData = getSavedData(patientId, allForms.mentalHealthForm)
         const podiatryData = getSavedData(patientId, allForms.podiatryForm)
+        const mammobusData = getSavedData(patientId, allForms.mammobusForm)
+        const hpvData = getSavedData(patientId, allForms.hpvForm)
 
         Promise.all([
           hcsrData,
@@ -123,6 +127,8 @@ const SummaryForm = (props) => {
           heartsData,
           mentalData,
           podiatryData,
+          mammobusData,
+          hpvData,
           //sacsData,
         ]).then((result) => {
           setHcsr(result[0])
@@ -155,6 +161,8 @@ const SummaryForm = (props) => {
           setHearts(result[27])
           setMental(result[28])
           setPodiatry(result[29])
+          setMammobus(result[30])
+          setHpv(result[31])
           //setSacs(result[])
           isLoadingPrevData(false)
         })
@@ -200,7 +208,9 @@ const SummaryForm = (props) => {
                   geriOtConsult,
                   mental,
                   social,
-                  podiatry
+                  podiatry,
+                  mammobus,
+                  hpv,
                 )
               }
             >

@@ -34,7 +34,9 @@
     "other_eye_tbl_b_row": "With Pinhole Occluder",
     "other_eye_error": "Type of vision error, if any: ",
     "podiatry_screening_true": "You have undergone screening at the podiatry station",
-    "podiatry_screening_false": "You have not undergone screening at the podiatry station",
+    "vaccine_1": "You are eligible for the vaccination station.",
+    "vaccine_2": "You have taken the Influenza vaccine.",
+    "vaccine_3": "You have taken the Pneumococcal vaccine.",
 
     "fw_title": "Follow-Up",
     "fw_intro": "You have indicated interest for or signed-up for follow up with our external partners, details can be found below:",
@@ -52,6 +54,9 @@
     "fw_grace": "You have been referred to a G-RACE associated partners/polyclinic, {0}. Please contact G-RACE at: g_race@nuhs.edu.sg",
     "fw_wh": "You have indicated interest to be followed-up with Whispering Hearts. Whispering Hearts will contact you for follow up. Whispering Hearts can be contacted at: contact@viriya.org.sg",
     "fw_dent": "You have indicated interest with NUS Dentistry to be followed up. Please contact NUS Dentistry at smileclinic@nus.edu.sg for further enquiries.",
+    "fw_lung": "You have undergone the lung function screening today, a doctor will call you around 2 weeks later to follow-up with you on your test results. Please contact PUMA study team at 8775 9298 or lkcmed-puma@ntu.edu.sg if you have any queries.",
+    "fw_mammobus": "You have undergone the mammobus station. You will be contacted by NHG at a later date about your mammogram results.",
+    "fw_hpv": "You have undergone the HPV on-site testing. You will be mailed a letter informing you of your results in due time. If the results are abnormal, please proceed with the appointment provided in the Referral Letter. Please contact communityhealth@singaporecancersociety.org.sg for further enquiries.",
     
     "memo_title": "Referral Memos",
     "memo_audio" : "Audiology:\n\n",
