@@ -735,7 +735,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     <GetScores />
                     <br />
                     <h3 className='remove-top-margin'>
-                      Total (Record it as &quot;YES&quot; / 25 - &quot;NA&quot;)
+                      Total: (record it as &quot;no. of YES&quot; / 25 - &quot;no. of NA&quot;)
                     </h3>
                     <FastField
                       name='geriOtQuestionnaireQ32'

@@ -10,12 +10,14 @@ import './fieldPadding.css'
 import { useNavigate } from 'react-router'
 
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+import CustomTextField from '../components/form-components/CustomTextField'
 
 const formName = 'vaccineForm'
 
 const initialValues = {
   VAX1: '',
   VAX2: '',
+  VAX3: '',
 }
 
 const formOptions = {
@@ -41,6 +43,7 @@ export default function VaccineForm() {
   const validationSchema = Yup.object({
     VAX1: Yup.string().required(),
     VAX2: Yup.string().required(),
+    VAX3: Yup.string().required(),
   })
 
   useEffect(() => {
@@ -96,6 +99,7 @@ export default function VaccineForm() {
                     component={CustomRadioGroup}
                     options={formOptions.VAX1}
                     row
+                    fullwidth
                   />
 
                   <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
@@ -107,6 +111,17 @@ export default function VaccineForm() {
                     component={CustomRadioGroup}
                     options={formOptions.VAX2}
                     row
+                  />
+
+                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
+                    Patient's Vaccination history
+                  </Typography>
+                  <FastField
+                    name='VAX3'
+                    label='VAX3'
+                    component={CustomTextField}
+                    multiline
+                    rows={3}
                   />
 
                   {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
@@ -144,24 +159,6 @@ export default function VaccineForm() {
                   <Typography variant='h6' gutterBottom>
                     Patient Info
                   </Typography>
-                  {regi ? (
-                    <>
-                      <Typography variant='body1' className='blue'>
-                        Age: {regi.registrationQ4}
-                      </Typography>
-                      <Typography variant='body1' className='blue'>
-                        Citizenship: {regi.registrationQ7}
-                      </Typography>
-                      <Typography variant='body1' className='blue'>
-                        CHAS status: {regi.registrationQ12}
-                      </Typography>
-                    </>
-                  ) : (
-                    <Typography variant='body1' className='red'>
-                      NO REGI DATA
-                    </Typography>
-                  )}
-
                   {regi ? (
                     <>
                       {regi.registrationQ4 ? (
