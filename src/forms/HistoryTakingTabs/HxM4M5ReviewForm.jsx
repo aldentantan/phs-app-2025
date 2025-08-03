@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
 import { getSavedData } from '../../services/mongoDB.js'
@@ -51,6 +51,7 @@ const HxM4M5ReviewForm = () => {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       navigate('/app/dashboard', { replace: true })
     } else {
