@@ -134,7 +134,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
         // Resets PHQ3 to PHQ9 if the score of PHQ1 + PHQ2 is less than 3
         useEffect(() => {
           if (score < 3) {
-            ['PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9', 'PHQextra9'].forEach((qn) => {
+            ;['PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9', 'PHQextra9'].forEach((qn) => {
               setFieldValue(qn, '', false)
               setFieldTouched(qn, false, false)
             })
@@ -256,15 +256,18 @@ export default function HxPhqForm({ changeTab, nextTab }) {
               options={formOptions.PHQ11}
               row
             />
-            <Typography variant='subtitle2'>Please specify.</Typography>
-            <FastField
-              name='PHQShortAns11'
-              label='PHQShortAns11'
-              component={CustomTextField}
-              fullWidth
-              multiline
-              sx={{ mb: 3, mt: 1 }}
-            />
+
+            <PopupText qnNo='PHQ11' triggerValue='Yes'>
+              <Typography variant='subtitle2'>Please specify.</Typography>
+              <FastField
+                name='PHQShortAns11'
+                label='PHQShortAns11'
+                component={CustomTextField}
+                fullWidth
+                multiline
+                sx={{ mb: 3, mt: 1 }}
+              />
+            </PopupText>
 
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
               {loading || isSubmitting ? (

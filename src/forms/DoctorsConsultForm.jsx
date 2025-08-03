@@ -72,7 +72,6 @@ const formOptions = {
     { label: 'No', value: 'No' },
   ],
   doctorSConsultQ11: [{ label: 'Yes', value: 'Yes' }],
-
 }
 
 const formName = 'doctorConsultForm'
@@ -191,7 +190,7 @@ const DoctorsConsultForm = () => {
             </Typography>
             <FastField
               name='doctorSConsultQ1'
-              label='doctorSConsultQ1'
+              label='doctorQ1'
               component={CustomTextField}
               fullWidth
               multiline
@@ -201,7 +200,7 @@ const DoctorsConsultForm = () => {
             </Typography>
             <FastField
               name='doctorSConsultQ2'
-              label='doctorSConsultQ2'
+              label='doctorQ2'
               component={CustomTextField}
               fullWidth
               multiline
@@ -212,7 +211,7 @@ const DoctorsConsultForm = () => {
             </Typography>
             <FastField
               name='doctorSConsultQ3'
-              label="Doctor's Memo"
+              label='doctorQ3'
               component={CustomTextField}
               fullWidth
               multiline
@@ -221,7 +220,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to dietitian?</h3>
             <FastField
               name='doctorSConsultQ4'
-              label='doctorSConsultQ4'
+              label='doctorQ4'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -232,7 +231,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ5'
-                label='doctorSConsultQ5'
+                label='doctorQ5'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -242,7 +241,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Social Support?</h3>
             <FastField
               name='doctorSConsultQ6'
-              label='doctorSConsultQ6'
+              label='doctorQ6'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -253,7 +252,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ7'
-                label='doctorSConsultQ7'
+                label='doctorQ7'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -263,7 +262,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Mental Health? (and indicated on Form A)</h3>
             <FastField
               name='doctorSConsultQ13'
-              label='doctorSConsultQ13'
+              label='doctorQ13'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -271,7 +270,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Dental?</h3>
             <FastField
               name='doctorSConsultQ8'
-              label='doctorSConsultQ8'
+              label='doctorQ8'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -282,7 +281,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ9'
-                label='doctorSConsultQ9'
+                label='doctorQ9'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -293,15 +292,15 @@ const DoctorsConsultForm = () => {
             <h3>Does patient require urgent follow up</h3>
             <FastField
               name='doctorSConsultQ10'
-              label='doctorSConsultQ10'
+              label='doctorQ10'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
             />
-            <h3>Completed Doctor&apos;s Consult station. Please check that Form A is filled.</h3>
+            <h3>Completed Doctor&apos;s station. Please check that Form A is filled.</h3>
             <FastField
               name='doctorSConsultQ11'
-              label='doctorSConsultQ11'
+              label='doctorQ11'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultQ11}
             />

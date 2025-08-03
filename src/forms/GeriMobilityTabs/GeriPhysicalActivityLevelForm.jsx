@@ -262,7 +262,7 @@ const GeriPhysicalActivityLevelForm = ({ changeTab, nextTab }) => {
                 name='geriPhysicalActivityLevelQ6'
                 label='Geri - Physical Activity Level Q6'
                 component={CustomCheckboxGroup}
-                options={formOptions.geriPhysicalActivityLevelQ6.map((o) => o.value)}
+                options={formOptions.geriPhysicalActivityLevelQ6}
               />
             </div>
 
