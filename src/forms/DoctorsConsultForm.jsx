@@ -10,8 +10,6 @@ import {
   Grid,
   Paper,
   Typography,
-  Box,
-  Alert,
 } from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
@@ -21,6 +19,7 @@ import './fieldPadding.css'
 import allForms from './forms.json'
 
 import CustomTextField from 'src/components/form-components/CustomTextField'
+import ErrorNotification from 'src/components/form-components/ErrorNotification'
 import PopupText from '../utils/popupText'
 import CustomRadioGroup from 'src/components/form-components/CustomRadioGroup.jsx'
 
@@ -93,7 +92,8 @@ const DoctorsConsultForm = () => {
   const [osteo, setOsteo] = useState({})
   const [pmhx, setPMHX] = useState({})
   const [social, setSocial] = useState({})
-  const [family, setFamily] = useState({})
+  // const [family, setFamily] = useState({})
+  const [setFamily] = useState({})
 
   const navigate = useNavigate()
 
@@ -182,7 +182,7 @@ const DoctorsConsultForm = () => {
       onSubmit={handleSubmit}
       enableReinitialize
     >
-      {({ errors, isSubmitting, submitCount, ...formikProps }) => (
+      {({ errors, isSubmitting, submitCount }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
             <h1>Doctor&apos;s Station</h1>
@@ -307,11 +307,11 @@ const DoctorsConsultForm = () => {
             />
           </div>
 
-          {Object.keys(errors).length > 0 && submitCount > 0 && (
-            <Box sx={{ mt: 2 }}>
-              <Alert severity='error'>Please correct the errors above before submitting.</Alert>
-            </Box>
-          )}
+          <ErrorNotification 
+            show={Object.keys(errors).length > 0 && submitCount > 0}
+            message="Please correct the errors above before submitting."
+          />
+
           <div>
             {loading ? (
               <CircularProgress />
