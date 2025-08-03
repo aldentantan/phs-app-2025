@@ -141,6 +141,10 @@ const WceForm = (props) => {
       const regData = getSavedData(patientId, allForms.registrationForm)
       const hxSocialData = getSavedData(patientId, allForms.hxSocialForm)
       const hxFamilyData = getSavedData(patientId, allForms.hxFamilyForm)
+      const reg = await getSavedData(patientId, 'registrationForm')
+      if (reg?.registrationQ5 === 'Male') {
+        alert('This patient is not female. Are you sure you want to proceed with the HPV form?')
+      }
 
       Promise.all([savedData, regData, hxSocialData, hxFamilyData]).then((result) => {
         setSaveData({ ...initialValues, ...result[0] })
