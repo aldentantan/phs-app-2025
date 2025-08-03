@@ -1389,7 +1389,7 @@ export function bmiSection(height, weight, bmiString) {
 export function otherScreeningModularitiesSection(eye, podiatry) {
   let pdText = "";
   print("PODIATRY", podiatry)
-  if(podiatry == {}){
+  if(Object.keys(podiatry).length === 0){
     pdText = parseFromLangKey('podiatry_screening_false');
   }else{
     pdText = parseFromLangKey('podiatry_screening_true');
