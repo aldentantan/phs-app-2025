@@ -1142,9 +1142,10 @@ export function generate_pdf_updated(
   geriOtConsult,
   mental,
   social,
+  podiatry,
 ) {
   console.log("TRIAGE", triage);
-  console.log("TRIAGE", geriAudiometry);
+  console.log("PODIA", podiatry);
   setLangUpdated(reg.registrationQ14)
   let content = []
 
@@ -1152,7 +1153,7 @@ export function generate_pdf_updated(
   content.push(...temperatureSection(triage))
   content.push(...bloodPressureSection(triage))
   content.push(...bmiSection(triage.triageQ10, triage.triageQ11, triage.triageQ12))
-  content.push(...otherScreeningModularitiesSection(lung, geriVision, social))
+  content.push(...otherScreeningModularitiesSection(geriVision, podiatry))
   //content.push({ text: '', pageBreak: 'before' })
   content.push(
     ...followUpSection(
@@ -1259,13 +1260,13 @@ function patientSection(reg, patients) {
 
 export function temperatureSection(triage) {
   const textSection = [
-    { text: 'Temperature', style: 'subheader' },
+    { text:  `${parseFromLangKey('temp_title')}`, style: 'subheader' },
     {
-      text: `Your temperature is ${triage.triageQ7} °C.\n`,
+      text: `${parseFromLangKey('temp_reading')} ${triage.triageQ7} °C.\n`,
       style: 'normal',
     },
     {
-      text: 'A temperature of 37.5 °C and above is considered a fever. Any temperature above 38.5 °C is considered a high fever. A mild fever can be managed by medication like paracetamol. If you are experiencing any other worrying symptoms along with the fever such as diarrhoea and confusion, or if you have a high fever or if the fever persists please consult a doctor who can better evaluate the cause of your fever and manage appropriately.',
+      text: `${parseFromLangKey('temp_tip')}`,
       style: 'normal'
     },
   ]
@@ -1385,11 +1386,13 @@ export function bmiSection(height, weight, bmiString) {
   ]
 }
 
-export function otherScreeningModularitiesSection(lung, eye, social) {
-  let other_lung_smoking_text = ''
-
-  if (social.SOCIAL10) {
-    other_lung_smoking_text = parseFromLangKey('other_lung_smoking')
+export function otherScreeningModularitiesSection(eye, podiatry) {
+  let pdText = "";
+  print("PODIATRY", podiatry)
+  if(podiatry == {}){
+    pdText = parseFromLangKey('podiatry_screening_false');
+  }else{
+    pdText = parseFromLangKey('podiatry_screening_true');
   }
 
   return [
@@ -1444,6 +1447,8 @@ export function otherScreeningModularitiesSection(lung, eye, social) {
     },
     { text: '', margin: [0, 5] },
     { text: `${parseFromLangKey('other_eye_error')} ${eye.OphthalQ8}\n`, style: 'normal' },
+    { text: '', margin: [0, 5] },
+    { text: `${pdText}\n`, style: 'normal' },
     { text: '', margin: [0, 5] },
   ]
 }
@@ -1527,7 +1532,7 @@ export function memoSection(audioData, dietData, ptData, otData, doctorData) {
 
   const pt = parseFromLangKey('memo_pt') + `${ptData.geriPtConsultQ1}`
   const ot = parseFromLangKey('memo_ot') + `${otData.geriOtConsultQ1}`
-  const doctor = "Doctor Station:" + `\n\n${doctorData.doctorSConsultQ3}`
+  const doctor = parseFromLangKey('memo_doctor') + `${doctorData.doctorSConsultQ3}`
 
   return [
     { text: parseFromLangKey('memo_title'), style: 'subheader' },

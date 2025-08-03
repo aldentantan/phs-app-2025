@@ -115,8 +115,8 @@ function generateStatusObject(record) {
         record.geriSppbForm !== undefined &&
         record.geriPtConsultForm !== undefined &&
         record.geriOtConsultForm !== undefined,
-      ophthal: record.OphthalForm !== undefined,
-      audio: record.AudiometryForm !== undefined,
+      ophthal: record.ophthalForm !== undefined,
+      audio: record.audiometryForm !== undefined,
       hpv: record.hpvForm !== undefined,
       doctorsconsult: record.doctorConsultForm !== undefined, // doctor's consult
       dietitiansconsult: record.dietitiansConsultForm !== undefined, // dietitian's consult

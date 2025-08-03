@@ -4,6 +4,10 @@
     "dear": "Dear {0} {1},",
     "intro": "Thank you for participating in our health screening at The Frontier CC and Jurong Medical Centre on 16th and 17th August this year. Here are your screening results:",
 
+    "temp_title": "Temperature",
+    "temp_reading": "Your temperature is",
+    "temp_tip": "A temperature of 37.5 °C and above is considered a fever. Any temperature above 38.5 °C is considered a high fever. A mild fever can be managed by medication like paracetamol. If you are experiencing any other worrying symptoms along with the fever such as diarrhoea and confusion, or if you have a high fever or if the fever persists please consult a doctor who can better evaluate the cause of your fever and manage appropriately.",
+    
     "bp_title": "Blood Pressure",
     "bp_reading": "Your average blood pressure reading is ",
     "bp_tip": "A normal blood pressure reading is lower than 130/85mmHg. As blood pressure is characterised by large spontaneous variations, the diagnosis of high blood pressure should be based on multiple blood pressure measurements taken on several separate occasions. This should be regularly followed-up by a doctor who can provide the appropriate diagnosis and management. If your average blood pressure reading is above 130/85, please consult a doctor who can better evaluate your risk of hypertension.",
@@ -29,6 +33,8 @@
     "other_eye_tbl_t_row": "Without Pinhole Occluder",
     "other_eye_tbl_b_row": "With Pinhole Occluder",
     "other_eye_error": "Type of vision error, if any: ",
+    "podiatry_screening_true": "You have undergone screening at the podiatry station",
+    "podiatry_screening_false": "You have not undergone screening at the podiatry station",
 
     "fw_title": "Follow-Up",
     "fw_intro": "You have indicated interest for or signed-up for follow up with our external partners, details can be found below:",
@@ -55,6 +61,7 @@
     "memo_diet_1" : "\n\nThe dietitian has indicated that you {0} urgent follow up due to {1}. ",
     "memo_pt" : "Physical Therapist Station:\n\n",
     "memo_ot" : "Occupational Therapist Station:\n\n",
+    "memo_doctor": "Doctor Station:\n\n",
 
     "rec_title": "Recommendation ",
     "rec": "You are strongly recommended to seek follow-up based on your health screening result. \n\nAs mentioned above, PHS members may be calling you soon as a form of follow-up in a few weeks time, if you have not opted out of our Telehealth Initiative.",

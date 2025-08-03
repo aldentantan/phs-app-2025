@@ -51,6 +51,7 @@ const SummaryForm = (props) => {
   const [grace, setGrace] = useState({})
   const [hearts, setHearts] = useState({})
   const [mental, setMental] = useState({})
+  const [podiatry, setPodiatry] = useState({})
 
   const [refresh, setRefresh] = useState(false)
 
@@ -89,6 +90,7 @@ const SummaryForm = (props) => {
         const graceData = getSavedData(patientId, allForms.geriGraceForm)
         const heartsData = getSavedData(patientId, allForms.geriWhForm)
         const mentalData = getSavedData(patientId, allForms.mentalHealthForm)
+        const podiatryData = getSavedData(patientId, allForms.podiatryForm)
 
         Promise.all([
           hcsrData,
@@ -119,7 +121,8 @@ const SummaryForm = (props) => {
           hsgData,
           graceData,
           heartsData,
-          mentalData
+          mentalData,
+          podiatryData,
           //sacsData,
         ]).then((result) => {
           setHcsr(result[0])
@@ -151,6 +154,7 @@ const SummaryForm = (props) => {
           setGrace(result[26])
           setHearts(result[27])
           setMental(result[28])
+          setPodiatry(result[29])
           //setSacs(result[])
           isLoadingPrevData(false)
         })
@@ -195,7 +199,8 @@ const SummaryForm = (props) => {
                   geriPtConsult,
                   geriOtConsult,
                   mental,
-                  social
+                  social,
+                  podiatry
                 )
               }
             >
