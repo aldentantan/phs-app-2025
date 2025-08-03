@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form, FastField } from 'formik'
 import * as Yup from 'yup'
-import { Paper, CircularProgress, Divider, Box, Alert, Button, Typography } from '@mui/material'
+import { Paper, CircularProgress, Divider, Button, Typography } from '@mui/material'
 
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
@@ -10,6 +10,7 @@ import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+import ErrorNotification from '../components/form-components/ErrorNotification'
 
 const initialValues = {
   HPV1: '',
@@ -72,7 +73,7 @@ const HpvForm = () => {
       onSubmit={handleSubmit}
       enableReinitialize
     >
-      {({ isSubmitting, submitCount, errors, touched }) => (
+      {({ isSubmitting, submitCount, errors }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
             <h1>On-Site HPV Testing</h1>
@@ -90,11 +91,11 @@ const HpvForm = () => {
             />
           </div>
 
-          {Object.keys(errors).length > 0 && submitCount > 0 && (
-            <Box sx={{ mt: 2 }}>
-              <Alert severity='error'>Please correct the errors above before submitting.</Alert>
-            </Box>
-          )}
+          <ErrorNotification 
+            show={Object.keys(errors).length > 0 && submitCount > 0}
+            message="Please correct the errors above before submitting."
+          />
+
           <div>
             {loading ? (
               <CircularProgress />
