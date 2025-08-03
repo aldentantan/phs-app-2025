@@ -1,18 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Divider, Paper, CircularProgress, Box, Button, Typography } from '@mui/material'
-import { Formik, Form, Field } from 'formik'
+import { Button, CircularProgress, Paper, Typography, Grid, Divider } from '@mui/material'
+import { FastField, Field, Form, Formik } from 'formik'
+import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
-import { getSavedData } from '../../services/mongoDB'
+import CustomNumberField from '../../components/form-components/CustomNumberField.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import { getSavedData } from '../../services/mongoDB'
 import '../fieldPadding.css'
 import '../forms.css'
+import allForms from '../forms.json'
 
 const formName = 'geriAmtForm'
 
-const validationSchema = Yup.object(
-  Object.fromEntries(
+const validationSchema = Yup.object({
+  ...Object.fromEntries(
     Array.from({ length: 10 }, (_, i) => [
       `geriAmtQ${i + 1}`,
       Yup.string()
@@ -20,51 +23,82 @@ const validationSchema = Yup.object(
         .required('Required'),
     ]),
   ),
-)
+  geriAmtQ11: Yup.number()
+    .typeError('Must be a number')
+    .min(0, 'Must be at least 0')
+    .required('Required'),
+  geriAmtQ12: Yup.string()
+    .oneOf(['Yes (Eligible for G-RACE)', 'No (Not eligible for G-RACE)'])
+    .required('Required'),
+})
 
-const options = [
-  { label: 'Yes (Answered correctly)', value: 'Yes (Answered correctly)' },
-  { label: 'No (Answered incorrectly)', value: 'No (Answered incorrectly)' },
-]
+const formOptions = {
+  YesNo: [
+    { label: 'Yes (Answered correctly)', value: 'Yes (Answered correctly)' },
+    { label: 'No (Answered incorrectly)', value: 'No (Answered incorrectly)' },
+  ],
+  geriAmtQ12: [
+    { label: 'Yes (Eligible for G-RACE)', value: 'Yes (Eligible for G-RACE)' },
+    { label: 'No (Not eligible for G-RACE)', value: 'No (Not eligible for G-RACE)' },
+  ],
+}
 
 const getScore = (values) => {
   return Array.from({ length: 10 }, (_, i) => values[`geriAmtQ${i + 1}`]).filter(
     (v) => v === 'Yes (Answered correctly)',
   ).length
 }
-
-const getInitialValues = (savedData) => {
-  return Object.fromEntries(
-    Array.from({ length: 10 }, (_, i) => [`geriAmtQ${i + 1}`, savedData[`geriAmtQ${i + 1}`] || '']),
-  )
+const initialValues = {
+  geriAmtQ1: '',
+  geriAmtQ2: '',
+  geriAmtQ3: '',
+  geriAmtQ4: '',
+  geriAmtQ5: '',
+  geriAmtQ6: '',
+  geriAmtQ7: '',
+  geriAmtQ8: '',
+  geriAmtQ9: '',
+  geriAmtQ10: '',
+  geriAmtQ11: '', // number field, keep as '' for Formik compatibility
+  geriAmtQ12: '', // Yes/No field
 }
 
 const GeriAmtForm = ({ changeTab, nextTab }) => {
   const { patientId } = useContext(FormContext)
-  const [initialValues, setInitialValues] = useState(() => getInitialValues({}))
+  const [savedData, setSavedData] = useState(initialValues)
+  const [regForm, setRegForm] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [loadingSidePanel, setLoadingSidePanel] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
-      const savedData = await getSavedData(patientId, formName)
-      setInitialValues(getInitialValues(savedData))
+      const res = await getSavedData(patientId, formName)
+      const reg = await getSavedData(patientId, allForms.registrationForm)
+      setSavedData({ ...initialValues, ...res })
+      setRegForm(reg)
+      setLoadingSidePanel(false)
     }
     fetchData()
   }, [patientId])
 
-  return (
+  const renderForm = () => (
     <Formik
       enableReinitialize
-      initialValues={initialValues}
+      initialValues={savedData}
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting }) => {
         setLoading(true)
         const response = await submitForm(values, patientId, formName)
         setLoading(false)
-        setSubmitting(false)
         if (response.result) {
           alert('Successfully submitted form')
-          changeTab(null, nextTab)
+          // If patient is eligible for G-RACE, navigate to next tab. If not, navigate to PatientTimeline.
+          if (values.geriAmtQ12 === 'Yes (Eligible for G-RACE)') {
+            changeTab(null, nextTab)
+          } else if (values.geriAmtQ12 === 'No (Not eligible for G-RACE)') {
+            navigate('/app/dashboard', { replace: true })
+          }
         } else {
           alert(`Unsuccessful. ${response.error}`)
         }
@@ -75,6 +109,10 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
           <Form className='fieldPadding'>
             <div className='form--div'>
               <h1>ABBREVIATED MENTAL TEST (for dementia)</h1>
+              <img
+                src='../../../images/geri-amt/scoring-rubric.png'
+                alt='Scoring rubric for geri AMT'
+              />
               <h2>
                 Please select 'Yes' if participant answered correctly or 'No' if answered
                 incorrectly.
@@ -92,7 +130,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                       name={`geriAmtQ${qNum}`}
                       label={`geriAmtQ${qNum}`}
                       component={CustomRadioGroup}
-                      options={options}
+                      options={formOptions.YesNo}
                       row
                     />
                   </div>
@@ -109,6 +147,34 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
               />*/}
 
               <h4>AMT Total Score: {getScore(formikProps.values)} /10</h4>
+
+              <Typography sx={{ fontWeight: 'bold', mt: 3 }}>
+                11) How many years of education does the patient have?
+              </Typography>
+              <FastField
+                name='geriAmtQ11'
+                component={CustomNumberField}
+                label='geriAmtQ11'
+                placeholder='Enter number of years'
+                fullWidth
+              />
+              <img
+                src='../../../images/geri-amt/g-race-criteria.png'
+                alt='Eligibility for g-race based on education level'
+              />
+              <Typography sx={{ fontWeight: 'bold', mt: 3 }}>
+                Follow the criteria shown in the image above.
+                <br />
+                12) Based on the patient's age ({regForm?.registrationQ4}), years of education and AMT score, is the patient
+                eligible for G-RACE for MMSE?
+              </Typography>
+              <Field
+                name='geriAmtQ12'
+                label='geriAmtQ12'
+                component={CustomRadioGroup}
+                options={formOptions.geriAmtQ12}
+                row
+              />
             </div>
 
             {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
@@ -132,6 +198,30 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
         </Paper>
       )}
     </Formik>
+  )
+
+  const renderSidePanel = () => (
+    <div className='summary--question-div'>
+      <h2>Patient Registration</h2>
+      <p className='underlined'>Patient's Age</p>
+      {regForm ? <p className='blue'>{regForm.registrationQ4}</p> : null}
+      <Divider />
+    </div>
+  )
+
+  return (
+    <Paper elevation={2} sx={{ p: 0, m: 0 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={9}>
+          {renderForm()}
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Paper elevation={2} sx={{ p: 2 }}>
+            {loadingSidePanel ? <CircularProgress /> : renderSidePanel()}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Paper>
   )
 }
 

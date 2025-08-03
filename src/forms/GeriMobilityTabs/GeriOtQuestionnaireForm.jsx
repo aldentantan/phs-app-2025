@@ -11,9 +11,6 @@ import '../fieldPadding.css'
 
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
-import CustomNumberField from '../../components/form-components/CustomNumberField'
-
-import PopupText from 'src/utils/popupText'
 
 const formName = 'geriOtQuestionnaireForm'
 
@@ -195,9 +192,6 @@ const validationSchema = Yup.object({
     .oneOf(formOptions.geriOtQuestionnaireQ27.map((opt) => opt.value))
     .required(),
   geriOtQuestionnaireQ28: Yup.string(),
-  geriOtQuestionnaireQ29: Yup.string().required(),
-  geriOtQuestionnaireQ30: Yup.string().required(),
-  geriOtQuestionnaireQ31: Yup.string().required(),
   geriOtQuestionnaireQ32: Yup.string().required(),
   geriOtQuestionnaireQ33: Yup.string(),
 })
@@ -208,6 +202,48 @@ const generateInitialValues = () => {
     values[`geriOtQuestionnaireQ${i}`] = ''
   }
   return values
+}
+
+const calculateScores = (values) => {
+  const keys = [
+    'geriOtQuestionnaireQ1',
+    'geriOtQuestionnaireQ2',
+    'geriOtQuestionnaireQ3',
+    'geriOtQuestionnaireQ4',
+    'geriOtQuestionnaireQ5',
+    'geriOtQuestionnaireQ6',
+    'geriOtQuestionnaireQ7',
+    'geriOtQuestionnaireQ8',
+    'geriOtQuestionnaireQ9',
+    'geriOtQuestionnaireQ11',
+    'geriOtQuestionnaireQ12',
+    'geriOtQuestionnaireQ13',
+    'geriOtQuestionnaireQ14',
+    'geriOtQuestionnaireQ15',
+    'geriOtQuestionnaireQ16',
+    'geriOtQuestionnaireQ18',
+    'geriOtQuestionnaireQ19',
+    'geriOtQuestionnaireQ20',
+    'geriOtQuestionnaireQ21',
+    'geriOtQuestionnaireQ22',
+    'geriOtQuestionnaireQ23',
+    'geriOtQuestionnaireQ24',
+    'geriOtQuestionnaireQ25',
+    'geriOtQuestionnaireQ26',
+    'geriOtQuestionnaireQ27',
+  ]
+  let yes = 0,
+    no = 0,
+    na = 0,
+    total = ''
+  keys.forEach((key) => {
+    const val = (values[key] || '').toLowerCase().trim()
+    if (val.startsWith('yes')) yes++
+    else if (val.startsWith('no')) no++
+    else na++
+  })
+  total = `${yes}/${25 - na}`
+  return { yes, no, na, total }
 }
 
 const GeriOtQuestionnaireForm = (props) => {
@@ -243,70 +279,17 @@ const GeriOtQuestionnaireForm = (props) => {
 
   const GetScores = () => {
     const { values } = useFormikContext()
-
-    const score = [0, 0, 0] // yes, no, NA
-    const keys = [
-      'geriOtQuestionnaireQ1',
-      'geriOtQuestionnaireQ2',
-      'geriOtQuestionnaireQ3',
-      'geriOtQuestionnaireQ4',
-      'geriOtQuestionnaireQ5',
-      'geriOtQuestionnaireQ6',
-      'geriOtQuestionnaireQ7',
-      'geriOtQuestionnaireQ8',
-      'geriOtQuestionnaireQ9',
-      'geriOtQuestionnaireQ11',
-      'geriOtQuestionnaireQ12',
-      'geriOtQuestionnaireQ13',
-      'geriOtQuestionnaireQ14',
-      'geriOtQuestionnaireQ15',
-      'geriOtQuestionnaireQ16',
-      'geriOtQuestionnaireQ18',
-      'geriOtQuestionnaireQ19',
-      'geriOtQuestionnaireQ20',
-      'geriOtQuestionnaireQ21',
-      'geriOtQuestionnaireQ22',
-      'geriOtQuestionnaireQ23',
-      'geriOtQuestionnaireQ24',
-      'geriOtQuestionnaireQ25',
-      'geriOtQuestionnaireQ26',
-      'geriOtQuestionnaireQ27',
-    ]
-
-    keys.forEach((key) => {
-      const val = (values[key] || '').toLowerCase().trim()
-      if (val.startsWith('yes')) score[0]++
-      else if (val.startsWith('no')) score[1]++
-      else score[2]++
-    })
-
+    const scores = calculateScores(values)
     return (
       <div className='form--div'>
         <br />
-        <b>Yes (calculated):</b> {score[0]}
+        <b>Yes (calculated):</b> {scores.yes}
         <br />
-        <b>Yes :</b>
-        <FastField
-          name='geriOtQuestionnaireQ29'
-          label='geriOtQuestionnaireQ29'
-          component={CustomNumberField}
-        />
-        <b>No (calculated):</b> {score[1]}
+        <b>No (calculated):</b> {scores.no}
         <br />
-        <b>No :</b>
-        <FastField
-          name='geriOtQuestionnaireQ30'
-          label='geriOtQuestionnaireQ30'
-          component={CustomNumberField}
-        />
-        <b>NA (calculated):</b> {score[2]}
+        <b>NA (calculated):</b> {scores.na}
         <br />
-        <b>NA :</b>
-        <FastField
-          name='geriOtQuestionnaireQ31'
-          label='geriOtQuestionnaireQ31'
-          component={CustomNumberField}
-        />
+        <b>Total Score (calculated):</b> {scores.total}
       </div>
     )
   }
@@ -318,7 +301,18 @@ const GeriOtQuestionnaireForm = (props) => {
       enableReinitialize
       onSubmit={async (values, { setSubmitting }) => {
         setLoading(true)
-        const response = await submitForm(values, patientId, formName)
+        const scores = calculateScores(values)
+        const response = await submitForm(
+          {
+            ...values,
+            geriOtQuestionnaireQ29: scores.yes,
+            geriOtQuestionnaireQ30: scores.no,
+            geriOtQuestionnaireQ31: scores.na,
+            geriOtQuestionnaireQ32: scores.total,
+          },
+          patientId,
+          formName,
+        )
         setTimeout(() => {
           setLoading(false)
           setSubmitting(false)
@@ -336,7 +330,7 @@ const GeriOtQuestionnaireForm = (props) => {
           <Grid container>
             <Grid item xs={9}>
               <Paper>
-                <Form className='fieldPadding'>
+                <Form onSubmit={handleSubmit} className='fieldPadding'>
                   <div className='form--div'>
                     <h1>HOME FALLS AND ACCIDENTS SCREENING TOOL (HOME FAST)</h1>
                     <h4 className='red'>
@@ -376,17 +370,15 @@ const GeriOtQuestionnaireForm = (props) => {
                       options={formOptions.geriOtQuestionnaireQ2}
                       row
                     />
-                    <PopupText qnNo='geriOtQuestionnaireQ2' triggerValue='Yes'>
-                      <h4>Please specify:</h4>
-                      <FastField
-                        name='geriOtQuestionnaireQ33'
-                        label='geriOtQuestionnaireQ33'
-                        component={CustomTextField}
-                        multiline
-                        rows={3}
-                        fullWidth
-                      />
-                    </PopupText>
+                    <h4>Please specify:</h4>
+                    <FastField
+                      name='geriOtQuestionnaireQ33'
+                      label='geriOtQuestionnaireQ33'
+                      component={CustomTextField}
+                      multiline
+                      rows={3}
+                      fullWidth
+                    />
                     <h3>3. Are your floor surfaces non slip?</h3>
                     <p>
                       <b>Definition:</b> Score ‘NO” if kitchen, toilet are non-slip, Score “YES” if
@@ -733,16 +725,6 @@ const GeriOtQuestionnaireForm = (props) => {
                     />
                     <h2>SCORING</h2>
                     <GetScores />
-                    <br />
-                    <h3 className='remove-top-margin'>
-                      Total (Record it as &quot;YES&quot; / 25 - &quot;NA&quot;)
-                    </h3>
-                    <FastField
-                      name='geriOtQuestionnaireQ32'
-                      label='geriOtQuestionnaireQ32'
-                      component={CustomTextField}
-                      fullWidth
-                    />
                     <br />
                     {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
                       <Typography color='error' variant='body2' sx={{ mb: 1 }}>
