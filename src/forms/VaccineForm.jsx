@@ -85,11 +85,10 @@ export default function VaccineForm() {
       {({ errors, submitCount, isSubmitting }) => (
         <Paper elevation={2}>
           <Grid display='flex' flexDirection='row'>
-            <Grid xs={9}>
+            <Grid xs={9} sx={{ width: '50%' }}>
               <Paper elevation={2}>
                 <Form className='fieldPadding'>
                   <Typography variant='h4'>Vaccination</Typography>
-
                   <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
                     You have received a pneumococcal vaccine.
                   </Typography>
@@ -101,7 +100,7 @@ export default function VaccineForm() {
                     row
                     fullwidth
                   />
-
+                  p
                   <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
                     You have received an Influenza vaccine.
                   </Typography>
@@ -112,7 +111,6 @@ export default function VaccineForm() {
                     options={formOptions.VAX2}
                     row
                   />
-
                   <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
                     Patient's Vaccination history
                   </Typography>
@@ -123,13 +121,11 @@ export default function VaccineForm() {
                     multiline
                     rows={3}
                   />
-
                   {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
                     <Typography color='error' variant='body2' sx={{ mb: 1 }}>
                       Please fill in all required fields correctly.
                     </Typography>
                   )}
-
                   <div>
                     {loading || isSubmitting ? (
                       <CircularProgress />
