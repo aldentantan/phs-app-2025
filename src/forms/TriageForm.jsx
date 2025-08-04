@@ -382,7 +382,7 @@ const TriageForm = () => {
               <ul>
                 <li>BP &gt; 180/120</li>
               </ul>
-              <Typography fontWeight='bold' variant='h6'>
+              <Typography fontWeight='bold' variant='h4'>
                 Q9. Does the patient's blood pressure require closer scrutiny by doctors later?
                 (e.g. Systolic above 180/120)
               </Typography>
@@ -410,7 +410,7 @@ const TriageForm = () => {
               <h3>Waist Circumference (in cm)</h3>
               <Field name='triageQ13' component={CustomNumberField} label='Triage Q13' min={0} />
 
-              <h2>4) Temperature</h2>
+              <h2>4) Ear Temperature Taking</h2>
               <h3>Temperature (in Celsius)</h3>
               <Field
                 name='triageQ14'

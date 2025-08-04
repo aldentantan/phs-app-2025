@@ -144,11 +144,11 @@ const OralHealthForm = () => {
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
-            <Typography variant='h4' component='h1' gutterBottom>
+            <Typography variant='h1' gutterBottom>
               <strong>Oral Health</strong>
             </Typography>
 
-            <Typography variant='h6' component='h3' fontWeight='bold'>
+            <Typography variant='h4' fontWeight='bold'>
               I have been informed and understand that:
             </Typography>
             <Typography component='div' gutterBottom>
@@ -193,7 +193,7 @@ const OralHealthForm = () => {
               options={formOptions.DENT1}
             />
 
-            <Typography variant='h6' component='h3' fontWeight='bold'>
+            <Typography variant='h4' fontWeight='bold'>
               Are you on any blood thinners or have any bleeding disorders?
             </Typography>
             <FastField
@@ -217,8 +217,8 @@ const OralHealthForm = () => {
               />
             </PopupText>
 
-            <Typography variant='h6' component='h3' gutterBottom>
-              Patient has completed Oral Health station.
+            <Typography variant='h4' fontWeight='bold'>
+              Patient has completed Oral Health station?
             </Typography>
             <FastField
               name='DENT3'
@@ -227,8 +227,8 @@ const OralHealthForm = () => {
               options={formOptions.DENT3}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
-              Patient has registered with NUS Dentistry for follow-up. If no, why not.
+            <Typography variant='h4' fontWeight='bold'>
+              Patient has registered with NUS Dentistry for follow-up? If no, why not.
             </Typography>
             <FastField
               name='DENT4'

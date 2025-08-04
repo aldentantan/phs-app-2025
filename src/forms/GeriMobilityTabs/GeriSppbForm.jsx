@@ -210,7 +210,7 @@ const GeriSppbForm = (props) => {
 
             <br />
 
-            <Typography variant='h6' fontWeight='bold'>
+            <Typography variant='subtitle1' fontWeight='bold' sx={{ mt: 2}}>
               Fall Risk Level:
             </Typography>
             <Field

@@ -216,9 +216,7 @@ const WceForm = (props) => {
                   )}
                   {hxSocial && hxSocial.SOCIALShortAns3 ? (
                     <p className='blue'>{hxSocial.SOCIALShortAns3}</p>
-                  ) : (
-                    <p className='blue'>nil</p>
-                  )}
+                  ) : null}
 
                   <h2>Family History</h2>
                   <p className='underlined'>
@@ -226,14 +224,12 @@ const WceForm = (props) => {
                     <span className='red'>(AMONG FIRST DEGREE RELATIVES)</span> for the following
                     cancers?:
                   </p>
-                  {hxFamily && hxFamily.FAMILY1 ? (
-                    <p className='blue'>{hxFamily.FAMILY1}</p>
-                  ) : (
-                    <p className='blue'>nil</p>
-                  )}
-                  <p className='underlined'>Age of diagnosis:</p>
-                  {hxFamily && hxFamily.FAMILYShortAns1 ? (
-                    <p className='blue'>{hxFamily.FAMILYShortAns1}</p>
+                  {hxFamily && Array.isArray(hxFamily.FAMILY2) && hxFamily.FAMILY2.length > 0 ? (
+                    hxFamily.FAMILY2.map((item, idx) => (
+                      <p className='blue' key={idx}>
+                        {item}
+                      </p>
+                    ))
                   ) : (
                     <p className='blue'>nil</p>
                   )}

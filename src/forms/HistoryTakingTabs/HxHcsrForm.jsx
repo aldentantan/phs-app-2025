@@ -107,7 +107,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             </span>{' '}
           </Typography>
 
-          <Typography variant='h6'>
+          <Typography variant='h4' fontWeight='bold'>
             Please enter History-taker&apos;s surname followed by initials (e.g. Tan J J)
           </Typography>
           <FastField
@@ -128,7 +128,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             If the participant has any <u>presenting complaints or concern(s)</u>, please take a
             brief history. (Please write NIL if otherwise).
           </Typography>
-          <Typography gutterBottom>
+          <Typography gutterBottom variant='h4' fontWeight='bold' sx={{ mt: 4}}>
             &quot;Do you have any health issues that you are currently concerned about?&quot;
             <br />
             &quot;最近有没有哪里不舒服&quot;
@@ -148,7 +148,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             treatment for their problems.
           </Typography>
 
-          <Typography variant='subtitle1' fontWeight='bold'>
+          <Typography variant='h4' fontWeight='bold' sx={{ mt: 4}}>
             Do you have any vision problems? Please specify if yes. Exclude complaints like
             unspecific itchy eyes etc.
           </Typography>
@@ -174,7 +174,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             />
           </PopupText>
 
-          <Typography variant='subtitle1' fontWeight='bold'>
+          <Typography variant='h4' fontWeight='bold'>
             Do you have any hearing problems? Please specify if yes.
           </Typography>
           <FastField
@@ -198,7 +198,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               sx={{ mb: 3, mt: 1 }}
             />
 
-            <Typography variant='subtitle1' fontWeight='bold'>
+            <Typography variant='h4' fontWeight='bold'>
               If you are 60 and above, do you currently use hearing aids/have been detected to
               require hearing aids?
             </Typography>
@@ -211,7 +211,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             />
           </PopupText>
 
-          <Typography variant='subtitle1' fontWeight='bold'>
+          <Typography variant='h4' fontWeight='bold'>
             Please tick to highlight if you feel SYSTEMS REVIEW require closer scrutiny by doctors
             later or if participant strongly insists.
           </Typography>
@@ -223,7 +223,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='subtitle1' fontWeight='bold'>
+          <Typography variant='h4' fontWeight='bold'>
             Please indicate if you feel that HEALTH CONCERNS require closer scrutiny by doctors
             later or if participant strongly insists.
           </Typography>
@@ -249,7 +249,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             />
           </PopupText>
 
-          <Typography variant='subtitle1' fontWeight='bold'>
+          <Typography variant='h4' fontWeight='bold'>
             Below is a non-exhaustive list of possible red flags:
           </Typography>
           <ul>

@@ -185,7 +185,7 @@ const DoctorsConsultForm = () => {
         <Form className='fieldPadding'>
           <div className='form--div'>
             <h1>Doctor&apos;s Station</h1>
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Doctor&apos;s Name
             </Typography>
             <FastField
@@ -195,7 +195,7 @@ const DoctorsConsultForm = () => {
               fullWidth
               multiline
             />
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Clinical Findings
             </Typography>
             <FastField
@@ -206,7 +206,7 @@ const DoctorsConsultForm = () => {
               multiline
               minRows={4}
             />
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Doctor&apos;s Memo
             </Typography>
             <FastField
