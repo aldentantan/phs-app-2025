@@ -7,8 +7,9 @@ import { getSavedData } from '../../services/mongoDB'
 import { submitForm } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
-import '../fieldPadding.css'
 import CustomTextField from 'src/components/form-components/CustomTextField.jsx'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
+import '../fieldPadding.css'
 
 const formName = 'geriPhqForm'
 
@@ -133,7 +134,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting, values }) => {
+      {({ isSubmitting, values, errors, submitCount }) => {
 
         const score = (pointsMap[values.PHQ1] || 0) + (pointsMap[values.PHQ2] || 0)
         return (
@@ -259,6 +260,11 @@ export default function HxPhqForm({ changeTab, nextTab }) {
             fullWidth
             multiline
             sx={{ mb: 3, mt: 1 }}
+          />
+
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
           />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
