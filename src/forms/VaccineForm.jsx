@@ -81,6 +81,7 @@ export default function VaccineForm() {
     >
       {({ errors, submitCount, isSubmitting }) => (
         <Paper elevation={2}>
+
           <Grid container display='flex' flexDirection='row'>
             <Grid item xs={9} md={9}>
               <Paper elevation={2}>
@@ -91,6 +92,7 @@ export default function VaccineForm() {
 
                   <Typography variant='subtitle1' fontWeight='bold'>
                     Are you eligible for vaccination?
+
                   </Typography>
                   <FastField
                     name='VAX1'
@@ -100,8 +102,10 @@ export default function VaccineForm() {
                     row
                   />
 
+
                   <Typography variant='subtitle1' fontWeight='bold'>
                     You have received a pneumococcal vaccine.
+
                   </Typography>
                   <FastField
                     name='VAX2'
@@ -133,13 +137,11 @@ export default function VaccineForm() {
                     multiline
                     minRows={3}
                   />
-
                   {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
                     <Typography color='error' variant='body2' sx={{ mb: 1 }}>
                       Please fill in all required fields correctly.
                     </Typography>
                   )}
-
                   <div>
                     {loading || isSubmitting ? (
                       <CircularProgress />

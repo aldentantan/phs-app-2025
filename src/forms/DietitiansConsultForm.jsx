@@ -129,6 +129,7 @@ const DietitiansConsultForm = () => {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
+
           <div>
             <Typography variant='h2' fontWeight='bold' gutterBottom>
               Dietitian&apos;s Consultation
@@ -155,6 +156,7 @@ const DietitiansConsultForm = () => {
               multiline
             />
 
+
             <Typography variant='h4' fontWeight='bold'>
               Dietitian&apos;s Notes:
             </Typography>
@@ -177,6 +179,7 @@ const DietitiansConsultForm = () => {
               minRows={4}
             />
 
+
             <Typography variant='h4' fontWeight='bold'>
               Does the participant require urgent follow up?
             </Typography>
@@ -188,6 +191,7 @@ const DietitiansConsultForm = () => {
               row
             />
             <PopupText qnNo='dietitiansConsultQ5' triggerValue='Yes'>
+
               <Typography variant='h4' fontWeight='bold'>
                 Reasons for urgent follow up:
               </Typography>
@@ -199,6 +203,7 @@ const DietitiansConsultForm = () => {
                 minRows={4}
               />
             </PopupText>
+
 
             <Typography variant='h4' fontWeight='bold'>
               Referred to Polyclinic for follow-up?
@@ -270,9 +275,7 @@ const DietitiansConsultForm = () => {
       {hxSocial ? <p className='blue'>{hxSocial.SOCIAL13}</p> : null}
       {hxSocial ? <p className='blue'>Fruits: {hxSocial.SOCIAL13A}</p> : null}
       {hxSocial ? <p className='blue'>Vegetables: {hxSocial.SOCIAL13B}</p> : null}
-      {hxSocial ? (
-        <p className='blue'>Whole grain and cereals: {hxSocial.SOCIAL13C}</p>
-      ) : null}
+      {hxSocial ? <p className='blue'>Whole grain and cereals: {hxSocial.SOCIAL13C}</p> : null}
       <p className='underlined'>
         Does the participant exercise in any form of moderate physical activity for at least 150
         minutes OR intense physical activity at least 75 minutes throuhgout the week?
