@@ -7,10 +7,11 @@ import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
+import ErrorNotification from '../../components/form-components/ErrorNotification.jsx'
 import { getSavedData } from '../../services/mongoDB.js'
 import '../fieldPadding.css'
 import '../forms.css'
-import allForms from '../forms.json'
+//import allForms from '../forms.json'
 
 const formName = 'hxM4M5ReviewForm'
 
@@ -38,10 +39,8 @@ const HxM4M5ReviewForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      const regForm = await getSavedData(patientId, allForms.registrationForm)
+      //const regForm = await getSavedData(patientId, allForms.registrationForm)
       setSavedData({ ...initialValues, ...savedData })
-      setRegForm(regForm)
-      setLoadingSidePanel(false)
     }
 
     fetchData()
@@ -67,13 +66,13 @@ const HxM4M5ReviewForm = () => {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, submitCount }) => (
         <Form className='fieldPadding'>
           <Typography variant='h4'>
             <strong>M4/M5 Review</strong>
           </Typography>
           <Typography fontWeight='bold'>
-            Does the patient need to go for Doctor's Consult station?
+            Does the patient need to go for Doctor&apos;s Consult station?
           </Typography>
           <FastField
             name='hxM4M5Q1'
@@ -82,6 +81,12 @@ const HxM4M5ReviewForm = () => {
             options={formOptions.hxM4M5Q1}
             row
           />
+
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
+
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
             {loading || isSubmitting ? (
               <CircularProgress />
