@@ -8,6 +8,7 @@ import { FormContext } from '../../api/utils.js'
 import CustomTextField from 'src/components/form-components/CustomTextField.jsx'
 import CustomCheckboxGroup from '../../components/form-components/CustomCheckboxGroup'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 import { getSavedData } from '../../services/mongoDB'
 import allForms from '../forms.json'
 
@@ -117,7 +118,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, submitCount }) => (
         <Form className='fieldPadding'>
           <Typography variant='h4' gutterBottom>
             <strong>PAST MEDICAL HISTORY</strong>
@@ -274,14 +275,14 @@ export default function HxNssForm({ changeTab, nextTab }) {
             doctors later. Explain reasons for recommendation.
           </Typography>
           <Typography variant='subtitle1' fontWeight='bold'>
-            For participant with DM, refer to Doctor's Station if:
+            For participant with DM, refer to Doctor&apos;s Station if:
           </Typography>
           <ul>
             <li>Symptomatic, and non-compliant</li>
             <li>Asymptomatic, and non-compliant</li>
           </ul>
           <Typography>
-            Also refer to Doctor's Station if participant has not been diagnosed with DM, but has
+            Also refer to Doctor&apos;s Station if participant has not been diagnosed with DM, but has
             signs of DM (polyuria, polydipsia, periphery neuropathy, blurring of vision etc.)
           </Typography>
 
@@ -357,6 +358,11 @@ export default function HxNssForm({ changeTab, nextTab }) {
               </PopupText>
             </>
           )}
+
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
             {loading || isSubmitting ? (
