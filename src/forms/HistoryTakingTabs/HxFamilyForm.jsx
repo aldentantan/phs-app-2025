@@ -8,6 +8,7 @@ import { submitForm } from '../../api/api.jsx'
 import CustomCheckboxGroup from '../../components/form-components/CustomCheckboxGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 import PopupText from '../../utils/popupText'
 
 const formName = 'hxFamilyForm'
@@ -68,7 +69,7 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, submitCount }) => (
         <Form className='fieldPadding'>
           <Typography variant='h4'>
             <strong>FAMILY HISTORY</strong>
@@ -102,6 +103,11 @@ export default function HxFamilyForm({ changeTab, nextTab }) {
             label='FAMILY2'
             component={CustomCheckboxGroup}
             options={formOptions.FAMILY2}
+          />
+
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
           />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
