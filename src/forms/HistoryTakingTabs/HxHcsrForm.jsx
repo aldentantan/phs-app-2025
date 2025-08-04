@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Divider, Paper, Typography } from '@mui/material'
-import { FastField, Field, Form, Formik } from 'formik'
+import { FastField, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
@@ -8,6 +8,7 @@ import { getSavedData } from '../../services/mongoDB'
 import PopupText from '../../utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 
 const formName = 'hxHcsrForm'
 
@@ -91,7 +92,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
         enableReinitialize
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, errors, submitCount }) => (
           <Form className='fieldPadding'>
             <Typography variant='h4' gutterBottom>
               <strong>PARTICIPANT IDENTIFICATION</strong>
@@ -276,6 +277,11 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               fullWidth
               multiline
               sx={{ mb: 3, mt: 1 }}
+            />
+
+            <ErrorNotification 
+              show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+              message="Please fill in all required fields correctly."
             />
 
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
