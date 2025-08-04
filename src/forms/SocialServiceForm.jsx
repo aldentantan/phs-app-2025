@@ -146,11 +146,11 @@ const SocialServiceForm = () => {
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
-            <Typography variant='h4' component='h1' fontWeight='bold'>
+            <Typography variant='h2' fontWeight='bold'>
               Social Service Station
             </Typography>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold' sx={{ mt: 2 }}>
               Has the participant visited the Social Service station?
             </Typography>
             <FastField
@@ -161,7 +161,7 @@ const SocialServiceForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Brief summary of the participant&apos;s concerns
             </Typography>
             <FastField
@@ -172,7 +172,7 @@ const SocialServiceForm = () => {
               minRows={2}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Brief summary of what will be done for the participant (Eg name of scheme participant
               wants to apply for)
             </Typography>
@@ -184,7 +184,7 @@ const SocialServiceForm = () => {
               minRows={2}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Is follow-up required?
             </Typography>
             <FastField
@@ -196,7 +196,7 @@ const SocialServiceForm = () => {
             />
 
             <PopupText qnNo='socialServiceQ4' triggerValue='Yes'>
-              <Typography variant='h6' component='h3' gutterBottom>
+              <Typography variant='h4' fontWeight='bold'>
                 Brief summary of follow-up for the participant
               </Typography>
               <FastField
@@ -208,7 +208,7 @@ const SocialServiceForm = () => {
               />
             </PopupText>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Completed application for HDB EASE?
             </Typography>
             <FastField
@@ -218,7 +218,7 @@ const SocialServiceForm = () => {
               options={formOptions.socialServiceCheckbox}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Completed CHAS application?
             </Typography>
             <FastField
@@ -228,7 +228,7 @@ const SocialServiceForm = () => {
               options={formOptions.socialServiceCheckbox}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               If application is unsuccessful, document the reasons below and further follow-up
               action.
             </Typography>

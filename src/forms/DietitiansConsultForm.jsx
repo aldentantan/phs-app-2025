@@ -129,12 +129,13 @@ const DietitiansConsultForm = () => {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
-          <div className='form--div'>
-            <Typography variant='h2'>
-              <strong>Dietitian&apos;s Consultation</strong>
+
+          <div>
+            <Typography variant='h2' fontWeight='bold' gutterBottom>
+              Dietitian&apos;s Consultation
             </Typography>
 
-            <Typography component='h3'>
+            <Typography variant='h4' fontWeight='bold'>
               Has the participant visited the Dietitian&apos;s Consult station?
             </Typography>
             <FastField
@@ -145,7 +146,9 @@ const DietitiansConsultForm = () => {
               row
             />
 
-            <Typography component='h3'>Dietitian&apos;s Name:</Typography>
+            <Typography variant='h4' fontWeight='bold'>
+              Dietitian&apos;s Name:
+            </Typography>
             <FastField
               name='dietitiansConsultQ1'
               label='dietitiansConsultQ1'
@@ -153,7 +156,10 @@ const DietitiansConsultForm = () => {
               multiline
             />
 
-            <Typography component='h3'>Dietitian&apos;s Notes:</Typography>
+
+            <Typography variant='h4' fontWeight='bold'>
+              Dietitian&apos;s Notes:
+            </Typography>
             <FastField
               name='dietitiansConsultQ3'
               label='dietitiansConsultQ3'
@@ -162,7 +168,9 @@ const DietitiansConsultForm = () => {
               minRows={4}
             />
 
-            <Typography component='h3'>Notes for participant (if applicable):</Typography>
+            <Typography variant='h4' fontWeight='bold'>
+              Notes for participant (if applicable):
+            </Typography>
             <FastField
               name='dietitiansConsultQ4'
               label='dietitiansConsultQ4'
@@ -171,7 +179,10 @@ const DietitiansConsultForm = () => {
               minRows={4}
             />
 
-            <Typography component='h3'>Does the participant require urgent follow up?</Typography>
+
+            <Typography variant='h4' fontWeight='bold'>
+              Does the participant require urgent follow up?
+            </Typography>
             <FastField
               name='dietitiansConsultQ5'
               label='dietitiansConsultQ5'
@@ -180,7 +191,10 @@ const DietitiansConsultForm = () => {
               row
             />
             <PopupText qnNo='dietitiansConsultQ5' triggerValue='Yes'>
-              <Typography component='h3'>Reasons for urgent follow up:</Typography>
+
+              <Typography variant='h4' fontWeight='bold'>
+                Reasons for urgent follow up:
+              </Typography>
               <FastField
                 name='dietitiansConsultQ6'
                 label='dietitiansConsultQ6'
@@ -190,7 +204,10 @@ const DietitiansConsultForm = () => {
               />
             </PopupText>
 
-            <Typography component='h3'>Referred to Polyclinic for follow-up?</Typography>
+
+            <Typography variant='h4' fontWeight='bold'>
+              Referred to Polyclinic for follow-up?
+            </Typography>
             <FastField
               name='dietitiansConsultQ8'
               component={CustomRadioGroup}

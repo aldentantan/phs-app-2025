@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Paper, Divider, Typography, CircularProgress, Button, Grid } from '@mui/material'
-import { Formik, Form, FastField } from 'formik'
+import { Button, CircularProgress, Divider, Grid, Paper, Typography } from '@mui/material'
+import { FastField, Form, Formik } from 'formik'
+import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router'
 import * as Yup from 'yup'
+import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
-import { submitForm } from '../api/api.jsx'
-import allForms from './forms.json'
 import './fieldPadding.css'
-import { useNavigate } from 'react-router'
+import allForms from './forms.json'
 
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomTextField from '../components/form-components/CustomTextField'
@@ -15,17 +15,13 @@ import CustomTextField from '../components/form-components/CustomTextField'
 const formName = 'vaccineForm'
 
 const initialValues = {
-  VAX1: '',
   VAX2: '',
   VAX3: '',
+  VAX4: '',
 }
 
 const formOptions = {
-  VAX1: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
-  ],
-  VAX2: [
+  YesNo: [
     { label: 'Yes', value: 'Yes' },
     { label: 'No', value: 'No' },
   ],
@@ -44,6 +40,7 @@ export default function VaccineForm() {
     VAX1: Yup.string().required(),
     VAX2: Yup.string().required(),
     VAX3: Yup.string().required(),
+    VAX4: Yup.string().required(),
   })
 
   useEffect(() => {
@@ -84,42 +81,61 @@ export default function VaccineForm() {
     >
       {({ errors, submitCount, isSubmitting }) => (
         <Paper elevation={2}>
-          <Grid display='flex' flexDirection='row'>
-            <Grid xs={9} sx={{ width: '50%' }}>
+
+          <Grid container display='flex' flexDirection='row'>
+            <Grid item xs={9} md={9}>
               <Paper elevation={2}>
                 <Form className='fieldPadding'>
-                  <Typography variant='h4'>Vaccination</Typography>
-                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
-                    You have received a pneumococcal vaccine.
+                  <Typography variant='h1' fontWeight='bold' gutterBottom>
+                    Vaccination
+                  </Typography>
+
+                  <Typography variant='subtitle1' fontWeight='bold'>
+                    Are you eligible for vaccination?
+
                   </Typography>
                   <FastField
                     name='VAX1'
                     label='VAX1'
                     component={CustomRadioGroup}
-                    options={formOptions.VAX1}
+                    options={formOptions.YesNo}
                     row
-                    fullwidth
                   />
-                  p
-                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
-                    You have received an Influenza vaccine.
+
+
+                  <Typography variant='subtitle1' fontWeight='bold'>
+                    You have received a pneumococcal vaccine.
+
                   </Typography>
                   <FastField
                     name='VAX2'
                     label='VAX2'
                     component={CustomRadioGroup}
-                    options={formOptions.VAX2}
+                    options={formOptions.YesNo}
                     row
+                    fullwidth
                   />
-                  <Typography variant='h6' sx={{ fontWeight: 'bold' }}>
-                    Patient's Vaccination history
+
+                  <Typography variant='subtitle1' fontWeight='bold'>
+                    You have received an Influenza vaccine.
                   </Typography>
                   <FastField
                     name='VAX3'
                     label='VAX3'
+                    component={CustomRadioGroup}
+                    options={formOptions.YesNo}
+                    row
+                  />
+
+                  <Typography variant='subtitle1' fontWeight='bold'>
+                    Patient's Vaccination history
+                  </Typography>
+                  <FastField
+                    name='VAX4'
+                    label='VAX4'
                     component={CustomTextField}
                     multiline
-                    rows={3}
+                    minRows={3}
                   />
                   {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
                     <Typography color='error' variant='body2' sx={{ mb: 1 }}>
@@ -142,8 +158,10 @@ export default function VaccineForm() {
             </Grid>
 
             <Grid
+              item
               p={1}
-              width='30%'
+              xs={3}
+              md={3}
               display='flex'
               flexDirection='column'
               alignItems={loadingSidePanel ? 'center' : 'left'}
