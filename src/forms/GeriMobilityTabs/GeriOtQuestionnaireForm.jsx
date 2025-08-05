@@ -315,10 +315,10 @@ const GeriOtQuestionnaireForm = (props) => {
       validationSchema={validationSchema}
       enableReinitialize
       onSubmit={async (values, { setSubmitting }) => {
-        isLoading(true)
+        setLoading(true)
         const response = await submitForm(values, patientId, formName)
         setTimeout(() => {
-          isLoading(false)
+          setLoading(false)
           setSubmitting(false)
           if (response.result) {
             alert('Successfully submitted form')
