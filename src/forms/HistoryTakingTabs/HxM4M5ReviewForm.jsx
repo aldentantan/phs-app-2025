@@ -41,7 +41,6 @@ const HxM4M5ReviewForm = () => {
       const savedData = await getSavedData(patientId, formName)
 
       setSavedData({ ...initialValues, ...savedData })
-      setLoadingSidePanel(false)
     }
 
     fetchData()

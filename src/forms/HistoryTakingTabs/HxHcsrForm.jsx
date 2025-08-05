@@ -7,11 +7,8 @@ import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
-
 import ErrorNotification from '../../components/form-components/ErrorNotification'
-
 import PopupText from 'src/utils/popupText'
-
 
 const formName = 'hxHcsrForm'
 
@@ -90,14 +87,13 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
   }
 
   const renderForm = () => (
-
     <Formik
       initialValues={savedData}
       validationSchema={validationSchema}
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, submitCount, errors }) => (
         <Form className='fieldPadding'>
           <Typography variant='h4' gutterBottom>
             <strong>PARTICIPANT IDENTIFICATION</strong>
@@ -111,7 +107,6 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
               </ol>
             </span>{' '}
           </Typography>
-
 
           <Typography variant='h4' fontWeight='bold'>
             Please enter History-taker&apos;s surname followed by initials (e.g. Tan J J)
@@ -290,21 +285,20 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             sx={{ mb: 3, mt: 1 }}
           />
 
-            <ErrorNotification 
-              show={submitCount > 0 && Object.keys(errors || {}).length > 0}
-              message="Please fill in all required fields correctly."
-            />
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
 
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
-              {loading || isSubmitting ? (
-                <CircularProgress />
-              ) : (
-                <Button type='submit' variant='contained' color='primary'>
-                  Submit
-                </Button>
-              )}
-            </div>
-
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
+            {loading || isSubmitting ? (
+              <CircularProgress />
+            ) : (
+              <Button type='submit' variant='contained' color='primary'>
+                Submit
+              </Button>
+            )}
+          </div>
 
           <br />
           <Divider />
@@ -313,7 +307,5 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-
   return <Paper elevation={2}>{renderForm()}</Paper>
 }
-
