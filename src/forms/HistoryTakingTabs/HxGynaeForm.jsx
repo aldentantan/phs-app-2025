@@ -4,7 +4,7 @@ import { Formik, Form, Field, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
 import { getSavedData } from '../../services/mongoDB'
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
@@ -100,6 +100,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       changeTab(null, nextTab)
     } else {
@@ -119,14 +120,14 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
           <Typography variant='h4'>
             <strong>GYNECOLOGY</strong>
           </Typography>
-          <Typography fontWeight='bold' color='error'>
+          <Typography fontWeight='bold' color='error' sx={{ mb: 2}}>
             This form should only be submitted for female participants
           </Typography>
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             Are you menopaused?
           </Typography>
-          <Typography variant='h6'>i.e. &gt; 1 year from your last menstrual period</Typography>
+          <Typography variant='subtitle1'>i.e. &gt; 1 year from your last menstrual period</Typography>
           <FastField
             name='GYNAE1'
             label='GYNAE1'
@@ -136,7 +137,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
           />
 
           <PopupText qnNo='GYNAE1' triggerValue='Yes'>
-            <Typography variant='h6' fontWeight='bold'>
+            <Typography variant='subtitle1' fontWeight='bold'>
               Do you have any postmenopausal bleeding?
             </Typography>
             <FastField
@@ -147,7 +148,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
               row
             />
 
-            <Typography variant='h6'>Please specify:</Typography>
+            <Typography variant='subtitle1'>Please specify:</Typography>
             <Field
               name='GYNAEShortAns2'
               label='GYNAEShortAns2'
@@ -157,7 +158,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             />
           </PopupText>
 
-          <Typography variant='h6' >
+          <Typography variant='subtitle1' >
             <strong>Do you have any abnormal per vaginal bleeding?</strong><br />
             e.g. bleeding between periods, prolonged menses, bleeding after intercourse
           </Typography>
@@ -169,7 +170,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns3'
             label='GYNAEShortAns3'
@@ -178,7 +179,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you have irregular periods or less than 4 menstrual cycles a year?
           </Typography>
           <FastField
@@ -188,7 +189,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <Field
             name='GYNAEShortAns4'
             label='GYNAEShortAns4'
@@ -197,7 +198,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you have any menstrual concerns?
           </Typography>
           <FastField
@@ -207,7 +208,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns5'
             label='GYNAEShortAns5'
@@ -216,7 +217,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you feel any abnormal abdominal masses?
           </Typography>
           <FastField
@@ -226,7 +227,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <Field
             name='GYNAEShortAns6'
             label='GYNAEShortAns6'
@@ -235,7 +236,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you have any new onset abdominal pain/bloatedness?
           </Typography>
           <FastField
@@ -245,7 +246,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns7'
             label='GYNAEShortAns7'
@@ -254,7 +255,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you have fertility concerns?
           </Typography>
           <FastField
@@ -264,7 +265,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns8'
             label='GYNAEShortAns8'
@@ -274,7 +275,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
           />
 
           <PopupText qnNo='GYNAE8' triggerValue='Yes'>
-            <Typography variant='h6'  fontWeight='bold'>
+            <Typography variant='subtitle1'  fontWeight='bold'>
               Are you keen to investigate for subfertility?
             </Typography>
             <FastField
@@ -286,7 +287,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             />
           </PopupText>
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you have any urinary symptoms?
           </Typography>
           <FastField
@@ -296,7 +297,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns10'
             label='GYNAEShortAns10'
@@ -306,7 +307,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             sx={{ mb: 3, mt: 1 }}
           />
 
-          <Typography variant='h6'  fontWeight='bold'>
+          <Typography variant='subtitle1'  fontWeight='bold'>
             Do you feel any lump in vagina or pelvic organ prolapse?
           </Typography>
           <FastField
@@ -316,7 +317,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             options={formOptions.YESNO}
             row
           />
-          <Typography variant='h6' >Please specify:</Typography>
+          <Typography variant='subtitle1' >Please specify:</Typography>
           <FastField
             name='GYNAEShortAns11'
             label='GYNAEShortAns11'
@@ -325,7 +326,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             multiline
           />
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             When, if any, was the last HPV test you have taken? <br />
             (Please verify on HealthHub. HPV is different from Pap Smear, answer Pap Smear in the
             next question)
@@ -338,7 +339,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             When if any, was the last Pap Smear test you have taken? (Please verify on HealthHub)
           </Typography>
           <FastField
@@ -349,7 +350,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             I am asking the next few questions to check your eligibility for a Pap Smear. This
             question may be sensitive, but could I ask if you have engaged in sexual intercourse
             before?
@@ -362,7 +363,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>Are you pregnant?</Typography>
+          <Typography variant='subtitle1' fontWeight='bold'>Are you pregnant?</Typography>
           <FastField
             name='GYNAE15'
             label='GYNAE15'
@@ -371,10 +372,11 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>
-            Was your last menstrual period within the window where the first day falls between xx
-            and xx 2025? <br />
-            If you are post-menopausal or use contraception, please indicate &apos;yes&apos;
+
+          <Typography variant='subtitle1' fontWeight='bold'>
+            Was your last menstrual period within the window where the first day falls between 28 July and 4 Aug 2025? <br />
+            If you are post-menopausal or use contraception, please indicate 'yes'
+
           </Typography>
           <FastField
             name='GYNAE16'
@@ -384,7 +386,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             Indicated interest for HPV Test under SCS?
           </Typography>
           <FastField
@@ -395,7 +397,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          <Typography variant='h6' fontWeight='bold'>
+          <Typography variant='subtitle1' fontWeight='bold'>
             Is patient indicated for on-site testing? Please circle On-Site Testing on Form A as well
           </Typography>
           <FastField

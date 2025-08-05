@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
 import ErrorNotification from '../../components/form-components/ErrorNotification.jsx'
@@ -39,8 +39,9 @@ const HxM4M5ReviewForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       const savedData = await getSavedData(patientId, formName)
-      //const regForm = await getSavedData(patientId, allForms.registrationForm)
+
       setSavedData({ ...initialValues, ...savedData })
+      setLoadingSidePanel(false)
     }
 
     fetchData()
@@ -52,6 +53,7 @@ const HxM4M5ReviewForm = () => {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       navigate('/app/dashboard', { replace: true })
     } else {
@@ -72,7 +74,9 @@ const HxM4M5ReviewForm = () => {
             <strong>M4/M5 Review</strong>
           </Typography>
           <Typography fontWeight='bold'>
-            Does the patient need to go for Doctor&apos;s Consult station?
+
+            Does the patient need to go for Doctor&apos;s Station?
+
           </Typography>
           <FastField
             name='hxM4M5Q1'

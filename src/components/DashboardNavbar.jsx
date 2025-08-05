@@ -70,6 +70,18 @@ const DashboardNavbar = ({ onMobileNavOpen, ...rest }) => {
             Doctor PDF
           </Button>
         )}
+        {admin && (
+          <Button
+            color='primary'
+            size='large'
+            type='submit'
+            variant='contained'
+            href='/app/formAadmin'
+            sx={{ marginLeft: 2 }}
+          >
+            Form A
+          </Button>
+        )}
 
         <Box sx={{ flexGrow: 1 }} />
         <Hidden lgUp>

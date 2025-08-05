@@ -3,7 +3,7 @@ import { FastField, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import PopupText from 'src/utils/popupText.jsx'
 import * as Yup from 'yup'
-import { submitForm } from '../../api/api.jsx'
+import { submitForm, checkFormA } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import CustomTextField from 'src/components/form-components/CustomTextField.jsx'
 import CustomCheckboxGroup from '../../components/form-components/CustomCheckboxGroup'
@@ -104,6 +104,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
     setLoading(false)
     setSubmitting(false)
     if (response.result) {
+      checkFormA(response.qNum)
       alert('Successfully submitted form')
       changeTab(null, nextTab)
     } else {
@@ -135,7 +136,13 @@ export default function HxNssForm({ changeTab, nextTab }) {
             <li>Complications</li>
             <li>Follow up route (specify whether GP/Polyclinic/FMC/SOC)</li>
           </Typography>
-          <FastField name='PMHX1' component={CustomTextField} label='PMHX1' sx={{ mb: 5 }} />
+          <FastField
+            name='PMHX1'
+            component={CustomTextField}
+            label='PMHX1'
+            sx={{ mb: 5 }}
+            multiline
+          />
 
           <Typography variant='subtitle1' color='error' fontWeight='bold' gutterBottom>
             If participant is not engaged with any follow-up, ask:
@@ -196,11 +203,11 @@ export default function HxNssForm({ changeTab, nextTab }) {
             Do you have any drug allergies? If yes, please specify.
           </Typography>
           <FastField
-          name='PMHX10'
-          label='PMHX10'
-          component={CustomRadioGroup}
-          options={formOptions.PMHX8}
-          row
+            name='PMHX10'
+            label='PMHX10'
+            component={CustomRadioGroup}
+            options={formOptions.PMHX10}
+            row
           />
           <PopupText qnNo='PMHX10' triggerValue='Yes'>
             <Typography fontWeight='bold'>Please specify:</Typography>
@@ -293,14 +300,17 @@ export default function HxNssForm({ changeTab, nextTab }) {
             options={formOptions.PMHX7}
             row
           />
-          <FastField
-            name='PMHXShortAns7'
-            component={CustomTextField}
-            label="PMHXShortAns7 (Explain reasons for recommendation to Doctor's Station)"
-            fullWidth
-            multiline
-            sx={{ mb: 3 }}
-          />
+
+          <PopupText qnNo='PMHX7' triggerValue='Yes'>
+            <FastField
+              name='PMHXShortAns7'
+              component={CustomTextField}
+              label="PMHXShortAns7 (Explain reasons for recommendation to Doctor's Station)"
+              fullWidth
+              multiline
+              sx={{ mb: 3 }}
+            />
+          </PopupText>
 
           {/* For participants who are 60 and above, show PMHX8 and PMHX9 */}
           {regForm.registrationQ4 >= 60 && (
@@ -379,9 +389,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-  return (
-    <Paper elevation={2}>
-      {renderForm()}
-    </Paper>
-  )
+
+  return <Paper elevation={2}>{renderForm()}</Paper>
 }
+

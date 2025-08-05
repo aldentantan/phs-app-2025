@@ -5,8 +5,8 @@ import Tabs from '@mui/material/Tabs'
 import Typography from '@mui/material/Typography'
 import { styled } from '@mui/system'
 import PropTypes from 'prop-types'
-import React from 'react'
-import { ScrollTopContext } from '../../api/utils.js'
+import React, { useState, useContext, useEffect } from 'react'
+import { ScrollTopContext, FormContext } from '../../api/utils.js'
 import HxFamilyForm from './HxFamilyForm.jsx'
 import HxGynaeForm from './HxGynaeForm.jsx'
 import HxHcsrForm from './HxHcsrForm.jsx'
@@ -15,6 +15,8 @@ import HxNssForm from './HxNssForm.jsx'
 import HxOralForm from './HxOralForm.jsx'
 import HxPhqForm from './HxPhqForm.jsx'
 import HxSocialForm from './HxSocialForm.jsx'
+import allForms from '../forms.json'
+import { getSavedData } from '../../services/mongoDB.js'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props
@@ -57,12 +59,31 @@ const HxWrapper = styled('div')(
 )
 
 export default function HxTabs() {
-  const [value, setValue] = React.useState(0)
-  const { scrollTop } = React.useContext(ScrollTopContext)
+  const [value, setValue] = useState(0)
+  const [isFemale, setIsFemale] = useState(false)
+  const { scrollTop } = useContext(ScrollTopContext)
+  const { patientId } = useContext(FormContext)
+
+  // Fetches regForm data to show hxGynae tab based on whether patient is female or not
+  useEffect(() => {
+    const fetchData = async () => {
+      const registrationData = await getSavedData(patientId, allForms.registrationForm)
+      setIsFemale(registrationData?.registrationQ5 === 'Female' ? true : false)
+      console.log('isFemale:', registrationData?.registrationQ5)
+    }
+    fetchData()
+  }, [patientId])
 
   const handleChange = (event, newValue) => {
     scrollTop()
-    setValue(newValue)
+    // If male and trying to go to Gynae (index 5), skip to PHQ (index 5 for males)
+    if (!isFemale && newValue === 5) {
+      setValue(5) // PHQ tab for males
+    } else if (!isFemale && newValue === 6) {
+      setValue(6) // M4/M5 Review tab for males
+    } else {
+      setValue(newValue)
+    }
   }
 
   return (
@@ -73,10 +94,10 @@ export default function HxTabs() {
           <Tab label='PMHx' {...a11yProps(1)} />
           <Tab label='Social' {...a11yProps(2)} />
           <Tab label='Oral' {...a11yProps(3)} />
-          <Tab label='Family' {...a11yProps(3)} />
-          <Tab label='Gynae' {...a11yProps(3)} />
-          <Tab label='PHQ' {...a11yProps(3)} />
-          <Tab label='M4/M5 Review' {...a11yProps(3)} />
+          <Tab label='Family' {...a11yProps(4)} />
+          {isFemale && <Tab label='Gynae' {...a11yProps(5)} />}
+          <Tab label='PHQ' {...a11yProps(6)} />
+          <Tab label='M4/M5 Review' {...a11yProps(7)} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -94,14 +115,17 @@ export default function HxTabs() {
       <TabPanel value={value} index={4}>
         <HxFamilyForm changeTab={handleChange} nextTab={5} />
       </TabPanel>
-      <TabPanel value={value} index={5}>
-        <HxGynaeForm changeTab={handleChange} nextTab={6} />
+      {/* Only show hxGynae form if the patient is female */}
+      {isFemale && (
+        <TabPanel value={value} index={5}>
+          <HxGynaeForm changeTab={handleChange} nextTab={6} />
+        </TabPanel>
+      )}
+      <TabPanel value={value} index={isFemale ? 6 : 5}>
+        <HxPhqForm changeTab={handleChange} nextTab={isFemale ? 7 : 6} />
       </TabPanel>
-      <TabPanel value={value} index={6}>
-        <HxPhqForm changeTab={handleChange} nextTab={7} />
-      </TabPanel>
-      <TabPanel value={value} index={7}>
-        <HxM4M5ReviewForm/>
+      <TabPanel value={value} index={isFemale ? 7 : 6}>
+        <HxM4M5ReviewForm />
       </TabPanel>
     </HxWrapper>
   )

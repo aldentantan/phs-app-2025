@@ -43,7 +43,6 @@ const formOptions = {
   LUNG1: YesNo,
   LUNG1a: YesNo,
   LUNG2: YesNo,
-  LUNG14: YesNo,
 }
 
 const validationSchema = Yup.object({
@@ -60,11 +59,7 @@ const validationSchema = Yup.object({
     then: (schema) => schema.required('Please specify why test was not completed'),
     otherwise: (schema) => schema,
   }),
-  LUNG3: Yup.number().typeError('Must be a number').required('FVC (L) is required'),
-  LUNG4: Yup.number().typeError('Must be a number').required('FEV1 (L) is required'),
-  LUNG5: Yup.number().typeError('Must be a number').required('FVC (%pred) is required'),
-  LUNG6: Yup.number().typeError('Must be a number').required('FEV1 (%pred) is required'),
-  LUNG7: Yup.number().typeError('Must be a number').required('FEV1:FVC (%) is required'),
+
 })
 
 function determineLungType(lung5, lung7) {
@@ -84,7 +79,15 @@ const LungFnForm = () => {
   const { patientId } = useContext(FormContext)
   const navigate = useNavigate()
 
-  const [savedData, setSavedData] = useState(initialValues)
+
+  const [initialValues, setInitialValues] = useState({
+    LUNG1: '',
+    LUNGShortAns1: '',
+    LUNG1a: '',
+    LUNG2: '',
+    LUNGShortAns2: '',
+  })
+
   const [social, setSocial] = useState({})
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -210,72 +213,7 @@ const LungFnForm = () => {
                       multiline
                       fullWidth
                     />
-                  </PopupText>
 
-                  <Typography variant='h5' component='h2' gutterBottom sx={{ mt: 3 }}>
-                    Pre-bronchodilator Results
-                  </Typography>
-                  
-                  <Typography variant='h6' component='h3' gutterBottom>
-                    FVC (L)
-                  </Typography>
-                  <FastField 
-                    name='LUNG3' 
-                    label='FVC (L)' 
-                    component={CustomNumberField} 
-                    fullWidth 
-                  />
-                  
-                  <Typography variant='h6' component='h3' gutterBottom>
-                    FEV1 (L)
-                  </Typography>
-                  <FastField
-                    name='LUNG4'
-                    label='FEV1 (L)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  
-                  <Typography variant='h6' component='h3' gutterBottom>
-                    FVC (%pred)
-                  </Typography>
-                  <FastField
-                    name='LUNG5'
-                    label='FVC (%pred)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  
-                  <Typography variant='h6' component='h3' gutterBottom>
-                    FEV1 (%pred)
-                  </Typography>
-                  <FastField
-                    name='LUNG6'
-                    label='FEV1 (%pred)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-                  
-                  <Typography variant='h6' component='h3' gutterBottom>
-                    FEV1:FVC (%)
-                  </Typography>
-                  <FastField
-                    name='LUNG7'
-                    label='FEV1:FVC (%)'
-                    component={CustomNumberField}
-                    fullWidth
-                  />
-
-                  <Typography variant='h6' component='h3' gutterBottom sx={{ mt: 2 }}>
-                    Lung Type:
-                  </Typography>
-                  <Typography 
-                    variant='body1' 
-                    className='blue'
-                    sx={{ fontWeight: 'bold', color: 'primary.main' }}
-                  >
-                    {determineLungType(values.LUNG5, values.LUNG7) || 'nil'}
-                  </Typography>
                 </div>
 
                 <ErrorNotification 

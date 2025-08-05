@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Formik, Form, Field, FastField } from 'formik'
 import { validationSchema } from './registrationSchema'
 
 import { Divider, Paper, CircularProgress, Button, TextField, Typography, Box } from '@mui/material'
 
-import { submitForm } from '../api/api.jsx'
+import { submitForm, checkFormA } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
 import PopupText from 'src/utils/popupText'
@@ -15,12 +15,20 @@ import CustomTextField from '../components/form-components/CustomTextField'
 import CustomCheckbox from '../components/form-components/CustomCheckbox'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomSelect from '../components/form-components/CustomSelect'
+
 import ErrorNotification from 'src/components/form-components/ErrorNotification'
+
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo'
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { DatePicker } from '@mui/x-date-pickers/DatePicker'
+import dayjs from 'dayjs'
+
 
 const initialValues = {
   registrationQ1: 'Mr',
   registrationQ2: '',
-  registrationQ3: new Date(),
+  registrationQ3: dayjs(),
   registrationQ4: 0,
   registrationQ5: '',
   registrationQ6: '',
@@ -47,7 +55,7 @@ const RegForm = () => {
   const [loading, isLoading] = useState(true)
   const navigate = useNavigate()
   const [savedData, setSavedData] = useState(initialValues)
-  const [birthday, setBirthday] = useState(new Date())
+  const [birthday, setBirthday] = useState(dayjs())
   const [patientAge, setPatientAge] = useState(0)
 
   useEffect(() => {
@@ -55,14 +63,11 @@ const RegForm = () => {
       console.log('Patient ID: ' + patientId)
       const res = await getSavedData(patientId, formName)
 
-      // Set date to current date if no birthday was previously saved
-      if (patientId == -1) {
-        res.registrationQ3 = birthday
-      }
-
       // Calculate age if birthday exists in saved data
       if (res.registrationQ3) {
-        const calculatedAge = calculateAge(res.registrationQ3)
+        const dayjsBirthday = dayjs(res.registrationQ3)
+        setBirthday(dayjsBirthday)
+        const calculatedAge = calculateAgeFromDayjs(dayjsBirthday)
         setPatientAge(calculatedAge)
       }
       setSavedData(res)
@@ -71,28 +76,27 @@ const RegForm = () => {
     fetchData()
   }, [patientId])
 
-  const calculateAge = (birthDate) => {
-    const today = new Date()
-    if (birthDate) {
-      const birth = new Date(birthDate)
-      let age = today.getFullYear() - birth.getFullYear()
-      const monthDiff = today.getMonth() - birth.getMonth()
+  // Calculates based on birth year only [e.g. all participants born in 1985 are considered 40 y/o in 2025]
+  const calculateAgeFromDayjs = (birthDayjs) => {
+    if (!birthDayjs || !birthDayjs.isValid()) return 0
+    const today = dayjs()
+    let age = today.year() - birthDayjs.year()
 
-      // Adjust age if birthday hasn't occurred this year yet
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-        age--
-      }
-
-      setBirthday(birth)
-      setPatientAge(age)
-      return age
-    }
-    return 0
+    // Logic for adjusting age if birthday hasn't occurred yet this year
+    // if (
+    //   today.month() < birthDayjs.month() ||
+    //   (today.month() === birthDayjs.month() && today.date() < birthDayjs.date())
+    // ) {
+    //   age--
+    // }
+    setPatientAge(age)
+    return age
   }
 
   const handleSubmit = async (values, { setSubmitting }) => {
     isLoading(true)
     setSubmitting(true)
+    values.registrationQ3 = birthday.toDate()
     values.registrationQ4 = patientAge
 
     console.log('Patient ID: ' + patientId)
@@ -106,6 +110,7 @@ const RegForm = () => {
         console.log('Successfully submitted form')
         updatePatientInfo(response.data)
         updatePatientId(response.qNum)
+        checkFormA(response.qNum)
         navigate('/app/dashboard', { replace: true })
       }, 80)
     } else {
@@ -114,57 +119,8 @@ const RegForm = () => {
         alert(`Unsuccessful. ${response.error}`)
       }, 80)
     }
-
     isLoading(false)
     setSubmitting(false)
-  }
-
-  // Custom Field Components
-  const FormikDateField = ({ field, form, ...props }) => {
-    const isValidDate = (date) => date instanceof Date && !isNaN(date.getTime())
-    const showError = form.errors[field.name] && (form.touched[field.name] || form.submitCount > 0)
-
-    // Convert Date object to YYYY-MM-DD string for input
-    const dateToString = (date) => {
-      if (date && isValidDate(date)) {
-        return date.toISOString().split('T')[0]
-      }
-      return '' // Handle null, undefined, or invalid dates
-    }
-
-    return (
-      <TextField
-        {...props}
-        type='date'
-        fullWidth
-        margin='normal'
-        error={showError}
-        helperText={showError ? form.errors[field.name] : ''}
-        value={dateToString(field.value)}
-        onChange={(e) => {
-          const dateValue = e.target.value
-          if (dateValue) {
-            const date = new Date(dateValue)
-            if (isValidDate(date)) {
-              form.setFieldValue(field.name, date)
-            }
-          } else {
-            // Set to null instead of invalid Date object
-            form.setFieldValue(field.name, null)
-          }
-        }}
-        onInput={(e) => {
-          const dateValue = e.target.value
-          if (dateValue) {
-            const date = new Date(dateValue)
-            if (isValidDate(date)) {
-              const calculatedAge = calculateAge(date)
-              form.setFieldValue('registrationQ4', calculatedAge)
-            }
-          }
-        }}
-      />
-    )
   }
 
   const formOptions = {
@@ -198,15 +154,6 @@ const RegForm = () => {
       { label: 'Widowed 已寡', value: 'Widowed 已寡' },
       { label: 'Separated 已分居', value: 'Separated 已分居' },
       { label: 'Divorced 已离婚', value: 'Divorced 已离婚' },
-    ],
-    registrationQ10: [
-      { label: 'Jurong', value: 'Jurong' },
-      { label: 'Yuhua', value: 'Yuhua' },
-      { label: 'Bukit Batok', value: 'Bukit Batok' },
-      { label: 'Pioneer', value: 'Pioneer' },
-      { label: 'West Coast', value: 'West Coast' },
-      { label: 'Hong Kah North', value: 'Hong Kah North' },
-      { label: 'Others', value: 'Others' },
     ],
     registrationQ11: [
       { label: 'Yes', value: 'Yes' },
@@ -255,14 +202,14 @@ const RegForm = () => {
       onSubmit={handleSubmit}
       enableReinitialize={true}
     >
-      {({ isSubmitting, submitCount, ...formikProps }) => (
+      {({ isSubmitting, submitCount, setFieldValue, values, ...formikProps }) => (
         <Form className='fieldPadding'>
-          <div className='form--div'>
-            <Typography variant='h4' component='h1' gutterBottom>
+          <div>
+            <Typography variant='h2' fontWeight='bold' sx={{ mb: 2 }}>
               Registration
             </Typography>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold' gutterBottom>
               Salutation 称谓
             </Typography>
             <FastField
@@ -272,8 +219,11 @@ const RegForm = () => {
               options={formOptions.registrationQ1}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold' gutterBottom>
               Initials (e.g Chen Ren Ying - Chen R Y, Christie Tan En Ning - Christie T E N)
+            </Typography>
+            <Typography>
+              For Indian/Malay/patients with no Chinese name, ask for their preferred name.
             </Typography>
             <FastField
               name='registrationQ2'
@@ -282,20 +232,52 @@ const RegForm = () => {
               multiline
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold' gutterBottom>
               Birthday
             </Typography>
-            <FastField name='registrationQ3' label='registrationQ3' component={FormikDateField} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DatePicker']}>
+                <Box>
+                  <DatePicker
+                    label='registrationQ3'
+                    value={birthday}
+                    format="DD/MM/YYYY"
+                    onChange={(newValue) => {
+                      setBirthday(newValue)
+                      setFieldValue('registrationQ3', newValue.toDate())
+                      const age = calculateAgeFromDayjs(newValue)
+                      setPatientAge(age)
+                      setFieldValue('registrationQ4', age)
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                    onAccept={() => {
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                    onClose={() => {
+                      formikProps.setFieldTouched('registrationQ3', true, true)
+                      formikProps.validateField('registrationQ3')
+                    }}
+                  />
+                  {formikProps.errors.registrationQ3 && (
+                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
+                      {formikProps.errors.registrationQ3}
+                    </Typography>
+                  )}
+                </Box>
+              </DemoContainer>
+            </LocalizationProvider>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold' gutterBottom>
               Age
             </Typography>
             <Typography variant='body2' color='text.secondary'>
               registrationQ4
             </Typography>
-            <Typography className='blue'>{patientAge}</Typography>
+            <Typography sx={{ color: 'blue', mb: 2 }}>{patientAge}</Typography>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Gender
             </Typography>
             <FastField
@@ -306,7 +288,7 @@ const RegForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Race 种族
             </Typography>
             <FastField
@@ -327,10 +309,10 @@ const RegForm = () => {
               />
             </PopupText>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Nationality 国籍
             </Typography>
-            <Typography>
+            <Typography sx={{ color: 'red' }}>
               Please Note: Non Singapore Citizens/ Non-PRs are unfortunately not eligible for this
               health screening
             </Typography>
@@ -341,7 +323,7 @@ const RegForm = () => {
               options={formOptions.registrationQ7}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Marital Status 婚姻状况
             </Typography>
             <FastField
@@ -351,29 +333,12 @@ const RegForm = () => {
               options={formOptions.registrationQ8}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Occupation 工作
             </Typography>
             <FastField name='registrationQ9' label='registrationQ9' component={CustomTextField} />
 
-            <Typography variant='h6' component='h3' gutterBottom>
-              GRC/SMC Subdivision{' '}
-              <a
-                href='https://www.parliament.gov.sg/mps/find-my-mp'
-                target='_blank'
-                rel='noreferrer'
-              >
-                [https://www.parliament.gov.sg/mps/find-my-mp]
-              </a>
-            </Typography>
-            <FastField
-              name='registrationQ10'
-              label='registrationQ10'
-              component={CustomSelect}
-              options={formOptions.registrationQ10}
-            />
-
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Are you currently part of HealthierSG?
             </Typography>
             <FastField
@@ -384,7 +349,7 @@ const RegForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               CHAS Status 社保援助计划
             </Typography>
             <FastField
@@ -394,7 +359,7 @@ const RegForm = () => {
               options={formOptions.registrationQ12}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Pioneer Generation Status 建国一代配套
             </Typography>
             <FastField
@@ -404,7 +369,7 @@ const RegForm = () => {
               options={formOptions.registrationQ13}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Preferred Language for Health Report
             </Typography>
             <FastField
@@ -414,7 +379,7 @@ const RegForm = () => {
               options={formOptions.registrationQ14}
             />
 
-            <Typography variant='h4' component='h2' gutterBottom sx={{ mt: 4 }}>
+            <Typography variant='h4' fontWeight='bold' sx={{ mt: 4 }}>
               Compliance to PDPA 同意书
             </Typography>
             <Typography paragraph>
@@ -442,7 +407,7 @@ const RegForm = () => {
               label='I agree and consent to the above.'
             />
 
-            <Typography variant='h6' component='h3' gutterBottom sx={{ mt: 4 }}>
+            <Typography variant='h4' fontWeight='bold' sx={{ mt: 4 }}>
               Has patient attended any health screenings before? (e.g. Annual Health Screening etc.)
             </Typography>
             <FastField
@@ -453,7 +418,7 @@ const RegForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Has patient pre-registered for the Mammobus station?
             </Typography>
             <FastField
@@ -464,7 +429,7 @@ const RegForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Patient consented to being considered for participation in Long Term Follow-Up (LTFU)?
               (Patient has to sign and tick Form C)
             </Typography>
@@ -476,7 +441,7 @@ const RegForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Does the patient speak English or Chinese?
             </Typography>
             <FastField
