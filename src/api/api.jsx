@@ -1703,6 +1703,7 @@ export const generateDoctorPdf = async (entry) => {
   const generateMemoBody = () => {
     return [
       { text: 'Memo for ______________________', margin: [0, 20, 0, 2], alignment: 'center' },
+      { text: 'NRIC: ______________________', margin: [0, 6, 0, 2], alignment: 'center' },
       { text: 'Dear Colleague:', margin: [0, 15, 0, 10] },
 
       // Doctor's Memo

@@ -36,6 +36,7 @@ const initialValues = {
   doctorSConsultQ9: '',
   doctorSConsultQ10: '',
   doctorSConsultQ11: '',
+  doctorSConsultQ12: '',
   doctorSConsultQ13: '',
 }
 
@@ -64,6 +65,7 @@ const validationSchema = Yup.object().shape({
   }),
   doctorSConsultQ10: Yup.string().required('This field is required'),
   doctorSConsultQ11: Yup.string().required('This field is required'),
+  doctorSConsultQ12: Yup.string().required('This field is required'),
 })
 
 const formOptions = {
@@ -72,7 +74,6 @@ const formOptions = {
     { label: 'No', value: 'No' },
   ],
   doctorSConsultQ11: [{ label: 'Yes', value: 'Yes' }],
-
 }
 
 const formName = 'doctorConsultForm'
@@ -150,13 +151,15 @@ const DoctorsConsultForm = () => {
       const response = await submitForm(values, patientId, formName)
 
       if (response.result) {
-        const collection = getDocPdfQueueCollection()
-        await collection.insertOne({
-          patientId: patientId,
-          doctorName: values.doctorSConsultQ1, // Using doctor's name from Q1
-          printed: false,
-          createdAt: new Date(),
-        })
+        if (values.doctorSConsultQ12 === 'Yes') {
+          const collection = getDocPdfQueueCollection()
+          await collection.insertOne({
+            patientId: patientId,
+            doctorName: values.doctorSConsultQ1, // Using doctor's name from Q1
+            printed: false,
+            createdAt: new Date(),
+          })
+        }
 
         setTimeout(() => {
           alert('Successfully submitted form')
@@ -186,33 +189,33 @@ const DoctorsConsultForm = () => {
         <Form className='fieldPadding'>
           <div className='form--div'>
             <h1>Doctor&apos;s Station</h1>
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Doctor&apos;s Name
             </Typography>
             <FastField
               name='doctorSConsultQ1'
-              label='doctorSConsultQ1'
+              label='doctorQ1'
               component={CustomTextField}
               fullWidth
               multiline
             />
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Clinical Findings
             </Typography>
             <FastField
               name='doctorSConsultQ2'
-              label='doctorSConsultQ2'
+              label='doctorQ2'
               component={CustomTextField}
               fullWidth
               multiline
               minRows={4}
             />
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Doctor&apos;s Memo
             </Typography>
             <FastField
               name='doctorSConsultQ3'
-              label="Doctor's Memo"
+              label='doctorQ3'
               component={CustomTextField}
               fullWidth
               multiline
@@ -221,7 +224,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to dietitian?</h3>
             <FastField
               name='doctorSConsultQ4'
-              label='doctorSConsultQ4'
+              label='doctorQ4'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -232,7 +235,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ5'
-                label='doctorSConsultQ5'
+                label='doctorQ5'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -242,7 +245,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Social Support?</h3>
             <FastField
               name='doctorSConsultQ6'
-              label='doctorSConsultQ6'
+              label='doctorQ6'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -253,7 +256,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ7'
-                label='doctorSConsultQ7'
+                label='doctorQ7'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -263,7 +266,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Mental Health? (and indicated on Form A)</h3>
             <FastField
               name='doctorSConsultQ13'
-              label='doctorSConsultQ13'
+              label='doctorQ13'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -271,7 +274,7 @@ const DoctorsConsultForm = () => {
             <h3>Refer to Dental?</h3>
             <FastField
               name='doctorSConsultQ8'
-              label='doctorSConsultQ8'
+              label='doctorQ8'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
@@ -282,7 +285,7 @@ const DoctorsConsultForm = () => {
               </Typography>
               <FastField
                 name='doctorSConsultQ9'
-                label='doctorSConsultQ9'
+                label='doctorQ9'
                 component={CustomTextField}
                 fullWidth
                 multiline
@@ -293,17 +296,26 @@ const DoctorsConsultForm = () => {
             <h3>Does patient require urgent follow up</h3>
             <FastField
               name='doctorSConsultQ10'
-              label='doctorSConsultQ10'
+              label='doctorQ10'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultYESNO}
               row
             />
-            <h3>Completed Doctor&apos;s Consult station. Please check that Form A is filled.</h3>
+            <h3>Completed Doctor&apos;s station. Please check that Form A is filled.</h3>
             <FastField
               name='doctorSConsultQ11'
-              label='doctorSConsultQ11'
+              label='doctorQ11'
               component={CustomRadioGroup}
               options={formOptions.doctorSConsultQ11}
+            />
+
+            <h3>Does this patient need a memo to be printed?</h3>
+            <FastField
+              name='doctorSConsultQ12'
+              label='doctorQ12'
+              component={CustomRadioGroup}
+              options={formOptions.doctorSConsultYESNO}
+              row
             />
           </div>
 

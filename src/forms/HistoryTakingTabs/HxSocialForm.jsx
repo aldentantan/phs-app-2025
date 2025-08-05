@@ -47,7 +47,21 @@ const validationSchema = Yup.object({
   SOCIAL7: Yup.string().required('Required'),
   SOCIAL8: Yup.string().required('Required'),
   SOCIAL10: Yup.string().required('Required'),
-  SOCIAL11: Yup.string().required('Required'),
+  SOCIAL10Years: Yup.number().when('SOCIAL10', {
+    is: 'Yes',
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  SOCIAL10Packs: Yup.number().when('SOCIAL10', {
+    is: 'Yes',
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  SOCIAL11: Yup.string().when('SOCIAL10', {
+    is: 'No',
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   SOCIAL12: Yup.string().required('Required'),
   SOCIAL13: Yup.string().required('Required'),
   SOCIAL14: Yup.string().required('Required'),

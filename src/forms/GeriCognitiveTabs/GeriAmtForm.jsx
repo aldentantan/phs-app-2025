@@ -125,9 +125,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                     <h3>
                       {`${qNum})`} {`Question ${qNum}`} {getQuestionText(qNum)}
                     </h3>
-                    <Typography variant='body2' gutterBottom>
-                      {`Was Q${qNum} answered correctly?`}
-                    </Typography>
+                    <Typography variant='body2'>{`Was Q${qNum} answered correctly?`}</Typography>
                     <Field
                       name={`geriAmtQ${qNum}`}
                       label={`geriAmtQ${qNum}`}
@@ -138,6 +136,16 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                   </div>
                 )
               })}
+
+              {/*<h3>Supplementary questions:</h3>
+              <Field
+                name='geriAmtQ11'
+                label='geriAmtQ11'
+                component={CustomRadioGroup}
+                options={options}
+                row
+              />*/}
+
               <h4>AMT Total Score: {getScore(formikProps.values)} /10</h4>
 
               <Typography sx={{ fontWeight: 'bold', mt: 3 }}>

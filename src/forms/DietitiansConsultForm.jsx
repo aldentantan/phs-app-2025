@@ -129,12 +129,13 @@ const DietitiansConsultForm = () => {
     >
       {({ isSubmitting }) => (
         <Form className='fieldPadding'>
-          <div className='form--div'>
-            <Typography variant='h4' component='h1' gutterBottom>
+
+          <div>
+            <Typography variant='h2' fontWeight='bold' gutterBottom>
               Dietitian&apos;s Consultation
             </Typography>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Has the participant visited the Dietitian&apos;s Consult station?
             </Typography>
             <FastField
@@ -145,7 +146,7 @@ const DietitiansConsultForm = () => {
               row
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Dietitian&apos;s Name:
             </Typography>
             <FastField
@@ -155,7 +156,8 @@ const DietitiansConsultForm = () => {
               multiline
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+
+            <Typography variant='h4' fontWeight='bold'>
               Dietitian&apos;s Notes:
             </Typography>
             <FastField
@@ -166,7 +168,7 @@ const DietitiansConsultForm = () => {
               minRows={4}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+            <Typography variant='h4' fontWeight='bold'>
               Notes for participant (if applicable):
             </Typography>
             <FastField
@@ -177,7 +179,8 @@ const DietitiansConsultForm = () => {
               minRows={4}
             />
 
-            <Typography variant='h6' component='h3' gutterBottom>
+
+            <Typography variant='h4' fontWeight='bold'>
               Does the participant require urgent follow up?
             </Typography>
             <FastField
@@ -188,7 +191,8 @@ const DietitiansConsultForm = () => {
               row
             />
             <PopupText qnNo='dietitiansConsultQ5' triggerValue='Yes'>
-              <Typography variant='h6' component='h3' gutterBottom>
+
+              <Typography variant='h4' fontWeight='bold'>
                 Reasons for urgent follow up:
               </Typography>
               <FastField
@@ -200,7 +204,8 @@ const DietitiansConsultForm = () => {
               />
             </PopupText>
 
-            <Typography variant='h6' component='h3' gutterBottom>
+
+            <Typography variant='h4' fontWeight='bold'>
               Referred to Polyclinic for follow-up?
             </Typography>
             <FastField
@@ -270,9 +275,7 @@ const DietitiansConsultForm = () => {
       {hxSocial ? <p className='blue'>{hxSocial.SOCIAL13}</p> : null}
       {hxSocial ? <p className='blue'>Fruits: {hxSocial.SOCIAL13A}</p> : null}
       {hxSocial ? <p className='blue'>Vegetables: {hxSocial.SOCIAL13B}</p> : null}
-      {hxSocial ? (
-        <p className='blue'>Whole grain and cereals: {hxSocial.SOCIAL13C}</p>
-      ) : null}
+      {hxSocial ? <p className='blue'>Whole grain and cereals: {hxSocial.SOCIAL13C}</p> : null}
       <p className='underlined'>
         Does the participant exercise in any form of moderate physical activity for at least 150
         minutes OR intense physical activity at least 75 minutes throuhgout the week?
