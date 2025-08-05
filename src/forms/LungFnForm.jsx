@@ -12,7 +12,6 @@ import { getSavedData } from '../services/mongoDB'
 import allForms from './forms.json'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomTextField from '../components/form-components/CustomTextField'
-import CustomNumberField from '../components/form-components/CustomNumberField'
 import ErrorNotification from '../components/form-components/ErrorNotification'
 import PopupText from 'src/utils/popupText'
 
@@ -59,7 +58,6 @@ const validationSchema = Yup.object({
     then: (schema) => schema.required('Please specify why test was not completed'),
     otherwise: (schema) => schema,
   }),
-
 })
 
 function determineLungType(lung5, lung7) {
@@ -79,15 +77,7 @@ const LungFnForm = () => {
   const { patientId } = useContext(FormContext)
   const navigate = useNavigate()
 
-
-  const [initialValues, setInitialValues] = useState({
-    LUNG1: '',
-    LUNGShortAns1: '',
-    LUNG1a: '',
-    LUNG2: '',
-    LUNGShortAns2: '',
-  })
-
+  const [savedData, setSavedData] = useState(initialValues)
   const [social, setSocial] = useState({})
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -95,9 +85,9 @@ const LungFnForm = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const savedData = await getSavedData(patientId, formName)
+        const savedFormData = await getSavedData(patientId, formName)
         const socialData = await getSavedData(patientId, allForms.hxSocialForm)
-        setSavedData({ ...initialValues, ...savedData })
+        setSavedData({ ...initialValues, ...savedFormData })
         setSocial(socialData || {})
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -147,7 +137,7 @@ const LungFnForm = () => {
         enableReinitialize
         onSubmit={handleSubmit}
       >
-        {({ values, submitCount, errors, isSubmitting }) => (
+        {({ submitCount, errors, isSubmitting }) => (
           <Form className='fieldPadding'>
             <Grid container>
               <Grid item xs={9}>
@@ -213,6 +203,7 @@ const LungFnForm = () => {
                       multiline
                       fullWidth
                     />
+                  </PopupText>
 
                 </div>
 
