@@ -11,10 +11,8 @@ import '../fieldPadding.css'
 
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
-
 import CustomNumberField from '../../components/form-components/CustomNumberField'
 import ErrorNotification from '../../components/form-components/ErrorNotification'
-
 
 const formName = 'geriOtQuestionnaireForm'
 
@@ -196,7 +194,6 @@ const validationSchema = Yup.object({
     .oneOf(formOptions.geriOtQuestionnaireQ27.map((opt) => opt.value))
     .required(),
   geriOtQuestionnaireQ28: Yup.string(),
-  geriOtQuestionnaireQ32: Yup.string().required(),
   geriOtQuestionnaireQ33: Yup.string(),
 })
 
@@ -256,7 +253,7 @@ const GeriOtQuestionnaireForm = (props) => {
 
   const [loading, setLoading] = useState(false)
   const [loadingSidePanel, setLoadingSidePanel] = useState(true)
-  const [initialValues, setInitialValues] = useState(generateInitialValues)
+  const [initialValues, setInitialValues] = useState(generateInitialValues())
 
   const [reg, setReg] = useState({})
   const [social, setSocial] = useState({})
@@ -264,22 +261,27 @@ const GeriOtQuestionnaireForm = (props) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const savedData = getSavedData(patientId, formName)
-      const regData = getSavedData(patientId, allForms.registrationForm)
-      const triageData = getSavedData(patientId, allForms.triageForm)
-      const hxSocialData = getSavedData(patientId, allForms.hxSocialForm)
+      try {
+        const savedData = await getSavedData(patientId, formName)
+        const regData = await getSavedData(patientId, allForms.registrationForm)
+        const triageData = await getSavedData(patientId, allForms.triageForm)
+        const hxSocialData = await getSavedData(patientId, allForms.hxSocialForm)
 
-      Promise.all([savedData, regData, triageData, hxSocialData]).then((result) => {
-        setInitialValues(result[0])
-        setReg(result[1])
-        setTriage(result[2])
-        setSocial(result[3])
+        const results = await Promise.all([savedData, regData, triageData, hxSocialData])
+        
+        setInitialValues({ ...generateInitialValues(), ...results[0] })
+        setReg(results[1] || {})
+        setTriage(results[2] || {})
+        setSocial(results[3] || {})
         setLoadingSidePanel(false)
-      })
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setLoadingSidePanel(false)
+      }
     }
 
     fetchData()
-  }, [])
+  }, [patientId])
 
   const GetScores = () => {
     const { values } = useFormikContext()
@@ -305,33 +307,38 @@ const GeriOtQuestionnaireForm = (props) => {
       enableReinitialize
       onSubmit={async (values, { setSubmitting }) => {
         setLoading(true)
+        setSubmitting(true)
 
-        const scores = calculateScores(values)
-        const response = await submitForm(
-          {
-            ...values,
-            geriOtQuestionnaireQ29: scores.yes,
-            geriOtQuestionnaireQ30: scores.no,
-            geriOtQuestionnaireQ31: scores.na,
-            geriOtQuestionnaireQ32: scores.total,
-          },
-          patientId,
-          formName,
-        )
+        try {
+          const scores = calculateScores(values)
+          const response = await submitForm(
+            {
+              ...values,
+              geriOtQuestionnaireQ29: scores.yes,
+              geriOtQuestionnaireQ30: scores.no,
+              geriOtQuestionnaireQ31: scores.na,
+              geriOtQuestionnaireQ32: scores.total,
+            },
+            patientId,
+            formName,
+          )
 
-        setTimeout(() => {
-          setLoading(false)
-          setSubmitting(false)
           if (response.result) {
             alert('Successfully submitted form')
             changeTab(null, nextTab)
           } else {
             alert(`Unsuccessful. ${response.error}`)
           }
-        }, 80)
+        } catch (error) {
+          console.error('Submission error:', error)
+          alert('An error occurred during submission')
+        } finally {
+          setLoading(false)
+          setSubmitting(false)
+        }
       }}
     >
-      {({ handleSubmit, errors, submitCount }) => (
+      {({ handleSubmit, errors, submitCount, isSubmitting }) => (
         <Paper elevation={2} sx={{ p: 2 }}>
           <Grid container>
             <Grid item xs={9}>
@@ -387,7 +394,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     />
                     <h3>3. Are your floor surfaces non slip?</h3>
                     <p>
-                      <b>Definition:</b> Score &quot;NO&quot; if kitchen, toilet are non-slip, Score &quot;YES&quot; if
+                      <b>Definition:</b> Score "NO" if kitchen, toilet are non-slip, Score "YES" if
                       kitchen, toilet are non-slip
                     </p>
                     <FastField
@@ -696,7 +703,7 @@ const GeriOtQuestionnaireForm = (props) => {
                       <b>Definition:</b> Supportive, firmly fitting shoes / slippers with low heels
                       and non-slip soles.
                     </p>
-                    No shoes = &quot;NO&quot;
+                    No shoes = "NO"
                     <br />
                     <FastField
                       name='geriOtQuestionnaireQ26'
@@ -710,7 +717,7 @@ const GeriOtQuestionnaireForm = (props) => {
                       of falling over?
                     </h3>
                     <p>
-                      <b>Definition: </b> &quot;YES&quot; when client does NOT need to bend down to feed pets,
+                      <b>Definition: </b> "YES" when client does NOT need to bend down to feed pets,
                       clean, refill bowls etc
                     </p>
                     <FastField
@@ -739,7 +746,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     />
 
                     <div>
-                      {loading ? (
+                      {loading || isSubmitting ? (
                         <CircularProgress />
                       ) : (
                         <Button type='submit' variant='contained' color='primary'>
