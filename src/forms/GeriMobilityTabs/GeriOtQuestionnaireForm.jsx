@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { FastField, Formik, Form, useFormikContext } from 'formik'
 import * as Yup from 'yup'
-import { Paper, CircularProgress, Button, Grid, Typography } from '@mui/material'
+import { Paper, CircularProgress, Button, Grid } from '@mui/material'
 
 import allForms from '../forms.json'
 import { formatBmi, submitForm } from '../../api/api.jsx'
@@ -12,6 +12,7 @@ import '../fieldPadding.css'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomNumberField from '../../components/form-components/CustomNumberField'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 
 const formName = 'geriOtQuestionnaireForm'
 
@@ -385,7 +386,7 @@ const GeriOtQuestionnaireForm = (props) => {
                     />
                     <h3>3. Are your floor surfaces non slip?</h3>
                     <p>
-                      <b>Definition:</b> Score ‘NO” if kitchen, toilet are non-slip, Score “YES” if
+                      <b>Definition:</b> Score &quot;NO&quot; if kitchen, toilet are non-slip, Score &quot;YES&quot; if
                       kitchen, toilet are non-slip
                     </p>
                     <FastField
@@ -708,7 +709,7 @@ const GeriOtQuestionnaireForm = (props) => {
                       of falling over?
                     </h3>
                     <p>
-                      <b>Definition: </b> “YES” when client does NOT need to bend down to feed pets,
+                      <b>Definition: </b> &quot;YES&quot; when client does NOT need to bend down to feed pets,
                       clean, refill bowls etc
                     </p>
                     <FastField
@@ -740,11 +741,12 @@ const GeriOtQuestionnaireForm = (props) => {
                       fullWidth
                     />
                     <br />
-                    {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                      <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                        Please fill in all required fields correctly.
-                      </Typography>
-                    )}
+
+                    <ErrorNotification 
+                      show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+                      message="Please fill in all required fields correctly."
+                    />
+
                     <div>
                       {loading ? (
                         <CircularProgress />
