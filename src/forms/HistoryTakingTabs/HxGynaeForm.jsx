@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Paper, Divider, Typography, CircularProgress, Button, Box, Alert } from '@mui/material'
+import { Paper, Divider, Typography, CircularProgress, Button } from '@mui/material'
 import { Formik, Form, Field, FastField } from 'formik'
 import * as Yup from 'yup'
 import { FormContext } from '../../api/utils.js'
@@ -8,6 +8,7 @@ import { submitForm, checkFormA } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
 import CustomTextField from '../../components/form-components/CustomTextField'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 import '../fieldPadding.css'
 import '../forms.css'
 
@@ -371,9 +372,11 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
+
           <Typography variant='subtitle1' fontWeight='bold'>
             Was your last menstrual period within the window where the first day falls between 28 July and 4 Aug 2025? <br />
-            If you are post-menopausal or use contraception, please indicate 'yes'
+            If you are post-menopausal or use contraception, please indicate &apos;yes&apos;
+
           </Typography>
           <FastField
             name='GYNAE16'
@@ -405,13 +408,11 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             row
           />
 
-          {Object.keys(errors).length > 0 && submitCount > 0 && (
-                    <Box sx={{ mt: 2 }}>
-                      <Alert severity="error">
-                        Please correct the errors above before submitting.
-                      </Alert>
-                    </Box>
-                  )}
+          <ErrorNotification 
+            show={Object.keys(errors).length > 0 && submitCount > 0}
+            message="Please correct the errors above before submitting."
+          />
+
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
             {loading || isSubmitting ? (
               <CircularProgress />

@@ -8,6 +8,7 @@ import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import allForms from './forms.json'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup.jsx'
+import ErrorNotification from '../components/form-components/ErrorNotification.jsx'
 import { getSavedData } from '../services/mongoDB.js'
 import './fieldPadding.css'
 import './forms.css'
@@ -69,6 +70,7 @@ const PodiatryForm = () => {
         }
       }}
     >
+
       {({ errors, submitCount, isSubmitting }) => (
         <Paper elevation={2}>
           <Grid display='flex' flexDirection='row'>
@@ -89,11 +91,10 @@ const PodiatryForm = () => {
                     row
                   />
 
-                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                      Please fill in all required fields correctly.
-                    </Typography>
-                  )}
+                  <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
 
                   <div>
                     {loading || isSubmitting ? (

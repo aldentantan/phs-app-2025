@@ -12,6 +12,7 @@ import { getSavedData } from '../services/mongoDB'
 import './fieldPadding.css'
 import CustomNumberField from '../components/form-components/CustomNumberField'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
+import ErrorNotification from 'src/components/form-components/ErrorNotification'
 
 let calSyst
 let calDias
@@ -422,11 +423,10 @@ const TriageForm = () => {
             </div>
 
             {/* Display form errors */}
-            {submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0 && (
-              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                Please fill in all required fields correctly.
-              </Typography>
-            )}
+            <ErrorNotification 
+              show={submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0}
+              message="Please fill in all required fields correctly."
+            />
 
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
               {loading || isSubmitting ? (

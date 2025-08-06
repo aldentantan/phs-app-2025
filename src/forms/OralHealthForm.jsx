@@ -8,6 +8,7 @@ import { Divider, Paper, Grid, CircularProgress, Button, Typography, Box } from 
 import CustomCheckboxGroup from '../components/form-components/CustomCheckboxGroup'
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomTextField from '../components/form-components/CustomTextField'
+import ErrorNotification from '../components/form-components/ErrorNotification'
 import PopupText from 'src/utils/popupText'
 
 import { submitForm } from '../api/api.jsx'
@@ -141,7 +142,7 @@ const OralHealthForm = () => {
       onSubmit={handleSubmit}
       enableReinitialize={true}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, submitCount }) => (
         <Form className='fieldPadding'>
           <div className='form--div'>
             <Typography variant='h1' gutterBottom>
@@ -251,6 +252,11 @@ const OralHealthForm = () => {
               />
             </PopupText>
           </div>
+
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
 
           <Box mt={2} mb={2}>
             {loading || isSubmitting ? (

@@ -1,13 +1,18 @@
+
 import { Button, CircularProgress, Paper, Typography, Grid, Divider } from '@mui/material'
 import { FastField, Field, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import * as Yup from 'yup'
 import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 import CustomNumberField from '../../components/form-components/CustomNumberField.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
+
 import { getSavedData } from '../../services/mongoDB'
+
 import '../fieldPadding.css'
 import '../forms.css'
 import allForms from '../forms.json'
@@ -104,7 +109,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
         }
       }}
     >
-      {(formikProps, handleSubmit, errors, submitCount) => (
+      {(formikProps) => (
         <Paper>
           <Form className='fieldPadding'>
             <div className='form--div'>
@@ -114,7 +119,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
                 alt='Scoring rubric for geri AMT'
               />
               <h2>
-                Please select 'Yes' if participant answered correctly or 'No' if answered
+                Please select &apos;Yes&apos; if participant answered correctly or &apos;No&apos; if answered
                 incorrectly.
               </h2>
 
@@ -177,11 +182,10 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
               />
             </div>
 
-            {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-              <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                Please fill in all required fields correctly.
-              </Typography>
-            )}
+            <ErrorNotification 
+              show={formikProps.submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0}
+              message="Please fill in all required fields correctly."
+            />
 
             <br />
 
