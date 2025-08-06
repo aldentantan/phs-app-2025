@@ -9,13 +9,10 @@ import { parseFromLangKey, setLang, setLangUpdated } from './langutil'
 import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
-import axios from 'axios'
 import { getSavedData, getSavedPatientData, addToFormAQueue } from '../services/mongoDB'
 
 import pic1 from '../icons/pic1-forma';
 import pic2 from '../icons/pic2-forma';
-import pic3 from '../icons/pic3-forma';
-import pic4 from '../icons/pic4-forma';
 import { checkedBox, uncheckedBox } from '../icons/checked';
 import allForms from '../forms/forms.json';
 import { getEligibilityRows } from '../services/stationCounts';
@@ -224,81 +221,6 @@ export async function submitPreRegForm(args, patientId, formCollection) {
   } catch (e) {
     return { result: false, error: e }
   }
-}
-
-// Provides general information about the kinds of forms that are supported
-export async function getFormInfo() {
-  try {
-    var response = await axios.get(`/api/forms/info`)
-  } catch (err) {
-    // TODO: more granular error handling
-    return { result: false, error: err }
-  }
-  return { result: true, data: response.data.data }
-}
-
-// retrieve completion status of all forms. green for completed, red for not complete, and amber for incomplete
-export async function getFormStatus(userID) {
-  userID = parseInt(userID)
-  if (Number.isNaN(userID)) {
-    return { result: false, error: 'User ID cannot be undefined.' }
-  }
-  try {
-    var response = await axios.get(`/api/users/${userID}/status`)
-  } catch (err) {
-    // TODO: more granular error handling
-    return { result: false, error: err }
-  }
-  return { result: true, data: response.data }
-}
-
-// retrieve specific form data
-export async function getIndividualFormData(userID, form) {
-  userID = parseInt(userID)
-  if (Number.isNaN(userID)) {
-    return { result: false, error: 'User ID cannot be undefined.' }
-  }
-  // TODO: use getFormInfo() to validate form name
-  try {
-    var response = await axios.get(`/api/users/${userID}/forms/${form}`)
-  } catch (err) {
-    // TODO: more granular error handling
-    return { result: false, error: err }
-  }
-  return { result: true, data: response.data }
-}
-
-// retrieve all form data
-export async function getAllFormData(userID) {
-  userID = parseInt(userID)
-  if (Number.isNaN(userID)) {
-    return { result: false, error: 'User ID cannot be undefined.' }
-  }
-  try {
-    var response = await axios.get(`/api/users/${userID}/forms`)
-  } catch (err) {
-    // TODO: more granular error handling
-    return { result: false, error: err }
-  }
-  return { result: true, data: response.data }
-}
-
-// update or insert (upsert) data for a specified form
-export async function upsertIndividualFormData(userID, form_name, form_data) {
-  userID = parseInt(userID)
-  if (Number.isNaN(userID)) {
-    return { result: false, error: 'User ID cannot be undefined.' }
-  }
-  // TODO: use getFormInfo() to validate form name.
-  try {
-    var response = await axios.post(`/api/users/${userID}/forms/${form_name}`, {
-      form_data: JSON.stringify(form_data),
-    })
-  } catch (err) {
-    // TODO: more granular error handling
-    return { result: false, error: err }
-  }
-  return { result: true, data: response.data }
 }
 
 // Calcuates the BMI
@@ -2209,7 +2131,7 @@ function triageTableSection(triage = {}) {
 }
 
 
-let formAImages = [pic1, pic2, pic3, pic4];
+let formAImages = [pic1, pic2];
 
 function picSections() {
   return formAImages

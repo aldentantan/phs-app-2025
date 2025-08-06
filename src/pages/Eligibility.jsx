@@ -28,6 +28,8 @@ import {
 } from '../services/stationCounts'
 import { generateFormAPdf } from '../api/api.jsx'
 
+// Eligibility page
+
 function Eligibility() {
   const { patientId } = useContext(FormContext)
   const [forms, setForms] = useState(null)
