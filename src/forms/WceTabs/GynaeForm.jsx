@@ -16,6 +16,8 @@ import ErrorNotification from '../../components/form-components/ErrorNotificatio
 
 import PopupText from 'src/utils/popupText'
 
+// This file is for the Gynae tab in the WCE station, not to be confused with the Gynae tab in the History Taking station
+
 const validationSchema = Yup.object({
   GYNAE1: Yup.string().required(),
   GYNAE2: Yup.string(),
@@ -151,7 +153,7 @@ const GynaeForm = () => {
         <Paper elevation={2} p={0} m={0}>
           <form onSubmit={handleSubmit} className='form--div fieldPadding'>
             <h1>Gynecology</h1>
-            
+
             <Alert severity="warning" sx={{ mb: 3 }}>
               <Typography variant='h6' component='h3' sx={{ color: 'error.main', fontWeight: 'bold' }}>
                 Only ask if participant is female
@@ -348,7 +350,7 @@ const GynaeForm = () => {
               />
             </PopupText>
 
-            <ErrorNotification 
+            <ErrorNotification
               show={submitCount > 0 && Object.keys(errors || {}).length > 0}
               message="Please fill in all required fields correctly."
             />
