@@ -2133,7 +2133,7 @@ function triageTableSection(triage = {}) {
 }
 
 
-let formAImages = [pic1, pic2, pic3, pic4];
+let formAImages = [pic1, pic2];
 
 function picSections() {
   return formAImages
