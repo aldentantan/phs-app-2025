@@ -1283,7 +1283,7 @@ export function temperatureSection(triage) {
   const textSection = [
     { text: `${parseFromLangKey('temp_title')}`, style: 'subheader' },
     {
-      text: `${parseFromLangKey('temp_reading')} ${triage.triageQ7} °C.\n`,
+      text: `${parseFromLangKey('temp_reading')} ${triage.triageQ14} °C.\n`,
       style: 'normal',
     },
     {
@@ -1553,11 +1553,11 @@ export function followUpSection(
     // ...(nkfString ? [{ text: nkfString, style: 'normal' }] : []),
 
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
+    ...(oralString ? [{ text: oralString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(mammobusString ? [{ text: mammobusString, style: 'normal' }] : []),
     ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
     //...(whisperString ? [{ text: whisperString, style: 'normal' }] : []),
-    //...(oralString ? [{ text: oralString, style: 'normal' }] : []),
     { text: '', margin: [0, 5] },
     //{ text: parseFromLangKey('fw_empty'), style: 'normal' },
   ]

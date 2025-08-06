@@ -63,7 +63,7 @@
     "memo_audio_1" : "Pasukan audiologi percaya bahawa: {0}\n\n",
     "memo_audio_2" : "Pasukan audiologi telah menulis susulan yang disyorkan: {0}\n\n",
     "memo_diet" : "Stesen Pakar Diet:\n\n",
-    "memo_diet_1" : "\n\nPakar diet telah menyatakan bahawa anda {0} susulan segera disebabkan {1}. ",
+    "memo_diet_1" : "\n\nPakar diet telah menyatakan bahawa anda memerlukan susulan segera: {0} disebabkan oleh {1}. ",
     "memo_pt" : "Stesen Terapi Fizikal:\n\n",
     "memo_ot" : "Stesen Terapi Pekerjaan:\n\n",
     "memo_doctor": "Stesen Doktor:\n\n",

@@ -63,7 +63,7 @@
     "memo_audio_1" : "The audiology team believes that {0}\n\n",
     "memo_audio_2" : "The audiology team has written a recommended follow-up: {0}\n\n",
     "memo_diet" : "Dietitian's Station:\n\n",
-    "memo_diet_1" : "\n\nThe dietitian has indicated that you {0} urgent follow up due to {1}. ",
+    "memo_diet_1" : "\n\nThe dietitian has indicated urgent follow up: {0} due to {1}. ",
     "memo_pt" : "Physical Therapist Station:\n\n",
     "memo_ot" : "Occupational Therapist Station:\n\n",
     "memo_doctor": "Doctor Station:\n\n",
