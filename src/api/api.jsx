@@ -13,8 +13,6 @@ import { getSavedData, getSavedPatientData, addToFormAQueue } from '../services/
 
 import pic1 from '../icons/pic1-forma';
 import pic2 from '../icons/pic2-forma';
-import pic3 from '../icons/pic3-forma';
-import pic4 from '../icons/pic4-forma';
 import { checkedBox, uncheckedBox } from '../icons/checked';
 import allForms from '../forms/forms.json';
 import { getEligibilityRows } from '../services/stationCounts';
