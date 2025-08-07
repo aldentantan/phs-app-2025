@@ -1188,6 +1188,7 @@ export function generate_pdf_updated(
       mental,
       mammobus,
       hpv,
+      socialService,
     ),
   )
   content.push(...memoSection(geriAudiometry, dietitiansConsult, geriPtConsult, geriOtConsult, doctorSConsult))
@@ -1359,13 +1360,13 @@ export function bmiSection(height, weight, bmiString) {
       width: 60,
       margin: [0, 0, 0, 5],
     },
-    {
-      text: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
-      style: 'italicSmall',
-      fontSize: 7,
-      color: 'blue',
-      link: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
-    },
+    // {
+    //   text: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
+    //   style: 'italicSmall',
+    //   fontSize: 7,
+    //   color: 'blue',
+    //   link: 'https://www.healthhub.sg/live-healthy/weight_putting_me_at_risk_of_health_problems',
+    // },
   ]
 
   return [
@@ -1471,10 +1472,10 @@ export function otherScreeningModularitiesSection(reg, eye, podiatry, vaccine) {
       ? [{ text: `${parseFromLangKey('vaccine_1')}\n`, style: 'normal' }]
       : []),
     ...(vaccine?.VAX2 === "Yes"
-      ? [{ text: `    ${parseFromLangKey('vaccine_2')}\n`, style: 'normal' }]
+      ? [{ text: `${parseFromLangKey('vaccine_2')}\n`, style: 'normal', margin: [20, 0, 0, 0] }]
       : []),
     ...(vaccine?.VAX3 === "Yes"
-      ? [{ text: `    ${parseFromLangKey('vaccine_3')}\n`, style: 'normal' }]
+      ? [{ text: `${parseFromLangKey('vaccine_3')}\n`, style: 'normal', margin: [20, 0, 0, 20] }]
       : []),
   ]
 }
@@ -1494,6 +1495,7 @@ export function followUpSection(
   mental,
   mammobus,
   hpv,
+  socialService,
 ) {
   let vaccineString = null
   if (vaccine.VAX1 == 'Yes') {
@@ -1535,6 +1537,11 @@ export function followUpSection(
     whisperString = `${parseFromLangKey('fw_wh')}\n`
   }
 
+  let aicString = null
+  if (socialService.socialServiceQ4 == "Yes") {
+    aicString = `${parseFromLangKey('fw_aic')}\n`
+  }
+
   let oralString = null
   if (oral.DENT4 == 'Yes') {
     oralString = `${parseFromLangKey('fw_dent')}\n`
@@ -1554,6 +1561,7 @@ export function followUpSection(
 
     ...(graceString ? [{ text: graceString, style: 'normal' }] : []),
     ...(oralString ? [{ text: oralString, style: 'normal' }] : []),
+    ...(aicString ? [{ text: aicString, style: 'normal' }] : []),
     ...(mentalString ? [{ text: mentalString, style: 'normal' }] : []),
     ...(mammobusString ? [{ text: mammobusString, style: 'normal' }] : []),
     ...(hpvString ? [{ text: hpvString, style: 'normal' }] : []),
@@ -1949,10 +1957,10 @@ function eligibilitySection(eligibilityRows) {
         }
       ]
     },
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
     {
       stack: [
         {
@@ -1963,7 +1971,7 @@ function eligibilitySection(eligibilityRows) {
         }
       ]
     },
-    {text: ''},
+    { text: '' },
     {
       rowSpan: 3,
       stack: [
@@ -1992,18 +2000,18 @@ function eligibilitySection(eligibilityRows) {
         }
       ]
     },
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: ''},
-    {text: 'Part of Geriatric Screening', fontSize: 9},
-    {text: ''},
-    {text: 'Please refer above to part 15A for details on reason(s) for recommendation', fontSize: 9},
-    {text: ''},
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: '' },
+    { text: 'Part of Geriatric Screening', fontSize: 9 },
+    { text: '' },
+    { text: 'Please refer above to part 15A for details on reason(s) for recommendation', fontSize: 9 },
+    { text: '' },
   ];
 
   const col3Eligible = col2Texts.map(({ eligibilityKey }, i) => {
@@ -2011,7 +2019,7 @@ function eligibilitySection(eligibilityRows) {
       return '';
     }
     if (i === 19) { // Screening review
-      return { text: "YES", alignment: 'center', color: 'blue'};
+      return { text: "YES", alignment: 'center', color: 'blue' };
     }
     const eligibility = eligibilityRows.find((r) => r.name === eligibilityKey)?.eligibility;
     return {
@@ -2055,7 +2063,7 @@ function eligibilitySection(eligibilityRows) {
         ]),
         // Row 5 (Geriatric Screening) with ELIGIBLE? rowSpan=5
         [
-          { text: 9, fontSize: 10, rowSpan: 5},
+          { text: 9, fontSize: 10, rowSpan: 5 },
           { text: col2Texts[5].label, fontSize: 11 },
           { ...col3Eligible[5], fontSize: 9, alignment: 'center', rowSpan: 5 },
           { text: col4Eligible[5], fontSize: 9 },
@@ -2116,7 +2124,7 @@ function chasStatusSection(reg) {
             text: 'FORM A',
             bold: true,
             fontSize: 20,
-            margin: [0,-35,0,5],
+            margin: [0, -35, 0, 5],
             alignment: 'center'
           }
         ],
@@ -2261,21 +2269,21 @@ function triageTableSection(triage = {}) {
               {
                 columns: [
                   { text: 'WEIGHT:', bold: true, fontSize: 9 },
-                  { text: weightStr, fontSize: 9,}
+                  { text: weightStr, fontSize: 9, }
                 ],
                 margin: [0, 2, 0, 2]
               },
               {
                 columns: [
                   { text: 'HEIGHT:', bold: true, fontSize: 9 },
-                  { text: heightStr, fontSize: 9,}
+                  { text: heightStr, fontSize: 9, }
                 ],
                 margin: [0, 2, 0, 2]
               },
               {
                 columns: [
                   { text: 'BMI:', bold: true, fontSize: 9 },
-                  { text: bmiStr, fontSize: 9,}
+                  { text: bmiStr, fontSize: 9, }
                 ],
                 margin: [0, 2, 0, 2]
               }
@@ -2292,7 +2300,7 @@ function triageTableSection(triage = {}) {
                   { text: '2nd BP: ', bold: true, fontSize: 9 },
                   { text: `${bp2}`, fontSize: 9 }
                 ],
-                margin:[0, 2, 0, 2]
+                margin: [0, 2, 0, 2]
               },
               {
                 text: [
@@ -2303,7 +2311,7 @@ function triageTableSection(triage = {}) {
                 ],
                 margin: [0, 2, 0, 2]
               },
-              { text: `Waist circumference: ${waist}`, fontSize: 9, margin: [0, 2, 0, 2]},
+              { text: `Waist circumference: ${waist}`, fontSize: 9, margin: [0, 2, 0, 2] },
             ],
             margin: [0, 4, 0, 4]
           },

@@ -216,6 +216,7 @@ const SummaryForm = (props) => {
             >
               Download Screening Report
             </Button>
+            <div>First download may take up to 15 seconds, please wait before retrying. Subsequent downloads are almost instant.</div>
           </div>
         </Fragment>
       )}
