@@ -7,8 +7,9 @@ import { getSavedData } from '../../services/mongoDB'
 import { submitForm, checkFormA } from '../../api/api.jsx'
 import PopupText from 'src/utils/popupText.jsx'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
-import '../fieldPadding.css'
 import CustomTextField from 'src/components/form-components/CustomTextField.jsx'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
+import '../fieldPadding.css'
 
 const formName = 'geriPhqForm'
 
@@ -128,7 +129,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting, values, setFieldValue, setFieldTouched, ...formikProps }) => {
+      {({ isSubmitting, values, setFieldValue, setFieldTouched, submitCount, errors, ...formikProps }) => {
         const score = (pointsMap[values.PHQ1] || 0) + (pointsMap[values.PHQ2] || 0)
 
         // Resets PHQ3 to PHQ9 if the score of PHQ1 + PHQ2 is less than 3
@@ -139,7 +140,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
               setFieldTouched(qn, false, false)
             })
           }
-        }, [score])
+        }, [score, setFieldValue, setFieldTouched])
 
         return (
           <Form className='fieldPadding'>
@@ -268,6 +269,11 @@ export default function HxPhqForm({ changeTab, nextTab }) {
                 sx={{ mb: 3, mt: 1 }}
               />
             </PopupText>
+            
+            <ErrorNotification 
+              show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+              message="Please fill in all required fields correctly."
+            />
 
             <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
               {loading || isSubmitting ? (

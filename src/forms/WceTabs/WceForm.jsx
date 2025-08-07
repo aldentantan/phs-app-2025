@@ -1,11 +1,11 @@
 import React from 'react'
 import { Fragment, useContext, useEffect, useState } from 'react'
-import { Formik, Form, useFormikContext, Field } from 'formik'
+import { Formik, useFormikContext, Field } from 'formik'
 import * as Yup from 'yup'
 
-import { Divider, Paper, Grid, CircularProgress, Button, Typography } from '@mui/material'
+import { Divider, Paper, Grid, CircularProgress, Button } from '@mui/material'
 
-import { submitForm, submitFormSpecial } from '../../api/api.jsx'
+import { submitForm } from '../../api/api.jsx'
 import { FormContext } from '../../api/utils.js'
 
 import { getSavedData } from '../../services/mongoDB'
@@ -13,6 +13,7 @@ import '../fieldPadding.css'
 import allForms from '../forms.json'
 
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 
 const formName = 'wceForm'
 
@@ -161,11 +162,10 @@ const WceForm = (props) => {
                     <CheckHpvEligibility />
                   </div>
 
-                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                      Please fill in all required fields correctly.
-                    </Typography>
-                  )}
+                  <ErrorNotification 
+                    show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+                    message="Please fill in all required fields correctly."
+                  />
 
                   <div>
                     {loading ? (

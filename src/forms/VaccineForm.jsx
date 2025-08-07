@@ -1,20 +1,24 @@
-import { Button, CircularProgress, Divider, Grid, Paper, Typography } from '@mui/material'
+import { Button, CircularProgress, Divider, Grid, Paper, Typography, Box } from '@mui/material'
 import { FastField, Form, Formik } from 'formik'
 import { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
+
 import * as Yup from 'yup'
 import { submitForm } from '../api/api.jsx'
 import { FormContext } from '../api/utils.js'
 import { getSavedData } from '../services/mongoDB'
+
 import './fieldPadding.css'
 import allForms from './forms.json'
 
 import CustomRadioGroup from '../components/form-components/CustomRadioGroup'
 import CustomTextField from '../components/form-components/CustomTextField'
+import ErrorNotification from '../components/form-components/ErrorNotification'
 
 const formName = 'vaccineForm'
 
 const initialValues = {
+  VAX1: '',
   VAX2: '',
   VAX3: '',
   VAX4: '',
@@ -27,6 +31,13 @@ const formOptions = {
   ],
 }
 
+const validationSchema = Yup.object({
+  VAX1: Yup.string().required(),
+  VAX2: Yup.string().required(),
+  VAX3: Yup.string().required(),
+  VAX4: Yup.string().required(),
+})
+
 export default function VaccineForm() {
   const { patientId } = useContext(FormContext)
   const [saveData, setSaveData] = useState(initialValues)
@@ -35,13 +46,6 @@ export default function VaccineForm() {
   const [regi, setRegi] = useState({})
   const [historyForm, setHistoryForm] = useState({})
   const navigate = useNavigate()
-
-  const validationSchema = Yup.object({
-    VAX1: Yup.string().required(),
-    VAX2: Yup.string().required(),
-    VAX3: Yup.string().required(),
-    VAX4: Yup.string().required(),
-  })
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,29 +63,36 @@ export default function VaccineForm() {
     fetchData()
   }, [patientId])
 
-  return (
-    <Formik
-      initialValues={saveData}
-      validationSchema={validationSchema}
-      enableReinitialize
-      onSubmit={async (values, { setSubmitting }) => {
-        setLoading(true)
-        const response = await submitForm(values, patientId, formName)
-        setTimeout(() => {
-          setLoading(false)
-          setSubmitting(false)
-          if (response.result) {
-            alert('Successfully submitted form')
-            navigate('/app/dashboard', { replace: true })
-          } else {
-            alert(`Unsuccessful. ${response.error}`)
-          }
-        }, 80)
-      }}
-    >
-      {({ errors, submitCount, isSubmitting }) => (
-        <Paper elevation={2}>
+  const handleSubmit = async (values, { setSubmitting }) => {
+    setLoading(true)
+    setSubmitting(true)
+    
+    const response = await submitForm(values, patientId, formName)
+    
+    setLoading(false)
+    setSubmitting(false)
+    
+    if (response.result) {
+      setTimeout(() => {
+        alert('Successfully submitted form')
+        navigate('/app/dashboard', { replace: true })
+      }, 80)
+    } else {
+      setTimeout(() => {
+        alert(`Unsuccessful. ${response.error}`)
+      }, 80)
+    }
+  }
 
+  return (
+    <Paper elevation={2}>
+      <Formik
+        initialValues={saveData}
+        validationSchema={validationSchema}
+        enableReinitialize
+        onSubmit={handleSubmit}
+      >
+        {({ errors, submitCount, isSubmitting }) => (
           <Grid container display='flex' flexDirection='row'>
             <Grid item xs={9} md={9}>
               <Paper elevation={2}>
@@ -92,7 +103,6 @@ export default function VaccineForm() {
 
                   <Typography variant='subtitle1' fontWeight='bold'>
                     Are you eligible for vaccination?
-
                   </Typography>
                   <FastField
                     name='VAX1'
@@ -102,10 +112,8 @@ export default function VaccineForm() {
                     row
                   />
 
-
                   <Typography variant='subtitle1' fontWeight='bold'>
                     You have received a pneumococcal vaccine.
-
                   </Typography>
                   <FastField
                     name='VAX2'
@@ -113,7 +121,6 @@ export default function VaccineForm() {
                     component={CustomRadioGroup}
                     options={formOptions.YesNo}
                     row
-                    fullwidth
                   />
 
                   <Typography variant='subtitle1' fontWeight='bold'>
@@ -128,7 +135,7 @@ export default function VaccineForm() {
                   />
 
                   <Typography variant='subtitle1' fontWeight='bold'>
-                    Patient's Vaccination history
+                    Patient&apos;s Vaccination history
                   </Typography>
                   <FastField
                     name='VAX4'
@@ -137,20 +144,27 @@ export default function VaccineForm() {
                     multiline
                     minRows={3}
                   />
-                  {submitCount > 0 && Object.keys(errors || {}).length > 0 && (
-                    <Typography color='error' variant='body2' sx={{ mb: 1 }}>
-                      Please fill in all required fields correctly.
-                    </Typography>
-                  )}
-                  <div>
+                      
+                  <ErrorNotification 
+                    show={submitCount > 0 && Object.keys(errors).length > 0}
+                  />
+
+                  <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
                     {loading || isSubmitting ? (
                       <CircularProgress />
                     ) : (
-                      <Button type='submit' variant='contained' color='primary'>
+                      <Button 
+                        type="submit" 
+                        variant="contained" 
+                        color="primary"
+                        size="large"
+                        disabled={isSubmitting}
+                      >
                         Submit
                       </Button>
                     )}
-                  </div>
+                  </Box>
+                  
                   <br />
                   <Divider />
                 </Form>
@@ -242,9 +256,9 @@ export default function VaccineForm() {
               )}
             </Grid>
           </Grid>
-        </Paper>
-      )}
-    </Formik>
+        )}
+      </Formik>
+    </Paper>
   )
 }
 

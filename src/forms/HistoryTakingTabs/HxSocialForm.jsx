@@ -8,6 +8,7 @@ import { submitForm, checkFormA } from '../../api/api.jsx'
 import CustomTextField from '../../components/form-components/CustomTextField'
 import CustomRadioGroup from '../../components/form-components/CustomRadioGroup.jsx'
 import CustomNumberField from 'src/components/form-components/CustomNumberField.jsx'
+import ErrorNotification from '../../components/form-components/ErrorNotification'
 import PopupText from 'src/utils/popupText.jsx'
 
 const formName = 'hxSocialForm'
@@ -200,7 +201,7 @@ export default function HxSocialForm({ changeTab, nextTab }) {
       enableReinitialize
       onSubmit={handleSubmit}
     >
-      {({ isSubmitting }) => (
+      {({ isSubmitting, errors, submitCount }) => (
         <Form className='fieldPadding'>
           <Typography variant='h4'>
             <strong>FINANCIAL STATUS</strong>
@@ -478,6 +479,11 @@ export default function HxSocialForm({ changeTab, nextTab }) {
             row
           />
 
+          <ErrorNotification 
+            show={submitCount > 0 && Object.keys(errors || {}).length > 0}
+            message="Please fill in all required fields correctly."
+          />
+
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
             {loading || isSubmitting ? (
               <CircularProgress />
@@ -493,5 +499,7 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     </Formik>
   )
 
+
   return <Paper elevation={2}>{renderForm()}</Paper>
 }
+
