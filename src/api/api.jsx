@@ -12,10 +12,6 @@ import { updateAllStationCounts } from '../services/stationCounts'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 
-//import * as pdfMake from 'pdfmake-support-chinese-fonts/pdfmake.min';
-//import * as pdfFonts from 'pdfmake-support-chinese-fonts/vfs_fonts';
-import axios from 'axios'
-
 import { getSavedData, getSavedPatientData, addToFormAQueue } from '../services/mongoDB'
 
 
