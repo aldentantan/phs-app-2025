@@ -17,6 +17,15 @@ const SummaryForm = (props) => {
   const [loadingPrevData, isLoadingPrevData] = useState(true)
   const [saveData, setSaveData] = useState({})
 
+  async function preloadFonts() {
+    const urls = [
+      'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/fonts/Roboto/Roboto-Regular.ttf',
+      'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansTamil-Regular.ttf',
+      'https://cdn.jsdelivr.net/gh/choijiwonsoc/my-fonts@main/NotoSansSC-Regular.ttf',
+    ]
+    await Promise.all(urls.map(url => fetch(url)))
+  }
+
   // Oh my god this is terrible PLEASE SOMEONE FIX THIS
   // All the forms
   const [hcsr, setHcsr] = useState({})
@@ -168,6 +177,7 @@ const SummaryForm = (props) => {
         })
       }
       await loadPastForms()
+      await preloadFonts()
     }
     loadForms()
   }, [refresh])
@@ -216,7 +226,6 @@ const SummaryForm = (props) => {
             >
               Download Screening Report
             </Button>
-            <div>First download may take up to 15 seconds, please wait before retrying. Subsequent downloads are almost instant.</div>
           </div>
         </Fragment>
       )}
