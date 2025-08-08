@@ -14,7 +14,7 @@
 
     "bmi_title": "体质指数",
     "bmi_reading": "您的身高是 {0}cm; 体重是 {1}kg. 您的体质指数是 {2}kg/m2.",
-    "bmi_tbl_l_header": "亚洲 BMI 行动截止点",
+    "bmi_tbl_l_header": "亚洲体质指数截止点",
     "bmi_tbl_r_header": "心血管疾病风险",
     "bmi_tbl_low": "低",
     "bmi_tbl_mod": "中等",
