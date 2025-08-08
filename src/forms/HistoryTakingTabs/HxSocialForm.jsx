@@ -121,8 +121,8 @@ const formOptions = {
     { label: '2 or more servings/day', value: '2 or more servings/day' },
   ],
   SOCIAL13C: [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
+    { label: '1 serving/day', value: '1 serving/day' },
+    { label: '2 or more servings/day', value: '2 or more servings/day' },
   ],
   SOCIAL14: [
     {
