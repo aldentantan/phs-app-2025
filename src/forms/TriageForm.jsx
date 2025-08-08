@@ -50,9 +50,7 @@ const validationSchema = Yup.object({
   triageQ13: Yup.number()
     .required('Waist circumference is required')
     .min(0, 'Value must be positive'),
-  triageQ14: Yup.number()
-    .required('Temperature is required')
-    .min(0, 'Value must be positive')
+  triageQ14: Yup.number().required('Temperature is required').min(0, 'Value must be positive'),
 })
 
 const initialValues = {
@@ -215,10 +213,6 @@ const TriageForm = () => {
             <div className='form--div'>
               <h1>Triage</h1>
               <h2>VITALS</h2>
-              <h4>
-                Please fill in the participant&apos;s BP and BMI based on what you earlier recorded
-                on Form A and copy to <font color='red'>NUHS form too.</font>
-              </h4>
               <h2>1) BLOOD PRESSURE</h2>
               <p>
                 (Before measuring BP: ensure no caffeine, anxiety, running and smoking in the last
@@ -370,12 +364,8 @@ const TriageForm = () => {
               <h3>Hypertension criteria:</h3>
               <ul>
                 <li>Younger participants: BP &gt; 140/90</li>
-                <li>
-                  Participants &gt; 80 years old: BP &gt; 150/90
-                  <ul>
-                    <li>CKD w proteinuria (mod to severe albuminuria): &gt; 130/80</li>
-                  </ul>
-                </li>
+                <li>Participants &gt; 80 years old: BP &gt; 150/90</li>
+                <li>CKD w proteinuria (mod to severe albuminuria): &gt; 130/80</li>
                 <li>DM: &gt; 130/80</li>
               </ul>
 
@@ -407,7 +397,7 @@ const TriageForm = () => {
                 BMI: <CalcBMI values={values} />
               </h3>
 
-              <h2>3) Waist Circumference (all participants)</h2>
+              <h2>3) Waist Circumference</h2>
               <h3>Waist Circumference (in cm)</h3>
               <Field name='triageQ13' component={CustomNumberField} label='Triage Q13' min={0} />
 
@@ -423,9 +413,9 @@ const TriageForm = () => {
             </div>
 
             {/* Display form errors */}
-            <ErrorNotification 
+            <ErrorNotification
               show={submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0}
-              message="Please fill in all required fields correctly."
+              message='Please fill in all required fields correctly.'
             />
 
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>

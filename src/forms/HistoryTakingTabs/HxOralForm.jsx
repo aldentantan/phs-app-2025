@@ -34,7 +34,7 @@ const formOptions = {
   ORAL1: [
     { label: 'Healthy', value: 'Healthy' },
     { label: 'Moderate', value: 'Moderate' },
-    { label: 'Poor, please specify', value: 'Poor' },
+    { label: 'Poor (such as oral disease symptoms), please specify', value: 'Poor' },
   ],
   ORAL2: [
     { label: 'Yes', value: 'Yes' },
@@ -202,9 +202,9 @@ export default function HxOralForm({ changeTab, nextTab }) {
             screening DOES NOT take the place of a thorough oral health examination with a dentist.
           </Typography>
 
-          <ErrorNotification 
+          <ErrorNotification
             show={submitCount > 0 && Object.keys(errors || {}).length > 0}
-            message="Please fill in all required fields correctly."
+            message='Please fill in all required fields correctly.'
           />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
@@ -224,9 +224,5 @@ export default function HxOralForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-  return (
-    <Paper elevation={2}>
-      {renderForm()}
-    </Paper>
-  )
+  return <Paper elevation={2}>{renderForm()}</Paper>
 }

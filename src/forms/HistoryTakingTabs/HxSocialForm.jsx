@@ -392,16 +392,18 @@ export default function HxSocialForm({ changeTab, nextTab }) {
             </PopupText>
           </PopupText>
 
-
           <Typography>
-            For the next question:<br />
+            For the next question:
+            <br />
             Appropriate amount of alcohol:
             <ul>
               <li> Males: &lt;2 standard drinks per day</li>
               <li> Females: &lt;1 standard drink per day</li>
             </ul>
           </Typography>
-          <Typography fontWeight='bold' sx={{ mt: 2 }}>Do you consume alcoholic drinks?</Typography>
+          <Typography fontWeight='bold' sx={{ mt: 2 }}>
+            Do you consume alcoholic drinks?
+          </Typography>
           <FastField name='SOCIAL12' label='SOCIAL12' component={CustomTextField} />
 
           <Typography fontWeight='bold'>
@@ -468,6 +470,20 @@ export default function HxSocialForm({ changeTab, nextTab }) {
             row
           />
 
+          <Typography fontWeight='bold'>Dietician consultation criteria:</Typography>
+          <ul>
+            <li>interested in dietary advice</li>
+            <li>Any chronic metabolic diseases that will benefit from dietetic intervention</li>
+            <ul>
+              <li>Diabetes</li>
+              <li>Hyperlipidemia</li>
+              <li>Hypertension</li>
+            </ul>
+            <li>Obesity cases (BMI &gt; 23.0 kg/m^2)</li>
+            <li>Underweight cases (BMI &lt; 18.0 kg/m^2)</li>
+            <li>Any other metabolic imbalance</li>
+          </ul>
+
           <Typography fontWeight='bold'>
             Have you visited any GP or polyclinic in the last 1 year?
           </Typography>
@@ -479,9 +495,9 @@ export default function HxSocialForm({ changeTab, nextTab }) {
             row
           />
 
-          <ErrorNotification 
+          <ErrorNotification
             show={submitCount > 0 && Object.keys(errors || {}).length > 0}
-            message="Please fill in all required fields correctly."
+            message='Please fill in all required fields correctly.'
           />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
@@ -499,7 +515,5 @@ export default function HxSocialForm({ changeTab, nextTab }) {
     </Formik>
   )
 
-
   return <Paper elevation={2}>{renderForm()}</Paper>
 }
-
