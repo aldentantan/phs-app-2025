@@ -1630,7 +1630,7 @@ export const generateDoctorPdf = async (entry) => {
   })
 
   const generateMemoBody = () => {
-    return [
+    const content = [
       { text: 'Memo for ______________________', margin: [0, 20, 0, 2], alignment: 'center' },
       { text: 'NRIC: ______________________', margin: [0, 6, 0, 2], alignment: 'center' },
       { text: 'Dear Colleague:', margin: [0, 15, 0, 10] },
@@ -1652,78 +1652,11 @@ export const generateDoctorPdf = async (entry) => {
         ],
         margin: [0, 2, 0, 10],
       },
-
-      { text: '\nThank you very much.', margin: [0, 2, 0, 10] },
     ]
-  }
+    
+    content.push({ text: '\nThank you very much.', margin: [0, 2, 0, 10] })
 
-
-  // Add doctor consult form data
-  if (savedDoctorConsultData) {
-    content.push({ text: 'Clinical Findings:', style: 'subheader', decoration: 'underline' })
-    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ2 || 'No response'}\n` })
-    content.push({ text: '\n' })
-    content.push({ text: `Doctor's Memo:`, style: 'subheader', decoration: 'underline' })
-    content.push({ text: `${savedDoctorConsultData.doctorSConsultQ3 || 'No response'}` })
-    content.push({ text: '\n' })
-
-    // Dietitian Referral
-    content.push({
-      text: `Refer to Dietitian: ${savedDoctorConsultData.doctorSConsultQ4 === 'Yes'
-        ? 'Yes'
-        : savedDoctorConsultData.doctorSConsultQ4 === 'No'
-          ? 'No'
-          : 'No response'
-        }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ4) {
-      content.push({ text: `Reason for Dietitian Referral: ${savedDoctorConsultData.doctorSConsultQ5 || 'No response'}` })
-    }
-
-    // Social Support Referral
-    content.push({
-      text: `Refer to Social Support: ${savedDoctorConsultData.doctorSConsultQ6 === 'Yes'
-        ? 'Yes'
-        : savedDoctorConsultData.doctorSConsultQ6 === 'No'
-          ? 'No'
-          : 'No response'
-        }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ6) {
-      content.push({ text: `Reason for Social Support Referral: ${savedDoctorConsultData.doctorSConsultQ7 || 'No response'}` })
-    }
-
-    // Dental Referral
-    content.push({
-      text: `Refer to Dental: ${savedDoctorConsultData.doctorSConsultQ8 === 'Yes'
-        ? 'Yes'
-        : savedDoctorConsultData.doctorSConsultQ8 === 'No'
-          ? 'No'
-          : 'No response'
-        }`, style: 'subheader', decoration: 'underline',
-    })
-    if (savedDoctorConsultData.doctorSConsultQ8) {
-      content.push({ text: `Reason for Dental Referral: ${savedDoctorConsultData.doctorSConsultQ9 || 'No response'}` })
-    }
-
-    // Mental Health Referral
-    content.push({
-      text: `Refer to Mental Health: ${savedDoctorConsultData.doctorSConsultQ13 === 'Yes'
-        ? 'Yes'
-        : savedDoctorConsultData.doctorSConsultQ13 === 'No'
-          ? 'No'
-          : 'No response'
-        }`, style: 'subheader', decoration: 'underline',
-    })
-
-    content.push({
-      text: `Does patient require urgent follow-up: ${savedDoctorConsultData.doctorSConsultQ10 === 'Yes'
-        ? 'Yes'
-        : savedDoctorConsultData.doctorSConsultQ10 === 'No'
-          ? 'No'
-          : 'No response'
-        }`, style: 'subheader', decoration: 'underline',
-    })
+    return content
   }
 
   const generateSignatureBlock = () => ({
