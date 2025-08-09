@@ -13,6 +13,7 @@ export const getEligibilityRows = (forms = {}) => {
     hxoral = {},
     phq = {},
     hxm4m5 = {},
+    ophthal = {},
   } = forms
 
   const createData = (name, isEligible) => ({
@@ -29,7 +30,7 @@ export const getEligibilityRows = (forms = {}) => {
     hxsocial?.SOCIAL16 === 'Yes' &&
     (hxsocial?.SOCIAL10 === 'Yes' || hxsocial?.SOCIAL11 === 'Yes')
   const isWomenCancerEducationEligible = reg?.registrationQ5 === 'Female'
-  const isPodiatryEligible = pmhx?.PMHX5?.includes('Diabetes')
+  const isPodiatryEligible = pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic')
   const isMentalHealthEligible =
     (phq?.PHQ10 >= 10 && reg?.registrationQ4 < 60) || phq?.PHQ11 === 'Yes'
   const isMammobusEligible = reg.registrationQ19 === 'Yes'
@@ -54,20 +55,22 @@ export const getEligibilityRows = (forms = {}) => {
     phq?.PHQ9 == '1 - Several days' ||
     phq?.PHQ9 == '2 - More than half the days' ||
     phq?.PHQ9 == '3 - Nearly everyday' ||
-    hxm4m5?.hxM4M5Q1 === 'Yes'
+    hxm4m5?.hxM4M5Q1 === 'Yes' ||
+    ophthal?.OphthalQ9?.includes("Referred to Doctor's Station")
 
   const isDietitianEligible = hxsocial?.SOCIAL15 === 'Yes'
   const isSocialServicesEligible =
     hxsocial?.SOCIAL6 === 'Yes' ||
     hxsocial?.SOCIAL7 === 'Yes' ||
-    (hxsocial?.SOCIAL8 === 'Yes' && hxsocial?.SOCIAL9 === 'No')
+    (hxsocial?.SOCIAL8 === 'Yes' && hxsocial?.SOCIAL9 === 'No') ||
+    ophthal?.OphthalQ13 === 'Yes'
 
   const isDentalEligible =
-    pmhx?.PMHX5 === 'Diabetes' ||
-    hxsocial?.SOCIAL10 === 'Yes, please specify' ||
-    hxsocial?.SOCIAL11 === 'Yes, please specify' ||
+    pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic') ||
+    hxsocial?.SOCIAL10 === 'Yes' ||
+    hxsocial?.SOCIAL11 === 'Yes' ||
     hxoral?.ORAL2 === 'Yes' ||
-    hxoral?.ORAL1 === 'Poor (such as oral disease symptoms), please specify' ||
+    hxoral?.ORAL1 === 'Poor' ||
     hxoral?.ORAL4 === 'No' ||
     hxoral?.ORAL5 === 'Yes'
 
@@ -109,7 +112,7 @@ export function computeVisitedStationsCount(record) {
       'geriPtConsultForm',
       'geriOtConsultForm',
     ],
-    ophthalmology: ['ophthalFrom'],
+    ophthalmology: ['ophthalForm'],
     oralhealth: ['oralHealthForm'],
     socialservice: ['socialServiceForm'],
     mentalhealth: ['mentalHealthForm'],
@@ -143,7 +146,7 @@ export const updateAllStationCounts = async (patientId) => {
   const visitedStationsCount = computeVisitedStationsCount(patient)
 
   // fetch all relevant forms for eligibility
-  const [pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5, hxgynae] =
+  const [pmhx, hxsocial, reg, hxfamily, triage, hcsr, hxoral, wce, phq, hxm4m5, hxgynae, ophthal] =
     await Promise.all([
       getSavedData(patientId, allForms.hxNssForm),
       getSavedData(patientId, allForms.hxSocialForm),
@@ -156,7 +159,9 @@ export const updateAllStationCounts = async (patientId) => {
       getSavedData(patientId, allForms.geriPhqForm),
       getSavedData(patientId, allForms.hxM4M5ReviewForm),
       getSavedData(patientId, allForms.hxGynaeForm),
+      getSavedData(patientId, allForms.ophthalForm),
     ])
+
 
   const formData = {
     reg: reg || {},
@@ -170,6 +175,7 @@ export const updateAllStationCounts = async (patientId) => {
     phq: phq || {},
     hxm4m5: hxm4m5 || {},
     hxgynae: hxgynae || {},
+    ophthal: ophthal || {},
   }
 
   const rows = getEligibilityRows(formData)
