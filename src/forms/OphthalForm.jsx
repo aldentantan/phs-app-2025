@@ -89,7 +89,7 @@ const OphthalForm = () => {
     OphthalQ6: saveData.OphthalQ6 || '',
     OphthalQ7: saveData.OphthalQ7 || '',
     OphthalQ8: saveData.OphthalQ8 || '',
-    OphthalQ9: saveData.OphthalQ9 || '',
+    OphthalQ9: saveData.OphthalQ9 || [],
     OphthalQ10: saveData.OphthalQ10 || '',
     OphthalQ11: saveData.OphthalQ11 || '',
     OphthalQ12: saveData.OphthalQ12 || '',
@@ -275,7 +275,7 @@ const OphthalForm = () => {
                     />
                   </div>
 
-                  <ErrorNotification 
+                  <ErrorNotification
                     show={submitCount > 0 && Object.keys(errors || {}).length > 0}
                     message="Please fill in all required fields correctly."
                   />
