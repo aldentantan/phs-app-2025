@@ -129,9 +129,6 @@ const DoctorsConsultForm = () => {
           setPMHX(result[6])
           setSocial(result[7])
           setLoadingSidePanel(false)
-          Object.entries(result[1]).forEach(([key, value]) => {
-          console.log(`Ophthal key: ${key}, value:`, value);
-        });
         })
       }
       loadPastForms()
