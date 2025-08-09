@@ -182,7 +182,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
               />
             </div>
 
-            <ErrorNotification 
+            <ErrorNotification
               show={formikProps.submitCount > 0 && Object.keys(formikProps.errors || {}).length > 0}
               message="Please fill in all required fields correctly."
             />
@@ -231,7 +231,7 @@ const GeriAmtForm = ({ changeTab, nextTab }) => {
 
 const getQuestionText = (qNum) => {
   const textMap = {
-    1: 'What is the year? 请问今是什么年份？',
+    1: 'What is the year? 请问今年是什么年份？',
     2: 'About what time is it? (within 1 hour) 请问现在大约是几点钟（一在一个小时之内）？',
     3: 'What is your age? 请问您今年几岁？',
     4: 'What is your date of birth? 请问您的出生日期或生日？',
