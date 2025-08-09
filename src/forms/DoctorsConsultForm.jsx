@@ -85,16 +85,13 @@ const DoctorsConsultForm = () => {
 
   // forms to retrieve for side panel
   const [hcsr, setHcsr] = useState({})
-  const [geriVision, setGeriVision] = useState({})
-  const [geriAudio, setGeriAudio] = useState({})
+  const [ophthal, setOphthal] = useState({})
+  const [audio, setAudio] = useState({})
   const [geriPHQ, setPHQ] = useState({})
   const [lung, setLung] = useState({})
   const [triage, setTriage] = useState({})
-  const [osteo, setOsteo] = useState({})
   const [pmhx, setPMHX] = useState({})
   const [social, setSocial] = useState({})
-  // const [family, setFamily] = useState({})
-  const [setFamily] = useState({})
 
   const navigate = useNavigate()
 
@@ -105,42 +102,40 @@ const DoctorsConsultForm = () => {
 
       const loadPastForms = async () => {
         const hcsrData = getSavedData(patientId, allForms.hxHcsrForm)
-        const geriVisionData = getSavedData(patientId, allForms.geriVisionForm)
-        const geriAudioData = getSavedData(patientId, allForms.geriAudiometryForm)
+        const ophthalData = getSavedData(patientId, allForms.ophthalForm)
+        const audioData = getSavedData(patientId, allForms.audiometryForm)
         const lungData = getSavedData(patientId, allForms.lungForm)
         const PHQDATA = getSavedData(patientId, allForms.geriPhqForm)
         const triageData = getSavedData(patientId, allForms.triageForm)
-        const osteoData = getSavedData(patientId, allForms.osteoForm)
         const pmhxData = getSavedData(patientId, allForms.hxNssForm)
         const socialData = getSavedData(patientId, allForms.hxSocialForm)
-        const familyData = getSavedData(patientId, allForms.hxFamilyForm)
 
         Promise.all([
           hcsrData,
-          geriVisionData,
-          geriAudioData,
+          ophthalData,
+          audioData,
           lungData,
           PHQDATA,
           triageData,
-          osteoData,
           pmhxData,
           socialData,
-          familyData,
         ]).then((result) => {
           setHcsr(result[0])
-          setGeriVision(result[1])
-          setGeriAudio(result[2])
+          setOphthal(result[1])
+          setAudio(result[2])
           setLung(result[3])
           setPHQ(result[4])
           setTriage(result[5])
-          setOsteo(result[6])
-          setPMHX(result[7])
-          setSocial(result[8])
-          setFamily(result[9])
+          setPMHX(result[6])
+          setSocial(result[7])
           setLoadingSidePanel(false)
+          Object.entries(result[1]).forEach(([key, value]) => {
+          console.log(`Ophthal key: ${key}, value:`, value);
+        });
         })
       }
       loadPastForms()
+
     }
     fetchData()
   }, [patientId])
@@ -319,7 +314,7 @@ const DoctorsConsultForm = () => {
             />
           </div>
 
-          <ErrorNotification 
+          <ErrorNotification
             show={Object.keys(errors).length > 0 && submitCount > 0}
             message="Please correct the errors above before submitting."
           />
@@ -343,43 +338,6 @@ const DoctorsConsultForm = () => {
     <div className='summary--question-div'>
       <h2>Patient Requires Referrals For: </h2>
       <ul>
-        {!lung ? <p className='red'>nil lung data!</p> : <></>}
-        {lung && lung.LUNG14 == 'Yes' ? (
-          <li>
-            <p>
-              Patient has <strong>{lung.LUNG13}</strong>
-            </p>
-            <p>Lung Function Results</p>
-            <table style={{ border: '1px solid black', borderCollapse: 'collapse' }}>
-              <tr style={{ border: '1px solid black' }}>
-                <td colSpan={2} style={{ border: '1px solid black' }}>
-                  Pre-Bronchodilator
-                </td>
-              </tr>
-              <tr style={{ border: '1px solid black' }}>
-                <td style={{ border: '1px solid black' }}>FVC (L)</td>
-                <td style={{ border: '1px solid black' }}>{lung.LUNG3}</td>
-              </tr>
-              <tr style={{ border: '1px solid black' }}>
-                <td style={{ border: '1px solid black' }}>FEV1 (L)</td>
-                <td style={{ border: '1px solid black' }}>{lung.LUNG4}</td>
-              </tr>
-              <tr style={{ border: '1px solid black' }}>
-                <td style={{ border: '1px solid black' }}>FVC (%pred)</td>
-                <td style={{ border: '1px solid black' }}>{lung.LUNG5}</td>
-              </tr>
-              <tr style={{ border: '1px solid black' }}>
-                <td style={{ border: '1px solid black' }}>FEV1 (%pred)</td>
-                <td style={{ border: '1px solid black' }}>{lung.LUNG6}</td>
-              </tr>
-              <tr style={{ border: '1px solid black' }}>
-                <td style={{ border: '1px solid black' }}>FEV1/FVC (%)</td>
-                <td style={{ border: '1px solid black' }}>{lung.LUNG7}</td>
-              </tr>
-            </table>
-          </li>
-        ) : null}
-
         {!geriPHQ ? <p className='red'>nil geriPHQ data!</p> : <></>}
         <li>
           {geriPHQ && geriPHQ.PHQ10 ? (
@@ -425,8 +383,8 @@ const DoctorsConsultForm = () => {
           </li>
         ) : null}
 
-        {!geriVision ? <p className='red'>nil geriVision data!</p> : <></>}
-        {geriVision.geriVisionQ9 ? (
+        {!ophthal ? <p className='red'>nil ophthal data!</p> : <></>}
+        {ophthal.OphthalQ9 ? (
           <li>
             <p>Visual Check Results.</p>
             <ul>
@@ -447,33 +405,33 @@ const DoctorsConsultForm = () => {
                   </tr>
                   <tr style={{ border: '1px solid black' }}>
                     <td style={{ border: '1px solid black' }}>Without Pinhole Occluder</td>
-                    <td style={{ border: '1px solid black' }}>6/{geriVision.geriVisionQ3}</td>
-                    <td style={{ border: '1px solid black' }}>6/{geriVision.geriVisionQ4}</td>
+                    <td style={{ border: '1px solid black' }}>6/{ophthal.OphthalQ3}</td>
+                    <td style={{ border: '1px solid black' }}>6/{ophthal.OphthalQ4}</td>
                   </tr>
                   <tr style={{ border: '1px solid black' }}>
                     <td style={{ border: '1px solid black' }}>With Pinhole Occluder</td>
-                    <td style={{ border: '1px solid black' }}>6/{geriVision.geriVisionQ5}</td>
-                    <td style={{ border: '1px solid black' }}>6/{geriVision.geriVisionQ6}</td>
+                    <td style={{ border: '1px solid black' }}>6/{ophthal.OphthalQ5}</td>
+                    <td style={{ border: '1px solid black' }}>6/{ophthal.OphthalQ6}</td>
                   </tr>
                 </table>
               </li>
               <li>
                 <p>
-                  Type of vision error, if any: <strong>{geriVision.geriVisionQ8}</strong>
+                  Type of vision error, if any: <strong>{ophthal.OphthalQ8}</strong>
                 </p>
                 <p>
-                  Previous eye surgery or condition: <strong>{geriVision.geriVisionQ1}</strong>
+                  Previous eye surgery or condition: <strong>{ophthal.OphthalQ1}. {ophthal.OphthalQ2}</strong>
                 </p>
                 <p>
                   Is currently on any eye review/ consulting any eye specialist:{' '}
-                  <strong>{geriVision.geriVisionQ10}</strong>
+                  <strong>{ophthal.OphthalQ10}</strong>
                 </p>
                 <p>
-                  <strong>{geriVision.geriVisionQ11}</strong>
+                  <strong>{ophthal.OphthalQ11}</strong>
                 </p>
                 {hcsr ? (
                   <p>
-                    Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ3}</strong>
+                    Patient&apos;s history indication of hearing problems: <strong>{hcsr.hxHcsrQ3}</strong>
                   </p>
                 ) : (
                   <p className='red'>nil hcsr data!</p>
@@ -483,46 +441,25 @@ const DoctorsConsultForm = () => {
           </li>
         ) : null}
 
-        {!geriAudio ? <p className='red'>nil geriAudio data!</p> : <></>}
-        {geriAudio ? (
+        {!audio ? <p className='red'>nil audio data!</p> : <></>}
+        {audio ? (
           <li>
-            <p>Patient&apos;s audiometry results, if any:</p>
+            <p>Patient&apos;s audiometry results:</p>
             <ul>
               <li>
                 <p>
-                  <strong>{geriAudio.geriAudiometryQ13}</strong>
+                  <strong>{audio.AudiometryQ13}</strong>
                 </p>
                 <p>
-                  Details: <strong>{geriAudio.geriAudiometryQ12}</strong>
+                  Details: <strong>{audio.AudiometryQ12}</strong>
                 </p>
                 {hcsr ? (
                   <p>
-                    Patient&apos;s history indicated: <strong>{hcsr.hxHcsrQ4}</strong>
+                    Patient&apos;s indication of hearing problems: <strong>{hcsr.hxHcsrQ4}</strong>
                   </p>
                 ) : (
                   <p className='red'>nil hcsr data!</p>
                 )}
-              </li>
-            </ul>
-          </li>
-        ) : null}
-
-        {!osteo ? <p className='red'>nil osteo data!</p> : <></>}
-        {osteo ? (
-          <li>
-            <p>
-              Patient&apos;s OSTA risk is <strong>{osteo.BONE1}</strong>
-            </p>
-            <ul>
-              <li>
-                <p>
-                  FRAX Hip Fracture Score is <strong>{osteo.BONE3}</strong>
-                </p>
-              </li>
-              <li>
-                <p>
-                  Patient requires a follow up: <strong>{osteo.BONE2}</strong>
-                </p>
               </li>
             </ul>
           </li>
