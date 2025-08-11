@@ -102,7 +102,7 @@ const MentalHealthForm = () => {
                     />
                   </div>
 
-                  <ErrorNotification 
+                  <ErrorNotification
                     show={submitCount > 0 && Object.keys(errors || {}).length > 0}
                     message="Please fill in all required fields correctly."
                   />
@@ -144,6 +144,7 @@ const MentalHealthForm = () => {
                   )}
 
                   <p className='blue'>PHQ Score: {phq.PHQ10}</p>
+                  {phq.PHQ10 >= 6 ? <p className='red'>Patient meets the PHQ score threshold for referral to SAMH. Patient is recommended to sign up for follow up to SAMH.</p> : null}
                   <p className='underlined'>Would the patient benefit from counselling:</p>
                   <p className='blue'>{phq.PHQ11}</p>
                   <p className='blue'>{phq.PHQShortAns11}</p>

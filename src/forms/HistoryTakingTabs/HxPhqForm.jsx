@@ -64,6 +64,69 @@ const initialValues = {
 const validationSchema = Yup.object({
   PHQ1: Yup.string().required('Required'),
   PHQ2: Yup.string().required('Required'),
+  PHQ3: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ4: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ5: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ6: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ7: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ8: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQ9: Yup.string().when(['PHQ1', 'PHQ2'], {
+    is: (phq1, phq2) => {
+      const score = (pointsMap[phq1] || 0) + (pointsMap[phq2] || 0)
+      return score >= 2
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  PHQextra9: Yup.string().when(['PHQ9'], {
+    is: (phq9) => {
+      return (pointsMap[phq9] || 0) >= 1
+    },
+    then: (schema) => schema.required('Required'),
+    otherwise: (schema) => schema.notRequired(),
+  }),
   PHQ11: Yup.string().required('Required'),
 })
 
@@ -142,7 +205,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
 
         // Resets PHQ3 to PHQ9 if the score of PHQ1 + PHQ2 is less than 3
         useEffect(() => {
-          if (score < 3) {
+          if (score < 2) {
             ;['PHQ3', 'PHQ4', 'PHQ5', 'PHQ6', 'PHQ7', 'PHQ8', 'PHQ9', 'PHQextra9'].forEach((qn) => {
               setFieldValue(qn, '', false)
               setFieldTouched(qn, false, false)
@@ -179,7 +242,7 @@ export default function HxPhqForm({ changeTab, nextTab }) {
             />
 
             {/* *PHQ3 - PHQ9 will only be rendered if the score of PHQ1 + PHQ2 >= 3*/}
-            {score >= 3 && (
+            {score >= 2 && (
               <>
                 <FastField
                   name='PHQ3'
