@@ -16,10 +16,10 @@
     "bmi_reading": "Ketinggian anda ialah {0}cm dan berat badan anda ialah {1}kg, dengan BMI {2}kg/m2.",
     "bmi_tbl_l_header": "Mata potong BMI Asia untuk tindakan",
     "bmi_tbl_r_header": "Risiko Penyakit Kardiovaskular",
-    "bmi_tbl_low": "Risiko rendah",
-    "bmi_tbl_mod": "Risiko sederhana",
-    "bmi_tbl_high": "Risiko tinggi",
-    "bmi_tbl_vhigh": "Risiko sangat tinggi",
+    "bmi_tbl_low": "Rendah",
+    "bmi_tbl_mod": "Sederhana",
+    "bmi_tbl_high": "Tinggi",
+    "bmi_tbl_vhigh": "Sangat Tinggi",
 
     "other_title": "Modaliti Saringan Lain",
     "other_lung": "Hasil fungsi paru-paru, jika ada:",
@@ -30,8 +30,8 @@
     "other_eye": "Keputusan ketajaman penglihatan anda adalah, jika ada",
     "other_eye_tbl_l_header": "Mata kanan",
     "other_eye_tbl_r_header": "Mata kiri",
-    "other_eye_tbl_t_row": "Tanpa occluder lubang jarum",
-    "other_eye_tbl_b_row": "Dengan occluder lubang jarum",
+    "other_eye_tbl_t_row": "Tanpa Occluder Lubang Pin",
+    "other_eye_tbl_b_row": "Dengan Pinhole Occluder",
     "other_eye_error": "Jenis ralat penglihatan, jika ada: ",
     "podiatry_screening_true": "Anda telah menjalani pemeriksaan di stesen podiatri.",
     "vaccine_1": "Anda layak untuk stesen vaksinasi.",
@@ -70,7 +70,7 @@
     "memo_doctor": "Stesen Doktor, jika ada:\n\n",
 
     "rec_title": "Syor ",
-    "rec": "Anda amat digalakkan untuk mendapatkan susulan berdasarkan hasil pemeriksaan kesihatan anda. \n\nSeperti yang dinyatakan di atas, ahli PHS mungkin akan menghubungi anda tidak lama lagi sebagai satu bentuk susulan dalam masa beberapa minggu, jika anda tidak menarik diri daripada Inisiatif Telekesihatan kami.",
+    "rec": "Anda amat disyorkan untuk mendapatkan susulan berdasarkan hasil pemeriksaan kesihatan anda. \n\nSeperti yang dinyatakan di atas, ahli PHS mungkin akan menghubungi anda tidak lama lagi sebagai satu bentuk susulan dalam masa beberapa minggu, jika anda tidak menarik diri daripada Inisiatif Telekesihatan kami.",
 
     "disclaimer_title": "Penafian Laporan Pemeriksaan Kesihatan",
     "disclaimer" : "Pemeriksaan kesihatan mungkin mengenal pasti faktor risiko perubatan tertentu, keadaan atau penyakit tetapi tidak bertujuan untuk menjadi pemeriksaan kesihatan yang komprehensif atau menggantikan perundingan perubatan untuk sebarang gejala atau kebimbangan perubatan. Walaupun tiada sebarang penemuan abnormal dalam keputusan saringan anda, kita tidak boleh memberi jaminan bahawa anda tiada penyakit lain. Anda dinasihatkan untuk memperhatikan jika ada sebarang gejala yang berkaitan dengan keadaan ini, dan mendapatkan rawatan perubatan apabila ragu-ragu. Keadaan-keadaan seperti demam dan penyakit lain semasa atau sejurus sebelum masa saringan boleh menjejaskan tafsiran keputusan dan oleh itu anda dinasihatkan untuk berjumpa doktor anda untuk tafsiran laporan kesihatan. Sila pastikan anda memenuhi kriteria kelayakan sebelum anda kembali untuk pemeriksaan kesihatan anda yang seterusnya. \n\nSekiranya anda mempunyai sebarang pertanyaan, sila hubungi kami di hello@publichealthservice.org. Terima kasih kerana mengambil bahagian dalam PHS 2025 dan kami berharap anda telah mendapat manfaat dan akan terus menyokong kami pada masa hadapan. "
