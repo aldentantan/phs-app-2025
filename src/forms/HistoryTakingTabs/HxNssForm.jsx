@@ -55,7 +55,7 @@ const formOptions = {
     { label: 'Kidney Disease', value: 'Kidney Disease' },
     { label: 'Hypertension', value: 'Hypertension' },
     { label: 'Hyperlipidemia', value: 'Hyperlipidemia' },
-    { label: 'Diabetes', value: 'Diabetes' },
+    { label: 'Diabetes/Pre-Diabetic', value: 'Diabetes/Pre-Diabetic' },
     {
       label:
         'Heart disease (includes heart attack, heart failure, heart valve disease, stroke, blood vessel/vascular disease)',
@@ -369,7 +369,7 @@ export default function HxNssForm({ changeTab, nextTab }) {
             </>
           )}
 
-          <ErrorNotification 
+          <ErrorNotification
             show={submitCount > 0 && Object.keys(errors || {}).length > 0}
             message="Please fill in all required fields correctly."
           />
