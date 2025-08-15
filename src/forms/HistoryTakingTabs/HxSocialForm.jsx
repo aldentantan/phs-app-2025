@@ -260,7 +260,7 @@ export default function HxSocialForm({ changeTab, nextTab }) {
           />
 
           <Typography fontWeight='bold'>
-            If you are currently not on CHAS but qualify, do you want to apply for CHAS card?
+            If you are currently not on CHAS but qualify, do you want to apply for CHAS card? <br/>For SG PRs, they do not qualify. Select 'No' if patient is a PR.
           </Typography>
           <FastField
             name='SOCIAL6'

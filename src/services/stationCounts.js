@@ -21,9 +21,7 @@ export const getEligibilityRows = (forms = {}) => {
     eligibility: isEligible ? 'YES' : 'NO',
   })
 
-  const isVaccinationEligible =
-    reg?.registrationQ4 >= 65 ||
-    ['CHAS Green', 'CHAS Orange', 'CHAS Blue'].includes(reg?.registrationQ12)
+  const isVaccinationEligible = reg?.registrationQ4 >= 65
   const isHealthierSGEligible = reg?.registrationQ11 !== 'Yes'
   const isLungFunctionEligible =
     reg?.registrationQ21 === 'Yes' &&
