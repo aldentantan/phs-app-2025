@@ -129,7 +129,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             If the participant has any <u>presenting complaints or concern(s)</u>, please take a
             brief history. (Please write NIL if otherwise).
           </Typography>
-          <Typography gutterBottom variant='h4' fontWeight='bold' sx={{ mt: 4}}>
+          <Typography gutterBottom variant='h4' fontWeight='bold' sx={{ mt: 4 }}>
             &quot;Do you have any health issues that you are currently concerned about?&quot;
             <br />
             &quot;最近有没有哪里不舒服&quot;
@@ -149,7 +149,7 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             treatment for their problems.
           </Typography>
 
-          <Typography variant='h4' fontWeight='bold' sx={{ mt: 4}}>
+          <Typography variant='h4' fontWeight='bold' sx={{ mt: 4 }}>
             Do you have any vision problems? Please specify if yes. Exclude complaints like
             unspecific itchy eyes etc.
           </Typography>
@@ -186,31 +186,29 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             row
           />
 
-          <PopupText qnNo='hxHcsrQ4' triggerValue='Yes'>
-            <Typography variant='subtitle1' fontWeight='bold'>
-              Please specify:
-            </Typography>
-            <FastField
-              name='hxHcsrShortAnsQ4'
-              label='hxHcsrShortAnsQ4'
-              component={CustomTextField}
-              fullWidth
-              multiline
-              sx={{ mb: 3, mt: 1 }}
-            />
+          <Typography variant='subtitle1' fontWeight='bold'>
+            Please specify:
+          </Typography>
+          <FastField
+            name='hxHcsrShortAnsQ4'
+            label='hxHcsrShortAnsQ4'
+            component={CustomTextField}
+            fullWidth
+            multiline
+            sx={{ mb: 3, mt: 1 }}
+          />
 
-            <Typography variant='h4' fontWeight='bold'>
-              If you are 60 and above, do you currently use hearing aids/have been detected to
-              require hearing aids?
-            </Typography>
-            <FastField
-              name='hxHcsrQ5'
-              label='hxHcsrQ5'
-              component={CustomRadioGroup}
-              options={formOptions.hxHcsrQ5}
-              row
-            />
-          </PopupText>
+          <Typography variant='h4' fontWeight='bold'>
+            If you are 60 and above, do you currently use hearing aids/have been detected to require
+            hearing aids?
+          </Typography>
+          <FastField
+            name='hxHcsrQ5'
+            label='hxHcsrQ5'
+            component={CustomRadioGroup}
+            options={formOptions.hxHcsrQ5}
+            row
+          />
 
           <Typography variant='h4' fontWeight='bold'>
             Please tick to highlight if you feel SYSTEMS REVIEW require closer scrutiny by doctors
@@ -285,9 +283,9 @@ export default function HxHcsrForm({ changeTab, nextTab }) {
             sx={{ mb: 3, mt: 1 }}
           />
 
-          <ErrorNotification 
+          <ErrorNotification
             show={submitCount > 0 && Object.keys(errors || {}).length > 0}
-            message="Please fill in all required fields correctly."
+            message='Please fill in all required fields correctly.'
           />
 
           <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center' }}>
