@@ -43,15 +43,18 @@ const formOptions = {
     { label: 'Never before', value: 'Never before' },
     { label: 'Less than 5 years ago', value: 'Less than 5 years ago' },
     { label: '5 years or longer', value: '5 years or longer' },
+    { label: 'Not answered', 'value': 'Never before'}
   ],
   GYNAE13: [
     { label: 'Never before', value: 'Never before' },
     { label: 'Within the last 3 years', value: 'Within the last 3 years' },
     { label: '3 years or longer', value: '3 years or longer' },
+    { label: 'Not answered', value: 'Never before' }
   ],
   GYNAE17: [
     { label: 'Yes', value: 'Yes' },
     { label: 'No', value: 'No' },
+    { label: 'Not answered', value: 'No' },
     { label: 'Not Applicable', value: 'Not Applicable' },
   ],
 }
@@ -100,7 +103,7 @@ export default function HxGynaeForm({ changeTab, nextTab }) {
             This form should only be submitted for female participants
           </Typography>
 
-          
+
 
           <Typography variant='subtitle1' fontWeight='bold'>
             When, if any, was the last HPV test you have taken? <br />

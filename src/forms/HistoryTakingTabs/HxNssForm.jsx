@@ -46,6 +46,7 @@ const formOptions = {
   PMHX3: [
     { label: 'Yes, please specify', value: 'Yes' },
     { label: 'No', value: 'No' },
+    { label: 'Not answered', value: 'No'}
   ],
   PMHX4: [
     { label: 'Yes, please specify', value: 'Yes' },
@@ -78,6 +79,7 @@ const formOptions = {
   PMHX10: [
     { label: 'Yes, please specify', value: 'Yes' },
     { label: 'No', value: 'No' },
+    { label: 'Not answered', value: 'No'}
   ],
 }
 
