@@ -68,8 +68,9 @@ export const getEligibilityRows = (forms = {}) => {
     hxsocial?.SOCIAL10 === 'Yes' ||
     hxsocial?.SOCIAL11 === 'Yes' ||
     hxoral?.ORAL2 === 'Yes' ||
-    hxoral?.ORAL1 === 'Poor'
-  hxoral?.ORAL4 === 'No' || hxoral?.ORAL5 === 'Yes'
+    hxoral?.ORAL1 === 'Poor' ||
+    hxoral?.ORAL4 === 'No' ||
+    hxoral?.ORAL5 === 'Yes'
 
   return [
     createData('Healthier SG Booth', isHealthierSGEligible),
