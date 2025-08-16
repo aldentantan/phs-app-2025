@@ -64,13 +64,13 @@ export const getEligibilityRows = (forms = {}) => {
     ophthal?.OphthalQ13 === 'Yes'
 
   const isDentalEligible = false
-    pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic') ||
-    hxsocial?.SOCIAL10 === 'Yes' ||
-    hxsocial?.SOCIAL11 === 'Yes' ||
-    hxoral?.ORAL2 === 'Yes' ||
-    hxoral?.ORAL1 === 'Poor'
-    hxoral?.ORAL4 === 'No' ||
-    hxoral?.ORAL5 === 'Yes'
+    // pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic') ||
+    // hxsocial?.SOCIAL10 === 'Yes' ||
+    // hxsocial?.SOCIAL11 === 'Yes' ||
+    // hxoral?.ORAL2 === 'Yes' ||
+    // hxoral?.ORAL1 === 'Poor'
+    // hxoral?.ORAL4 === 'No' ||
+    // hxoral?.ORAL5 === 'Yes'
 
   return [
     createData('Healthier SG Booth', isHealthierSGEligible),
