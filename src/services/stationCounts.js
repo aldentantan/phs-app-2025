@@ -32,12 +32,12 @@ export const getEligibilityRows = (forms = {}) => {
   const isMentalHealthEligible =
     (phq?.PHQ10 >= 10 && reg?.registrationQ4 < 60) || phq?.PHQ11 === 'Yes'
   const isMammobusEligible = reg.registrationQ19 === 'Yes'
-  const isHPVEligible = false
-    // (hxgynae?.GYNAE12 === '5 years or longer' || hxgynae?.GYNAE12 === 'Never before') &&
-    // hxgynae?.GYNAE14 === 'Yes' &&
-    // hxgynae?.GYNAE15 === 'No' &&
-    // (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
-    // hxgynae?.GYNAE16 === 'Yes'
+  const isHPVEligible =
+    (hxgynae?.GYNAE12 === '5 years or longer' || hxgynae?.GYNAE12 === 'Never before') &&
+    hxgynae?.GYNAE14 === 'Yes' &&
+    hxgynae?.GYNAE15 === 'No' &&
+    (hxgynae?.GYNAE13 === '3 years or longer' || hxgynae?.GYNAE13 === 'Never before') &&
+    hxgynae?.GYNAE16 === 'Yes'
   const isAudiometryEligible = reg?.registrationQ4 >= 60 && hcsr?.hxHcsrQ5 === 'No'
   const isGeriatricScreeningEligible = reg?.registrationQ4 >= 60
   const isOphthalmologyEligible = reg?.registrationQ4 >= 40
@@ -63,14 +63,13 @@ export const getEligibilityRows = (forms = {}) => {
     (hxsocial?.SOCIAL8 === 'Yes' && hxsocial?.SOCIAL9 === 'No') ||
     ophthal?.OphthalQ13 === 'Yes'
 
-  const isDentalEligible = false
-    // pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic') ||
-    // hxsocial?.SOCIAL10 === 'Yes' ||
-    // hxsocial?.SOCIAL11 === 'Yes' ||
-    // hxoral?.ORAL2 === 'Yes' ||
-    // hxoral?.ORAL1 === 'Poor'
-    // hxoral?.ORAL4 === 'No' ||
-    // hxoral?.ORAL5 === 'Yes'
+  const isDentalEligible =
+    pmhx?.PMHX5?.includes('Diabetes/Pre-Diabetic') ||
+    hxsocial?.SOCIAL10 === 'Yes' ||
+    hxsocial?.SOCIAL11 === 'Yes' ||
+    hxoral?.ORAL2 === 'Yes' ||
+    hxoral?.ORAL1 === 'Poor'
+  hxoral?.ORAL4 === 'No' || hxoral?.ORAL5 === 'Yes'
 
   return [
     createData('Healthier SG Booth', isHealthierSGEligible),
@@ -159,7 +158,6 @@ export const updateAllStationCounts = async (patientId) => {
       getSavedData(patientId, allForms.hxGynaeForm),
       getSavedData(patientId, allForms.ophthalForm),
     ])
-
 
   const formData = {
     reg: reg || {},
